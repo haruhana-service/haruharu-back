@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: haruhana
+  profiles:
+    active: local
+  web:
+    resources:
+      add-mappings: false
+
+server:
+  tomcat:
+    max-connections: 20000
+    threads:
+      max: 600
+      min-spare: 100
+
+---
+spring.config.activate.on-profile: test
+spring.config.import: application-test.yml
+
+---
+spring.config.activate.on-profile: local
+spring.config.import: application-local.yml
+
+---
+spring.config.activate.on-profile: dev
+spring.config.import: application-dev.yml
+
+---
+spring.config.activate.on-profile: prod
+spring.config.import: application-prod.yml
