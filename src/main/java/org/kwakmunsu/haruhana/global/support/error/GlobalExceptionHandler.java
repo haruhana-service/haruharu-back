@@ -41,7 +41,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<?>> handleException(Exception e) {
-        log.error("[Exception]: {}", e.getMessage());
+        log.error("[Exception]: {}", e.getMessage(), e);
 
         ErrorType errorType = ErrorType.DEFAULT_ERROR;
 
@@ -56,7 +56,8 @@ public class GlobalExceptionHandler {
 
         Map<String, String> validationData = e.getFieldErrors().stream()
                 .collect(Collectors.toMap(FieldError::getField,
-                        fe -> fe.getDefaultMessage() != null ? fe.getDefaultMessage() : "유효성 검사 실패"
+                        fe -> fe.getDefaultMessage() != null ? fe.getDefaultMessage() : "유효성 검사 실패",
+                        (existing, replacement) -> existing + ", " + replacement
                 ));
 
         log.warn("[MethodArgumentNotValidException] @Valid 실패. (ValidationData={})", validationData, e);
