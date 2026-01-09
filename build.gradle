@@ -46,7 +46,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 //	testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    implementation 'org.springframework.boot:spring-boot-webmvc-test:4.0.0'
+    testImplementation 'org.springframework.boot:spring-boot-webmvc-test:4.0.0'
 
     // Jwt
     implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
@@ -54,7 +54,7 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 
     // Swagger
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1'
 
 }
 
