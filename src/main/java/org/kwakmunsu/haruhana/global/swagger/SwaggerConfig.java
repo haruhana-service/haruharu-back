@@ -58,8 +58,9 @@ public class SwaggerConfig {
 
     private Schema<?> errorResponseSchema() {
         return new Schema<>()
-                .addProperty("statusCode", new IntegerSchema())
-                .addProperty("message", new StringSchema());
+                .addProperty("code", new StringSchema())
+                .addProperty("message", new StringSchema())
+                .addProperty("data", new Schema<>());
     }
 
     private Server server(String description, String url) {
