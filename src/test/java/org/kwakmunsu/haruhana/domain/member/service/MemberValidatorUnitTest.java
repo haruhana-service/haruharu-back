@@ -24,8 +24,8 @@ class MemberValidatorUnitTest extends UnitTestSupport {
     @Test
     void 유효한_회원정보로_생성_시_도메인_규칙_검증을_통과한다() {
         // given
-        given(memberJpaRepository.existsByLoginId(any())).willReturn(false);
-        given(memberJpaRepository.existsByNickname(any())).willReturn(false);
+        given(memberJpaRepository.existsByLoginIdAndStatus(any(), any())).willReturn(false);
+        given(memberJpaRepository.existsByNicknameAndStatus(any(), any())).willReturn(false);
 
         var newProfile = MemberFixture.createNewProfile();
 
@@ -36,7 +36,7 @@ class MemberValidatorUnitTest extends UnitTestSupport {
     @Test
     void 중복된_로그인아이디로_생성_시_도메인_규칙_검증에_걸린다() {
         // given
-        given(memberJpaRepository.existsByLoginId(any())).willReturn(true);
+        given(memberJpaRepository.existsByLoginIdAndStatus(any(), any())).willReturn(true);
 
         var newProfile = MemberFixture.createNewProfile();
 
@@ -49,8 +49,8 @@ class MemberValidatorUnitTest extends UnitTestSupport {
     @Test
     void 중복된_닉네임으로_생성_시_도메인_규칙_검증에_걸린다() {
         // given
-        given(memberJpaRepository.existsByLoginId(any())).willReturn(false);
-        given(memberJpaRepository.existsByNickname(any())).willReturn(true);
+        given(memberJpaRepository.existsByLoginIdAndStatus(any(), any())).willReturn(false);
+        given(memberJpaRepository.existsByNicknameAndStatus(any(), any())).willReturn(true);
 
         var newProfile = MemberFixture.createNewProfile();
 
