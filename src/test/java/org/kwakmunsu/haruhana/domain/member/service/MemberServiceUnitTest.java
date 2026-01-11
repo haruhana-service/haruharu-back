@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -96,9 +97,10 @@ class MemberServiceUnitTest extends UnitTestSupport {
     @Test
     void 존재하지_않는_카테고리로_등록_시_학습_정보_등록에_실패한다() {
         // given
-        var member = MemberFixture.createMember(Role.ROLE_MEMBER);
+        var member = MemberFixture.createMember(Role.ROLE_GUEST);
 
         given(memberReader.find(any())).willReturn(member);
+        doNothing().when(memberValidator).validateGuest(any());
         willThrow(new HaruHanaException(ErrorType.NOT_FOUND_CATEGORY))
                 .given(memberManager).registerPreference(any(), any());
 
