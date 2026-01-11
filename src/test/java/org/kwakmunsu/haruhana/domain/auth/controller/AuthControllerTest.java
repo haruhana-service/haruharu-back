@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.ControllerTestSupport;
 import org.kwakmunsu.haruhana.domain.auth.controller.dto.LoginRequest;
@@ -14,7 +15,7 @@ import org.springframework.http.MediaType;
 class AuthControllerTest extends ControllerTestSupport {
 
     @Test
-    void 로그인_API_호출_성공_시_AccessToken과_RefreshToken을_발급한다() {
+    void 로그인_API_호출_성공_시_AccessToken과_RefreshToken을_발급한다() throws JsonProcessingException {
         // given
         var request = new LoginRequest("testLoginId", "testPassword123!");
         var requestJson = objectMapper.writeValueAsString(request);
