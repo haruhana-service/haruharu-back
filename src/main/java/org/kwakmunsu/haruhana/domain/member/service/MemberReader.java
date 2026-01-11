@@ -27,4 +27,9 @@ public class MemberReader {
         return member;
     }
 
+    public Member find(Long id) {
+        return memberJpaRepository.findByIdAndStatus(id, EntityStatus.ACTIVE)
+                .orElseThrow(() -> new HaruHanaException(ErrorType.NOT_FOUND_MEMBER));
+    }
+
 }
