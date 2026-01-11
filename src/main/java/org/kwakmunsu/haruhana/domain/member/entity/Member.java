@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.kwakmunsu.haruhana.domain.member.enums.Role;
 import org.kwakmunsu.haruhana.global.entity.BaseEntity;
+import org.kwakmunsu.haruhana.global.security.jwt.TokenHasher;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -31,6 +32,8 @@ public class Member extends BaseEntity {
 
     private LocalDateTime lastLoginAt;
 
+    private String refreshToken;
+
     public static Member createMember(String loginId, String password, String nickname, Role role) {
         Member member = new Member();
 
@@ -39,6 +42,7 @@ public class Member extends BaseEntity {
         member.nickname = nickname;
         member.role = role;
         member.lastLoginAt = null;
+        member.refreshToken = null;
 
         return member;
     }
@@ -53,6 +57,10 @@ public class Member extends BaseEntity {
 
     public void updateRole(Role role) {
         this.role = role;
+    }
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = TokenHasher.hash(refreshToken);
     }
 
     public boolean isGuest() {
