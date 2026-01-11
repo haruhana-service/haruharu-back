@@ -15,7 +15,6 @@ public class MemberManager {
     private final MemberJpaRepository memberJpaRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // TODO: Security 설정 할 떄 암호화 처리
     // NOTE: 온본딩 이후 GUEST -> MEMBER로 전환
     public Member create(NewProfile newProfile) {
         return memberJpaRepository.save(Member.createMember(
