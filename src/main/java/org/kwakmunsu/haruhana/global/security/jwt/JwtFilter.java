@@ -4,6 +4,7 @@ import static org.kwakmunsu.haruhana.global.security.jwt.enums.TokenType.AUTHORI
 import static org.kwakmunsu.haruhana.global.security.jwt.enums.TokenType.BEARER_PREFIX;
 import static org.kwakmunsu.haruhana.global.support.error.ErrorType.INVALID_TOKEN;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +21,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
-import tools.jackson.databind.ObjectMapper;
 
 @Slf4j
 @RequiredArgsConstructor
