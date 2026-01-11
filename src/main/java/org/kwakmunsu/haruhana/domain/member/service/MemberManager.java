@@ -34,6 +34,11 @@ public class MemberManager {
         ));
     }
 
+    /**
+     * GUEST 회원의 학습 정보를 등록합니다.
+     * 이 메서드는 GUEST 권한으로 최초 1회만 호출 가능하며, 등록 후 자동으로 MEMBER로 승급됩니다.
+     * 따라서 중복 등록은 발생하지 않습니다.
+     */
     @Transactional
     public MemberPreference registerPreference(Member guest, NewPreference newPreference) {
         CategoryTopic categoryTopic = categoryReader.findCategoryTopic(newPreference.categoryTopicId());
