@@ -2,16 +2,16 @@ package org.kwakmunsu.haruhana.security.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import org.kwakmunsu.haruhana.security.TestMemberSecurityContextFactory;
+import org.kwakmunsu.haruhana.security.TestGuestSecurityContextFactory;
 import org.springframework.security.test.context.support.TestExecutionEvent;
 import org.springframework.security.test.context.support.WithSecurityContext;
 
 @Retention(RetentionPolicy.RUNTIME)
-@WithSecurityContext(factory = TestMemberSecurityContextFactory.class, setupBefore = TestExecutionEvent.TEST_EXECUTION)
-public @interface TestMember {
+@WithSecurityContext(factory = TestGuestSecurityContextFactory.class, setupBefore = TestExecutionEvent.TEST_EXECUTION)
+public @interface TestGuest {
 
     long id() default 1L;
 
-    String role() default "ROLE_MEMBER";
+    String role() default "ROLE_GUEST";
 
 }
