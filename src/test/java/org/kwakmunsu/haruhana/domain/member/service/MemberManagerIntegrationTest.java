@@ -8,6 +8,7 @@ import org.kwakmunsu.haruhana.IntegrationTestSupport;
 import org.kwakmunsu.haruhana.domain.member.MemberFixture;
 import org.kwakmunsu.haruhana.domain.member.entity.Member;
 import org.kwakmunsu.haruhana.domain.member.enums.Role;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 class MemberManagerIntegrationTest extends IntegrationTestSupport {
 
     final MemberManager memberManager;
+    final PasswordEncoder passwordEncoder;
 
     @Test
     void 회원을_생성한다() {
@@ -29,15 +31,14 @@ class MemberManagerIntegrationTest extends IntegrationTestSupport {
                 .extracting(
                         Member::getLoginId,
                         Member::getNickname,
-                        Member::getPassword,
                         Member::getRole
                 )
                 .containsExactly(
                         newProfile.loginId(),
                         newProfile.nickname(),
-                        newProfile.password(),
                         Role.ROLE_GUEST
                 );
+        assertThat(passwordEncoder.matches(newProfile.password(), member.getPassword())).isTrue();
     }
 
 }
