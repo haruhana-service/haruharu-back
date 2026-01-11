@@ -55,8 +55,8 @@ public class Member extends BaseEntity {
         this.lastLoginAt = lastLoginAt;
     }
 
-    public void updateRole(Role role) {
-        this.role = role;
+    public void updateRoleToMember() {
+        this.role = Role.ROLE_MEMBER;
     }
 
     public void updateRefreshToken(String refreshToken) {

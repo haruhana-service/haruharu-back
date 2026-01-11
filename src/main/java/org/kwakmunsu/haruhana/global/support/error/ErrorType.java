@@ -27,6 +27,11 @@ public enum ErrorType {
     DUPLICATE_LOGIN_ID                       (HttpStatus.CONFLICT, "이미 사용 중인 로그인 아이디입니다.", LogLevel.INFO),
     DUPLICATE_NICKNAME                       (HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다.", LogLevel.INFO),
 
+    // CATEGORY
+    NOT_FOUND_CATEGORY       (HttpStatus.NOT_FOUND, "카테고리를 찾을 수 없습니다.", LogLevel.INFO),
+    NOT_FOUND_CATEGORY_GROUP (HttpStatus.NOT_FOUND, "카테고리 그룹을 찾을 수 없습니다.", LogLevel.INFO),
+    NOT_FOUND_CATEGORY_TOPIC (HttpStatus.NOT_FOUND, "카테고리 주제를 찾을 수 없습니다.", LogLevel.INFO),
+
     // JWT
     EMPTY_TOKEN                        (HttpStatus.UNAUTHORIZED, "JWT 토큰이 존재하지 않습니다.", LogLevel.WARN),
     INVALID_TOKEN                      (HttpStatus.UNAUTHORIZED, "유효하지 않은 JWT 토큰입니다.", LogLevel.WARN),
