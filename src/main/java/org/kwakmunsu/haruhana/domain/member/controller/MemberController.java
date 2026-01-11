@@ -29,6 +29,7 @@ public class MemberController extends MemberDocsController {
                 .body(ApiResponse.success(memberId));
     }
 
+    @Override
     @PostMapping("/v1/members/preferences")
     public ResponseEntity<ApiResponse<?>> registerPreference(
             @RequestBody @Valid PreferenceRegisterRequest request,
