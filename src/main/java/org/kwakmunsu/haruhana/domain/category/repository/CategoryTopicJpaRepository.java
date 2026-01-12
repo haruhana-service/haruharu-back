@@ -9,4 +9,6 @@ public interface CategoryTopicJpaRepository extends JpaRepository<CategoryTopic,
 
     Optional<CategoryTopic> findByIdAndStatus(Long id, EntityStatus entityStatus);
 
+    Optional<CategoryTopic> findByName(String name);
+
 }

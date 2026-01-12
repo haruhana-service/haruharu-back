@@ -1,0 +1,199 @@
+package org.kwakmunsu.haruhana.domain.problem.service;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.kwakmunsu.haruhana.UnitTestSupport;
+import org.kwakmunsu.haruhana.domain.category.entity.CategoryTopic;
+import org.kwakmunsu.haruhana.domain.dailyproblem.service.DailyProblemManager;
+import org.kwakmunsu.haruhana.domain.member.entity.Member;
+import org.kwakmunsu.haruhana.domain.member.entity.MemberPreference;
+import org.kwakmunsu.haruhana.domain.member.enums.Role;
+import org.kwakmunsu.haruhana.domain.member.service.MemberReader;
+import org.kwakmunsu.haruhana.domain.problem.entity.Problem;
+import org.kwakmunsu.haruhana.domain.problem.enums.ProblemDifficulty;
+import org.kwakmunsu.haruhana.domain.problem.repository.ProblemJpaRepository;
+import org.kwakmunsu.haruhana.infrastructure.gemini.ChatService;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.springframework.test.util.ReflectionTestUtils;
+
+class ProblemGeneratorUnitTest extends UnitTestSupport {
+
+    @Mock
+    MemberReader memberReader;
+
+    @Mock
+    ChatService chatService;
+
+    @Spy
+    ObjectMapper objectMapper = new ObjectMapper();
+
+    @Mock
+    ProblemJpaRepository problemJpaRepository;
+
+    @Mock
+    DailyProblemManager dailyProblemManager;
+
+    @InjectMocks
+    ProblemGenerator problemGenerator;
+
+
+    @Test
+    void 활성화된_회원_학습_정보가_없으면_문제를_생성하지_않는다() {
+        // given
+        LocalDate targetDate = LocalDate.now();
+        given(memberReader.getMemberPreferences(targetDate)).willReturn(List.of());
+
+        // when
+        problemGenerator.generateProblem(targetDate);
+
+        // then
+        verify(chatService, never()).sendPrompt(anyString());
+        verify(problemJpaRepository, never()).save(any());
+        verify(dailyProblemManager, never()).assignDailyProblemToMembers(any(), any(), any());
+    }
+
+    @Test
+    void 카테고리와_난이도가_같은_회원들을_그룹화하여_문제를_생성한다() {
+        // given
+        var targetDate = LocalDate.now();
+
+        var member1 = createMember(1L);
+        var member2 = createMember(2L);
+        var member3 = createMember(3L);
+
+        var javaTopic = createCategoryTopic(1L, "Java");
+        var springTopic = createCategoryTopic(2L, "Spring");
+
+        // Java - MEDIUM 그룹 (2명)
+        var pref1 = createPreference(member1, javaTopic, ProblemDifficulty.MEDIUM, targetDate);
+        var pref2 = createPreference(member2, javaTopic, ProblemDifficulty.MEDIUM, targetDate);
+
+        // Spring - EASY 그룹 (1명)
+        var pref3 = createPreference(member3, springTopic, ProblemDifficulty.EASY, targetDate);
+
+        given(memberReader.getMemberPreferences(targetDate))
+                .willReturn(List.of(pref1, pref2, pref3));
+
+        var jsonResponse = """
+                {
+                    "title": "Java의 equals와 hashCode의 관계",
+                    "description": "Java에서 equals()와 hashCode()를 함께 재정의해야 하는 이유는 무엇인가요?",
+                    "aiAnswer": "equals()와 hashCode()는 객체의 동등성 비교에 사용되는 메서드입니다..."
+                }
+                """;
+
+        given(chatService.sendPrompt(anyString())).willReturn(jsonResponse);
+
+        Problem savedProblem = createProblem(1L, javaTopic, ProblemDifficulty.MEDIUM, targetDate);
+        given(problemJpaRepository.save(any(Problem.class))).willReturn(savedProblem);
+
+        // when
+        problemGenerator.generateProblem(targetDate);
+
+        // then
+        // 2개의 그룹이므로 2번 문제 생성
+        verify(chatService, times(2)).sendPrompt(anyString());
+        verify(problemJpaRepository, times(2)).save(any(Problem.class));
+        verify(dailyProblemManager, times(2)).assignDailyProblemToMembers(any(), any(), any());
+    }
+
+    @Test
+    void 문제_생성_중_예외가_발생해도_다른_그룹의_문제는_계속_생성된다() {
+        // given
+        var targetDate = LocalDate.now();
+
+        var member1 = createMember(1L);
+        var member2 = createMember(2L);
+
+        var javaTopic = createCategoryTopic(1L, "Java");
+        var springTopic = createCategoryTopic(2L, "Spring");
+
+        var pref1 = createPreference(member1, javaTopic, ProblemDifficulty.MEDIUM, targetDate);
+        var pref2 = createPreference(member2, springTopic, ProblemDifficulty.EASY, targetDate);
+
+        given(memberReader.getMemberPreferences(targetDate))
+                .willReturn(List.of(pref1, pref2));
+
+        var jsonResponse = """
+                {
+                    "title": "테스트 제목",
+                    "description": "테스트 설명",
+                    "aiAnswer": "테스트 답변"
+                }
+                """;
+
+        // 첫 번째 호출은 예외, 두 번째 호출은 성공
+        given(chatService.sendPrompt(anyString()))
+                .willThrow(new RuntimeException("AI 서비스 오류"))
+                .willReturn(jsonResponse);
+
+        Problem savedProblem = createProblem(2L, springTopic, ProblemDifficulty.EASY, targetDate);
+        given(problemJpaRepository.save(any(Problem.class))).willReturn(savedProblem);
+
+        // when
+        problemGenerator.generateProblem(targetDate);
+
+        // then
+        // 첫 번째는 실패했지만 두 번째는 성공
+        verify(chatService, times(2)).sendPrompt(anyString());
+        verify(problemJpaRepository, times(1)).save(any(Problem.class));
+        verify(dailyProblemManager, times(1)).assignDailyProblemToMembers(any(), any(), any());
+    }
+
+    private Member createMember(Long id) {
+        Member member = Member.createMember(
+                "test" + id,
+                "password",
+                "nickname" + id,
+                Role.ROLE_MEMBER
+        );
+        ReflectionTestUtils.setField(member, "id", id);
+        return member;
+    }
+
+    private CategoryTopic createCategoryTopic(Long id, String name) {
+        CategoryTopic topic = CategoryTopic.create(1L, name);
+        ReflectionTestUtils.setField(topic, "id", id);
+        return topic;
+    }
+
+    private MemberPreference createPreference(
+            Member member,
+            CategoryTopic categoryTopic,
+            ProblemDifficulty difficulty,
+            LocalDate effectiveAt
+    ) {
+        return MemberPreference.create(member, categoryTopic, difficulty, effectiveAt);
+    }
+
+    private Problem createProblem(
+            Long id,
+            CategoryTopic categoryTopic,
+            ProblemDifficulty difficulty,
+            LocalDate problemAt
+    ) {
+        Problem problem = Problem.create(
+                "테스트 제목",
+                "테스트 설명",
+                "테스트 답변",
+                categoryTopic,
+                difficulty,
+                problemAt,
+                Prompt.V1_PROMPT.name()
+        );
+        ReflectionTestUtils.setField(problem, "id", id);
+        return problem;
+    }
+
+}

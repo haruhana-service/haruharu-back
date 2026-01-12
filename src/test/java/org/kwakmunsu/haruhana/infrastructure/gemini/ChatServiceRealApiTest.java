@@ -1,0 +1,81 @@
+package org.kwakmunsu.haruhana.infrastructure.gemini;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.kwakmunsu.haruhana.IntegrationTestSupport;
+import org.kwakmunsu.haruhana.domain.problem.enums.ProblemDifficulty;
+import org.kwakmunsu.haruhana.domain.problem.service.Prompt;
+import org.springframework.test.context.ActiveProfiles;
+
+/**
+ * 실제 Gemini API를 호출하는 테스트
+ * 비용 발생 가능성이 있으므로 기본적으로 비활성화
+ */
+@RequiredArgsConstructor
+@ActiveProfiles({"test", "ai"})
+class ChatServiceRealApiTest extends IntegrationTestSupport {
+
+    final ChatService chatService;
+
+    @Test
+    @Disabled("실제 API 호출 테스트 - 필요할 때만 활성화")
+    void Java_중급_난이도_문제를_생성한다() {
+        // given
+        String prompt = Prompt.V1_PROMPT.generate("Java", ProblemDifficulty.MEDIUM);
+
+        // when
+        String response = chatService.sendPrompt(prompt);
+
+        // then
+        assertThat(response).isNotEmpty();
+        assertThat(response).contains("title");
+        assertThat(response).contains("description");
+        assertThat(response).contains("aiAnswer");
+
+        System.out.println("=== Gemini API 응답 ===");
+        System.out.println(response);
+    }
+
+    @Test
+    @Disabled("실제 API 호출 테스트 - 필요할 때만 활성화")
+    void Spring_초급_난이도_문제를_생성한다() {
+        // given
+        String prompt = Prompt.V1_PROMPT.generate("Spring", ProblemDifficulty.EASY);
+
+        // when
+        String response = chatService.sendPrompt(prompt);
+
+        // then
+        assertThat(response).isNotEmpty();
+        assertThat(response).contains("title");
+        assertThat(response).contains("description");
+        assertThat(response).contains("aiAnswer");
+
+        System.out.println("=== Gemini API 응답 ===");
+        System.out.println(response);
+    }
+
+    @Test
+    @Disabled("실제 API 호출 테스트 - 필요할 때만 활성화")
+    void 데이터베이스_고급_난이도_문제를_생성한다() {
+        // given
+        String prompt = Prompt.V1_PROMPT.generate("MySQL", ProblemDifficulty.HARD);
+
+        // when
+        String response = chatService.sendPrompt(prompt);
+
+        // then
+        assertThat(response).isNotEmpty();
+        assertThat(response).contains("title");
+        assertThat(response).contains("description");
+        assertThat(response).contains("aiAnswer");
+
+        System.out.println("=== Gemini API 응답 ===");
+        System.out.println(response);
+    }
+
+}
+
