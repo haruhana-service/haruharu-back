@@ -11,6 +11,7 @@ public class ChatService {
 
     private final ChatClient chatClient;  // Spring AI 에서 제공하는 ChatClient 빈 주입
 
+    // NOTE: 외부 API 호출에 대한 타임아웃 및 재시도 구성이 필요할 수 있음
     public String sendPrompt(String prompt) {
         return chatClient.prompt()
                 .user(prompt)
