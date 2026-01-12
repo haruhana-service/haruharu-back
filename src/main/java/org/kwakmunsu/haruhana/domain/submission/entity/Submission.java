@@ -34,18 +34,17 @@ public class Submission extends BaseEntity {
     public static Submission create(
             Member member,
             DailyProblem dailyProblem,
-            String answer
+            String answer,
+            LocalDateTime submissionAt
     ) {
-        LocalDateTime now = LocalDateTime.now();
-
         Submission submission = new Submission();
 
         submission.member = member;
         submission.dailyProblem = dailyProblem;
         submission.answer = answer;
-        submission.submittedAt = now;
+        submission.submittedAt = submissionAt;
         // 제출 시간이 할당 날짜 이후 면 false, 아니면 true
-        submission.isOnTime = !now.toLocalDate().isAfter(dailyProblem.getAssignedAt());
+        submission.isOnTime = !submissionAt.toLocalDate().isAfter(dailyProblem.getAssignedAt());
 
         return submission;
     }
