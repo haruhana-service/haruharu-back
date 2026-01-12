@@ -45,7 +45,7 @@ public class Submission extends BaseEntity {
         submission.answer = answer;
         submission.submittedAt = now;
         // 제출 시간이 할당 날짜 이후 면 false, 아니면 true
-        submission.isOnTime = !dailyProblem.getAssignedAt().isAfter(now.toLocalDate());
+        submission.isOnTime = !now.toLocalDate().isAfter(dailyProblem.getAssignedAt());
 
         return submission;
     }
