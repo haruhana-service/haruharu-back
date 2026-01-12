@@ -2,6 +2,7 @@ package org.kwakmunsu.haruhana.domain.dailyproblem.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.kwakmunsu.haruhana.domain.dailyproblem.service.DailyProblemService;
+import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.DailyProblemDetailResponse;
 import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.TodayProblemResponse;
 import org.kwakmunsu.haruhana.global.annotation.LoginMember;
 import org.kwakmunsu.haruhana.global.support.response.ApiResponse;
@@ -24,9 +25,15 @@ public class DailyProblemController extends DailyProblemDocsController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @Override
     @GetMapping("/v1/daily-problem/{dailyProblemId}")
-    public ResponseEntity<Void> findDailyProblem(@PathVariable Long dailyProblemId, @LoginMember Long memberId) {
-        dailyProblemService.findDailyProblem(dailyProblemId, memberId);
+    public ResponseEntity<ApiResponse<DailyProblemDetailResponse>> findDailyProblem(
+            @PathVariable Long dailyProblemId,
+            @LoginMember Long memberId
+    ) {
+        DailyProblemDetailResponse response = dailyProblemService.findDailyProblem(dailyProblemId, memberId);
+
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
 }

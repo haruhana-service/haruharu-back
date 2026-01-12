@@ -2,18 +2,22 @@ package org.kwakmunsu.haruhana.domain.dailyproblem.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
-import java.time.LocalDate;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.UnitTestSupport;
-import org.kwakmunsu.haruhana.domain.dailyproblem.entity.DailyProblem;
+import org.kwakmunsu.haruhana.domain.category.CategoryTopicFixture;
+import org.kwakmunsu.haruhana.domain.dailyproblem.DailyProblemFixture;
+import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.DailyProblemDetailResponse;
 import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.TodayProblemResponse;
 import org.kwakmunsu.haruhana.domain.member.MemberFixture;
 import org.kwakmunsu.haruhana.domain.member.enums.Role;
 import org.kwakmunsu.haruhana.domain.problem.ProblemFixture;
+import org.kwakmunsu.haruhana.domain.submission.SubmissionFixture;
+import org.kwakmunsu.haruhana.domain.submission.service.SubmissionReader;
 import org.kwakmunsu.haruhana.global.support.error.ErrorType;
 import org.kwakmunsu.haruhana.global.support.error.HaruHanaException;
 import org.mockito.InjectMocks;
@@ -24,50 +28,143 @@ class DailyProblemServiceUnitTest extends UnitTestSupport {
     @Mock
     DailyProblemReader dailyProblemReader;
 
+    @Mock
+    SubmissionReader submissionReader;
+
     @InjectMocks
     DailyProblemService dailyProblemService;
 
     @Test
     void 오늘의_문제를_조회한다() {
         // given
-        var member = MemberFixture.createMember(Role.ROLE_MEMBER);
-        var problem = ProblemFixture.createProblem();
-        LocalDate today = LocalDate.now();
-        var dailyProblem = DailyProblem.create(member, problem, today);
         var memberId = 1L;
+        var member = MemberFixture.createMember(Role.ROLE_MEMBER);
+        var categoryTopic = CategoryTopicFixture.createCategoryTopic();
+        var problem = ProblemFixture.createProblem(categoryTopic);
+        var dailyProblem = DailyProblemFixture.createUnsolvedDailyProblem(1L, member, problem);
 
-        given(dailyProblemReader.findDailyProblemByMember(any())).willReturn(dailyProblem);
+        given(dailyProblemReader.findDailyProblemByMember(memberId)).willReturn(dailyProblem);
 
         // when
-        var dailyProblemResponse = dailyProblemService.getTodayProblem(memberId);
+        var response = dailyProblemService.getTodayProblem(memberId);
 
         // then
-        assertThat(dailyProblemResponse).isNotNull()
-                .extracting(
-                        TodayProblemResponse::title,
-                        TodayProblemResponse::description,
-                        TodayProblemResponse::difficulty,
-                        TodayProblemResponse::categoryTopicName,
-                        TodayProblemResponse::isSolved
-                ).containsExactly(
-                        problem.getTitle(),
-                        problem.getDescription(),
-                        problem.getDifficulty().name(),
-                        problem.getCategoryTopic().getName(),
-                        false
-                );
+        assertThat(response).isNotNull().extracting(
+                TodayProblemResponse::id,
+                TodayProblemResponse::title,
+                TodayProblemResponse::description,
+                TodayProblemResponse::difficulty,
+                TodayProblemResponse::categoryTopicName,
+                TodayProblemResponse::isSolved
+        ).containsExactly(
+                1L,
+                ProblemFixture.TITLE,
+                ProblemFixture.DESCRIPTION,
+                ProblemFixture.DIFFICULTY.name(),
+                CategoryTopicFixture.CATEGORY_TOPIC_NAME,
+                false
+        );
+
+        verify(dailyProblemReader, times(1)).findDailyProblemByMember(memberId);
     }
 
     @Test
-    void 오늘의_문제가_존재하지_않는다() {
+    void 오늘의_문제가_없으면_예외를_발생시킨다() {
         // given
         var memberId = 1L;
 
-        willThrow(new HaruHanaException(ErrorType.NOT_FOUND_DAILY_PROBLEM))
-                .given(dailyProblemReader).findDailyProblemByMember(any());
+        given(dailyProblemReader.findDailyProblemByMember(memberId))
+                .willThrow(new HaruHanaException(ErrorType.NOT_FOUND_DAILY_PROBLEM));
 
         // when & then
         assertThatThrownBy(() -> dailyProblemService.getTodayProblem(memberId))
+                .isInstanceOf(HaruHanaException.class)
+                .hasMessage(ErrorType.NOT_FOUND_DAILY_PROBLEM.getMessage());
+    }
+
+    @Test
+    void 문제_상세를_조회한다_제출_정보_없음() {
+        // given
+        var dailyProblemId = 1L;
+        var memberId = 1L;
+        var member = MemberFixture.createMember(Role.ROLE_MEMBER);
+        var categoryTopic = CategoryTopicFixture.createCategoryTopic();
+        var problem = ProblemFixture.createProblem(categoryTopic);
+        var dailyProblem = DailyProblemFixture.createUnsolvedDailyProblem(dailyProblemId, member, problem);
+
+        given(dailyProblemReader.find(dailyProblemId, memberId)).willReturn(dailyProblem);
+        given(submissionReader.findByMemberIdAndDailyProblemId(memberId, dailyProblemId))
+                .willReturn(Optional.empty());
+
+        // when
+        DailyProblemDetailResponse response = dailyProblemService.findDailyProblem(dailyProblemId, memberId);
+
+        // then
+        assertThat(response).isNotNull().extracting(
+                DailyProblemDetailResponse::id,
+                DailyProblemDetailResponse::title,
+                DailyProblemDetailResponse::description,
+                DailyProblemDetailResponse::difficulty,
+                DailyProblemDetailResponse::categoryTopic,
+                DailyProblemDetailResponse::aiAnswer,
+                DailyProblemDetailResponse::userAnswer,
+                DailyProblemDetailResponse::submittedAt
+        ).containsExactly(
+                1L,
+                ProblemFixture.TITLE,
+                ProblemFixture.DESCRIPTION,
+                ProblemFixture.DIFFICULTY.name(),
+                CategoryTopicFixture.CATEGORY_TOPIC_NAME,
+                null, // 제출 전에는 AI 답변을 볼 수 없음
+                null,
+                null
+        );
+
+        verify(dailyProblemReader, times(1)).find(dailyProblemId, memberId);
+        verify(submissionReader, times(1)).findByMemberIdAndDailyProblemId(memberId, dailyProblemId);
+    }
+
+    @Test
+    void 문제_상세를_조회한다_제출_정보_있음() {
+        // given
+        var dailyProblemId = 1L;
+        var memberId = 1L;
+        var member = MemberFixture.createMember(Role.ROLE_MEMBER);
+        var categoryTopic = CategoryTopicFixture.createCategoryTopic();
+        var problem = ProblemFixture.createProblem(categoryTopic);
+        var dailyProblem = DailyProblemFixture.createSolvedDailyProblem(dailyProblemId, member, problem);
+        var submission = SubmissionFixture.createSubmission(member, dailyProblem);
+
+        given(dailyProblemReader.find(dailyProblemId, memberId))
+                .willReturn(dailyProblem);
+        given(submissionReader.findByMemberIdAndDailyProblemId(memberId, dailyProblemId))
+                .willReturn(Optional.of(submission));
+
+        // when
+        DailyProblemDetailResponse response = dailyProblemService.findDailyProblem(dailyProblemId, memberId);
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.id()).isEqualTo(1L);
+        assertThat(response.userAnswer()).isEqualTo(SubmissionFixture.USER_ANSWER);
+        assertThat(response.submittedAt()).isNotNull();
+        assertThat(response.aiAnswer()).isEqualTo(ProblemFixture.AI_ANSWER); // 제출 후에는 AI 답변을 볼 수 있음
+
+        verify(dailyProblemReader, times(1)).find(dailyProblemId, memberId);
+        verify(submissionReader, times(1)).findByMemberIdAndDailyProblemId(memberId, dailyProblemId);
+    }
+
+    @Test
+    void 다른_회원의_문제를_조회하면_예외를_발생시킨다() {
+        // given
+        Long dailyProblemId = 1L;
+        Long memberId = 1L;
+
+        given(dailyProblemReader.find(dailyProblemId, memberId))
+                .willThrow(new HaruHanaException(ErrorType.NOT_FOUND_DAILY_PROBLEM));
+
+        // when & then
+        assertThatThrownBy(() -> dailyProblemService.findDailyProblem(dailyProblemId, memberId))
                 .isInstanceOf(HaruHanaException.class)
                 .hasMessage(ErrorType.NOT_FOUND_DAILY_PROBLEM.getMessage());
     }
