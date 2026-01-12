@@ -23,4 +23,9 @@ public class DailyProblemReader {
         ).orElseThrow(() -> new HaruHanaException(ErrorType.NOT_FOUND_DAILY_PROBLEM));
     }
 
+    public DailyProblem find(Long id, Long memberId) {
+        return dailyProblemJpaRepository.findByIdAndMemberIdAndStatus(id, memberId, EntityStatus.ACTIVE)
+                .orElseThrow(() -> new HaruHanaException(ErrorType.NOT_FOUND_DAILY_PROBLEM));
+    }
+
 }
