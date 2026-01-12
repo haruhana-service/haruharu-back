@@ -24,7 +24,10 @@ public class DailyProblem extends BaseEntity {
     Problem problem;
 
     @Column(nullable = false)
-    LocalDate assignedAt;
+    LocalDate assignedAt; // 음 뺴도 될 거 같은데 일단 남겨두자
+
+    @Column(nullable = false)
+    boolean isSolved;
 
     public static DailyProblem create(
             Member member,
@@ -36,8 +39,13 @@ public class DailyProblem extends BaseEntity {
         dailyProblem.member = member;
         dailyProblem.problem = problem;
         dailyProblem.assignedAt = assignedAt;
+        dailyProblem.isSolved = false;
 
         return dailyProblem;
+    }
+
+    public void markAsSolved() {
+        this.isSolved = true;
     }
 
 }

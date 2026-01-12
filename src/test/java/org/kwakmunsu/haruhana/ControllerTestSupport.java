@@ -3,6 +3,8 @@ package org.kwakmunsu.haruhana;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.kwakmunsu.haruhana.domain.auth.controller.AuthController;
 import org.kwakmunsu.haruhana.domain.auth.service.AuthService;
+import org.kwakmunsu.haruhana.domain.dailyproblem.controller.DailyProblemController;
+import org.kwakmunsu.haruhana.domain.dailyproblem.service.DailyProblemService;
 import org.kwakmunsu.haruhana.domain.member.controller.MemberController;
 import org.kwakmunsu.haruhana.domain.member.service.MemberService;
 import org.kwakmunsu.haruhana.security.TestSecurityConfig;
@@ -18,7 +20,8 @@ import org.springframework.test.web.servlet.assertj.MockMvcTester;
 @WebMvcTest(
         controllers = {
                 MemberController.class,
-                AuthController.class
+                AuthController.class,
+                DailyProblemController.class,
         })
 public abstract class ControllerTestSupport {
 
@@ -33,5 +36,8 @@ public abstract class ControllerTestSupport {
 
     @MockitoBean
     protected AuthService authService;
+
+    @MockitoBean
+    protected DailyProblemService dailyProblemService;
 
 }
