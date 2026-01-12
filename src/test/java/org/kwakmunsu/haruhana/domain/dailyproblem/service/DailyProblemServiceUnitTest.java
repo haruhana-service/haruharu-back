@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.UnitTestSupport;
 import org.kwakmunsu.haruhana.domain.dailyproblem.entity.DailyProblem;
-import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.DailyProblemResponse;
+import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.TodayProblemResponse;
 import org.kwakmunsu.haruhana.domain.member.MemberFixture;
 import org.kwakmunsu.haruhana.domain.member.enums.Role;
 import org.kwakmunsu.haruhana.domain.problem.ProblemFixture;
@@ -44,11 +44,11 @@ class DailyProblemServiceUnitTest extends UnitTestSupport {
         // then
         assertThat(dailyProblemResponse).isNotNull()
                 .extracting(
-                        DailyProblemResponse::title,
-                        DailyProblemResponse::description,
-                        DailyProblemResponse::difficulty,
-                        DailyProblemResponse::categoryTopicName,
-                        DailyProblemResponse::isSolved
+                        TodayProblemResponse::title,
+                        TodayProblemResponse::description,
+                        TodayProblemResponse::difficulty,
+                        TodayProblemResponse::categoryTopicName,
+                        TodayProblemResponse::isSolved
                 ).containsExactly(
                         problem.getTitle(),
                         problem.getDescription(),
