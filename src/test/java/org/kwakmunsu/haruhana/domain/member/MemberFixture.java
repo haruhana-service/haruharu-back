@@ -46,6 +46,15 @@ public final class MemberFixture {
         return member;
     }
 
+    public static Member createMemberWithOutId(Role role) {
+        return Member.createMember(
+                LOGIN_ID,
+                PASSWORD,
+                NICKNAME,
+                role
+        );
+    }
+
     public static NewPreference createNewPreference(Long categoryTopicId) {
         return new NewPreference(categoryTopicId, ProblemDifficulty.MEDIUM);
     }

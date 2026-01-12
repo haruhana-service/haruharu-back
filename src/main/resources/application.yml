@@ -3,6 +3,9 @@ spring:
     name: haruhana
   profiles:
     active: local
+  config:
+    import:
+      - application-ai.yml
   web:
     resources:
       add-mappings: false

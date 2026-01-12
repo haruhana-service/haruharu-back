@@ -55,6 +55,10 @@ dependencies {
     // Swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'
 
+    // Spring AI (starter + BOM 관리)
+    implementation "org.springframework.ai:spring-ai-starter-model-openai"
+    implementation platform("org.springframework.ai:spring-ai-bom:1.1.1")
+
 }
 
 tasks.named('test') {
