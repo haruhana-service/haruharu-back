@@ -8,7 +8,7 @@ import org.kwakmunsu.haruhana.domain.problem.service.Prompt;
 
 public class ProblemFixture {
 
-    public static Problem creatProblem() {
+    public static Problem createProblem() {
         return Problem.create(
                 "문제 제목",
                 "문제 내용",

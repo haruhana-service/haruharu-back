@@ -31,7 +31,7 @@ class DailyProblemServiceUnitTest extends UnitTestSupport {
     void 오늘의_문제를_조회한다() {
         // given
         var member = MemberFixture.createMember(Role.ROLE_MEMBER);
-        var problem = ProblemFixture.creatProblem();
+        var problem = ProblemFixture.createProblem();
         LocalDate today = LocalDate.now();
         var dailyProblem = DailyProblem.create(member, problem, today);
         var memberId = 1L;
