@@ -2,7 +2,7 @@ package org.kwakmunsu.haruhana.domain.dailyproblem.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.DailyProblemResponse;
+import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.TodayProblemResponse;
 import org.kwakmunsu.haruhana.global.support.error.ErrorType;
 import org.kwakmunsu.haruhana.global.support.response.ApiResponse;
 import org.kwakmunsu.haruhana.global.swagger.ApiExceptions;
@@ -25,6 +25,6 @@ public abstract class DailyProblemDocsController {
             ErrorType.UNAUTHORIZED_ERROR,
             ErrorType.DEFAULT_ERROR
     })
-    public abstract ResponseEntity<ApiResponse<DailyProblemResponse>> getTodayProblem(Long memberId);
+    public abstract ResponseEntity<ApiResponse<TodayProblemResponse>> getTodayProblem(Long memberId);
 
 }

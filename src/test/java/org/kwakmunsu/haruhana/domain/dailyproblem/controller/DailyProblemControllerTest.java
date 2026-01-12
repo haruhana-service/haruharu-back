@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.ControllerTestSupport;
-import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.DailyProblemResponse;
+import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.TodayProblemResponse;
 import org.kwakmunsu.haruhana.security.annotation.TestMember;
 
 class DailyProblemControllerTest extends ControllerTestSupport {
@@ -16,7 +16,7 @@ class DailyProblemControllerTest extends ControllerTestSupport {
     @Test
     void 오늘의_문제_Api를_요청한다() {
         // given
-        var dailyProblemResponse = new DailyProblemResponse(1L, "문제 제목", "문제 설명", "EASY", "자바", false);
+        var dailyProblemResponse = new TodayProblemResponse(1L, "문제 제목", "문제 설명", "EASY", "자바", false);
 
         given(dailyProblemService.getTodayProblem(any())).willReturn(dailyProblemResponse);
 

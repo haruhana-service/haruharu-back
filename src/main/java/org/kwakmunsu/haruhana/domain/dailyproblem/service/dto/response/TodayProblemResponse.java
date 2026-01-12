@@ -6,7 +6,7 @@ import org.kwakmunsu.haruhana.domain.dailyproblem.entity.DailyProblem;
 
 @Schema(description = "오늘의 문제 응답 DTO")
 @Builder
-public record DailyProblemResponse(
+public record TodayProblemResponse(
         @Schema(description = "Daily Problem ID", example = "1")
         Long id,
 
@@ -26,8 +26,8 @@ public record DailyProblemResponse(
         boolean isSolved
 ) {
 
-    public static DailyProblemResponse from(DailyProblem dailyProblem) {
-        return DailyProblemResponse.builder()
+    public static TodayProblemResponse from(DailyProblem dailyProblem) {
+        return TodayProblemResponse.builder()
                 .id(dailyProblem.getId())
                 .title(dailyProblem.getProblem().getTitle())
                 .description(dailyProblem.getProblem().getDescription())
