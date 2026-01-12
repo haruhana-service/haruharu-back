@@ -1,12 +1,13 @@
 package org.kwakmunsu.haruhana.domain.problem.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 
 import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.IntegrationTestSupport;
 import org.kwakmunsu.haruhana.domain.category.CategoryFactory;
@@ -20,9 +21,10 @@ import org.kwakmunsu.haruhana.domain.member.repository.MemberJpaRepository;
 import org.kwakmunsu.haruhana.domain.member.repository.MemberPreferenceJpaRepository;
 import org.kwakmunsu.haruhana.domain.problem.enums.ProblemDifficulty;
 import org.kwakmunsu.haruhana.domain.problem.repository.ProblemJpaRepository;
+import org.kwakmunsu.haruhana.infrastructure.gemini.ChatService;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
-@Disabled("통합 테스트 - 필요할 때만 활성화")
 @RequiredArgsConstructor
 @Transactional
 class ProblemGeneratorIntegrationTest extends IntegrationTestSupport {
@@ -36,11 +38,24 @@ class ProblemGeneratorIntegrationTest extends IntegrationTestSupport {
     final DailyProblemJpaRepository dailyProblemJpaRepository;
     final EntityManager entityManager;
 
+    @MockitoBean
+    ChatService chatService;
+
     @BeforeEach
     void setUp() {
         categoryFactory.deleteAll();
         categoryFactory.saveAll();
         entityManager.flush();
+
+        // ChatService Mock 응답 설정
+        String mockJsonResponse = """
+                {
+                    "title": "테스트 문제 제목",
+                    "description": "테스트 문제 설명입니다.",
+                    "aiAnswer": "테스트 모범 답변입니다."
+                }
+                """;
+        given(chatService.sendPrompt(anyString())).willReturn(mockJsonResponse);
     }
 
     @Test
