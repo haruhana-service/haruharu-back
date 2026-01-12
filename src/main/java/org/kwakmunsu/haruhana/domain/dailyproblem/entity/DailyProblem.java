@@ -3,6 +3,7 @@ package org.kwakmunsu.haruhana.domain.dailyproblem.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDate;
 import lombok.AccessLevel;
@@ -18,9 +19,11 @@ import org.kwakmunsu.haruhana.global.entity.BaseEntity;
 public class DailyProblem extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
     Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
     Problem problem;
 
     @Column(nullable = false)
