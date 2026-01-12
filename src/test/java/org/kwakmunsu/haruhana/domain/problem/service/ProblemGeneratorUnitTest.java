@@ -12,12 +12,14 @@ import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.UnitTestSupport;
-import org.kwakmunsu.haruhana.domain.category.entity.CategoryTopic;
+import org.kwakmunsu.haruhana.domain.category.CategoryTopicFixture;
 import org.kwakmunsu.haruhana.domain.dailyproblem.service.DailyProblemManager;
+import org.kwakmunsu.haruhana.domain.member.MemberFixture;
 import org.kwakmunsu.haruhana.domain.member.entity.Member;
 import org.kwakmunsu.haruhana.domain.member.entity.MemberPreference;
 import org.kwakmunsu.haruhana.domain.member.enums.Role;
 import org.kwakmunsu.haruhana.domain.member.service.MemberReader;
+import org.kwakmunsu.haruhana.domain.problem.ProblemFixture;
 import org.kwakmunsu.haruhana.domain.problem.entity.Problem;
 import org.kwakmunsu.haruhana.domain.problem.enums.ProblemDifficulty;
 import org.kwakmunsu.haruhana.domain.problem.repository.ProblemJpaRepository;
@@ -68,12 +70,12 @@ class ProblemGeneratorUnitTest extends UnitTestSupport {
         // given
         var targetDate = LocalDate.now();
 
-        var member1 = createMember(1L);
-        var member2 = createMember(2L);
-        var member3 = createMember(3L);
+        var member1 = MemberFixture.createMember(Role.ROLE_MEMBER);
+        var member2 = createMemberWithId(2L);
+        var member3 = createMemberWithId(3L);
 
-        var javaTopic = createCategoryTopic(1L, "Java");
-        var springTopic = createCategoryTopic(2L, "Spring");
+        var javaTopic = CategoryTopicFixture.createCategoryTopic();
+        var springTopic = CategoryTopicFixture.createCategoryTopic(2L, "Spring");
 
         // Java - MEDIUM 그룹 (2명)
         var pref1 = createPreference(member1, javaTopic, ProblemDifficulty.MEDIUM, targetDate);
@@ -95,7 +97,7 @@ class ProblemGeneratorUnitTest extends UnitTestSupport {
 
         given(chatService.sendPrompt(anyString())).willReturn(jsonResponse);
 
-        Problem savedProblem = createProblem(1L, javaTopic, ProblemDifficulty.MEDIUM, targetDate);
+        var savedProblem = ProblemFixture.createProblem(1L, javaTopic);
         given(problemJpaRepository.save(any(Problem.class))).willReturn(savedProblem);
 
         // when
@@ -113,11 +115,11 @@ class ProblemGeneratorUnitTest extends UnitTestSupport {
         // given
         var targetDate = LocalDate.now();
 
-        var member1 = createMember(1L);
-        var member2 = createMember(2L);
+        var member1 = MemberFixture.createMember(Role.ROLE_MEMBER);
+        var member2 = createMemberWithId(2L);
 
-        var javaTopic = createCategoryTopic(1L, "Java");
-        var springTopic = createCategoryTopic(2L, "Spring");
+        var javaTopic = CategoryTopicFixture.createCategoryTopic();
+        var springTopic = CategoryTopicFixture.createCategoryTopic(2L, "Spring");
 
         var pref1 = createPreference(member1, javaTopic, ProblemDifficulty.MEDIUM, targetDate);
         var pref2 = createPreference(member2, springTopic, ProblemDifficulty.EASY, targetDate);
@@ -138,7 +140,7 @@ class ProblemGeneratorUnitTest extends UnitTestSupport {
                 .willThrow(new RuntimeException("AI 서비스 오류"))
                 .willReturn(jsonResponse);
 
-        Problem savedProblem = createProblem(2L, springTopic, ProblemDifficulty.EASY, targetDate);
+        var savedProblem = ProblemFixture.createProblem(2L, springTopic);
         given(problemJpaRepository.save(any(Problem.class))).willReturn(savedProblem);
 
         // when
@@ -151,49 +153,60 @@ class ProblemGeneratorUnitTest extends UnitTestSupport {
         verify(dailyProblemManager, times(1)).assignDailyProblemToMembers(any(), any(), any());
     }
 
-    private Member createMember(Long id) {
-        Member member = Member.createMember(
-                "test" + id,
-                "password",
-                "nickname" + id,
-                Role.ROLE_MEMBER
-        );
+    @Test
+    void 같은_회원이_여러_카테고리를_설정한_경우_각각_문제가_생성된다() {
+        // given
+        var targetDate = LocalDate.now();
+
+        var member = MemberFixture.createMember(Role.ROLE_MEMBER);
+
+        var javaTopic = CategoryTopicFixture.createCategoryTopic();
+        var pythonTopic = CategoryTopicFixture.createCategoryTopic(2L, "Python");
+
+        // 같은 회원이 여러 카테고리 설정
+        var pref1 = createPreference(member, javaTopic, ProblemDifficulty.MEDIUM, targetDate);
+        var pref2 = createPreference(member, pythonTopic, ProblemDifficulty.EASY, targetDate);
+
+        given(memberReader.getMemberPreferences(targetDate))
+                .willReturn(List.of(pref1, pref2));
+
+        var jsonResponse = """
+                {
+                    "title": "테스트 제목",
+                    "description": "테스트 설명",
+                    "aiAnswer": "테스트 답변"
+                }
+                """;
+
+        given(chatService.sendPrompt(anyString())).willReturn(jsonResponse);
+
+        var savedProblem = ProblemFixture.createProblem(1L, javaTopic);
+        given(problemJpaRepository.save(any(Problem.class))).willReturn(savedProblem);
+
+        // when
+        problemGenerator.generateProblem(targetDate);
+
+        // then
+        // 2개의 카테고리이므로 2번 문제 생성
+        verify(chatService, times(2)).sendPrompt(anyString());
+        verify(problemJpaRepository, times(2)).save(any(Problem.class));
+        verify(dailyProblemManager, times(2)).assignDailyProblemToMembers(any(), any(), any());
+    }
+
+    private Member createMemberWithId(Long id) {
+        var member = MemberFixture.createMemberWithOutId(Role.ROLE_MEMBER);
         ReflectionTestUtils.setField(member, "id", id);
         return member;
     }
 
-    private CategoryTopic createCategoryTopic(Long id, String name) {
-        CategoryTopic topic = CategoryTopic.create(1L, name);
-        ReflectionTestUtils.setField(topic, "id", id);
-        return topic;
-    }
-
     private MemberPreference createPreference(
             Member member,
-            CategoryTopic categoryTopic,
+            org.kwakmunsu.haruhana.domain.category.entity.CategoryTopic categoryTopic,
             ProblemDifficulty difficulty,
             LocalDate effectiveAt
     ) {
         return MemberPreference.create(member, categoryTopic, difficulty, effectiveAt);
     }
 
-    private Problem createProblem(
-            Long id,
-            CategoryTopic categoryTopic,
-            ProblemDifficulty difficulty,
-            LocalDate problemAt
-    ) {
-        Problem problem = Problem.create(
-                "테스트 제목",
-                "테스트 설명",
-                "테스트 답변",
-                categoryTopic,
-                difficulty,
-                problemAt,
-                Prompt.V1_PROMPT.name()
-        );
-        ReflectionTestUtils.setField(problem, "id", id);
-        return problem;
-    }
 
 }
