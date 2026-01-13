@@ -7,14 +7,12 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.OptimisticLockException;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.IntegrationTestSupport;
-import org.kwakmunsu.haruhana.domain.category.CategoryFactory;
 import org.kwakmunsu.haruhana.domain.member.entity.Member;
 import org.kwakmunsu.haruhana.domain.member.enums.Role;
 import org.kwakmunsu.haruhana.domain.member.repository.MemberJpaRepository;
@@ -32,7 +30,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 @RequiredArgsConstructor
 class StreakServiceIntegrationTest extends IntegrationTestSupport {
 
-    final CategoryFactory categoryFactory;
     final MemberJpaRepository memberJpaRepository;
     final StreakJpaRepository streakJpaRepository;
     final StreakService streakService;
@@ -45,9 +42,6 @@ class StreakServiceIntegrationTest extends IntegrationTestSupport {
 
     @BeforeEach
     void setUp() {
-        categoryFactory.deleteAll();
-        categoryFactory.saveAll();
-
         member = memberJpaRepository.save(Member.createMember("testUser", "password123!", "테스트유저", Role.ROLE_MEMBER));
         streak = streakJpaRepository.save(Streak.create(member));
     }
