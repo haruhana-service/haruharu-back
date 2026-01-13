@@ -1,5 +1,6 @@
 package org.kwakmunsu.haruhana.domain.dailyproblem.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.kwakmunsu.haruhana.domain.dailyproblem.service.DailyProblemService;
 import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.DailyProblemDetailResponse;
@@ -47,7 +48,7 @@ public class DailyProblemController extends DailyProblemDocsController {
     public ResponseEntity<ApiResponse<SubmissionResponse>> submitSolution(
             @PathVariable Long dailyProblemId,
             @LoginMember Long memberId,
-            @RequestBody SubmitSolutionRequest request
+            @RequestBody @Valid SubmitSolutionRequest request
     ) {
         SubmissionResponse response = submissionService.submitSolution(dailyProblemId, memberId, request.userAnswer());
 
