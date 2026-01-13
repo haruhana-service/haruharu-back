@@ -1,6 +1,5 @@
 package org.kwakmunsu.haruhana.domain.streak.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.kwakmunsu.haruhana.domain.streak.entity.Streak;
 import org.kwakmunsu.haruhana.domain.streak.repository.StreakJpaRepository;
@@ -8,6 +7,7 @@ import org.kwakmunsu.haruhana.global.entity.EntityStatus;
 import org.kwakmunsu.haruhana.global.support.error.ErrorType;
 import org.kwakmunsu.haruhana.global.support.error.HaruHanaException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
