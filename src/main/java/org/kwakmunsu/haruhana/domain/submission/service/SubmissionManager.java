@@ -9,7 +9,6 @@ import org.kwakmunsu.haruhana.domain.submission.repository.SubmissionJpaReposito
 import org.kwakmunsu.haruhana.domain.submission.service.dto.response.SubmissionResult;
 import org.kwakmunsu.haruhana.global.entity.EntityStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Component
@@ -18,15 +17,17 @@ public class SubmissionManager {
     private final SubmissionJpaRepository submissionJpaRepository;
 
     /**
-     * 제출 등록 또는 업데이트
-     * - 이미 제출했다면 답변 업데이트
-     * - 제출 기록이 없다면 새로 생성
-     * - 할당 날짜 내 제출: isOnTime = true (스트릭 증가 가능)
-     * - 할당 날짜 지난 후 제출: isOnTime = false (스트릭 증가 안됨)
+     * 제출 등록 또는 업데이트 <br>
+     * - 이미 제출했다면 답변 업데이트 <br>
+     * - 제출 기록이 없다면 새로 생성 <br>
+     * - 할당 날짜 내 제출: isOnTime = true (스트릭 증가 가능) <br>
+     * - 할당 날짜 지난 후 제출: isOnTime = false (스트릭 증가 안됨) <br>
+     *
+     * @param dailyProblem 오늘의 문제
+     * @param userAnswer 사용자가 제출한 답변
      *
      * @return SubmissionResult (제출 정보와 최초 제출 여부)
      */
-    @Transactional
     public SubmissionResult submit(DailyProblem dailyProblem, String userAnswer) {
         Optional<Submission> existingSubmission = submissionJpaRepository.findByMemberIdAndDailyProblemIdAndStatus(
                 dailyProblem.getMember().getId(),
