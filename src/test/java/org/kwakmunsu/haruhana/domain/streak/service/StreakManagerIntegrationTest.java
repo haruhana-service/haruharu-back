@@ -29,7 +29,6 @@ class StreakManagerIntegrationTest extends IntegrationTestSupport {
         var streak = streakJpaRepository.save(Streak.create(member));
 
         assertThat(streak.getCurrentStreak()).isZero();
-        assertThat(streak.getCurrentStreak()).isZero();
 
         // when
         streakManager.increase(member.getId());
@@ -38,7 +37,6 @@ class StreakManagerIntegrationTest extends IntegrationTestSupport {
         // then
         var updatedStreak = streakJpaRepository.findById(streak.getId()).orElseThrow();
 
-        assertThat(updatedStreak.getCurrentStreak()).isEqualTo(1);
         assertThat(updatedStreak.getCurrentStreak()).isEqualTo(1);
     }
 
