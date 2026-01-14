@@ -68,7 +68,7 @@ class StreakManagerIntegrationTest extends IntegrationTestSupport {
         var member = memberJpaRepository.save(MemberFixture.createMemberWithOutId(Role.ROLE_GUEST));
 
         // when & then
-        assertThatThrownBy(() ->streakManager.initStreakForMember(member))
+        assertThatThrownBy(() -> streakManager.initStreakForMember(member))
                 .isInstanceOf(HaruHanaException.class)
                 .hasMessage(ErrorType.NOT_FOUND_STREAK.getMessage());
     }
@@ -105,6 +105,13 @@ class StreakManagerIntegrationTest extends IntegrationTestSupport {
 
         // when
         streakManager.create(member);
+
+
+        // then
+        var streaks = streakJpaRepository.findAll().stream()
+                .filter(s -> s.getMember().getId().equals(member.getId()))
+                .toList();
+        assertThat(streaks).hasSize(1);
 
     }
 
