@@ -35,7 +35,11 @@ public class StreakScheduler {
 
         // NOTE: 대량의 회원이 있을 경우 성능 이슈가 발생할 수 있으므로, 배치 처리 또는 청크 단위로 나누어 처리하는 방법 고려 필요
         for (Member member : members) {
-            streakManager.initStreakForMember(member);
+            try {
+                streakManager.initStreakForMember(member);
+            } catch (Exception e) {
+                log.warn("[StreakScheduler] 회원 스트릭 초기화 실패 - memberId: {}, error: {}", member.getId(), e.getMessage());
+            }
         }
 
         log.info("[StreakScheduler] 전날 미제출 회원 스트릭 초기화 스케줄러 완료 - 초기화 회원 수: {}", members.size());
