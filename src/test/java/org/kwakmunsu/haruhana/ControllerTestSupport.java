@@ -7,6 +7,7 @@ import org.kwakmunsu.haruhana.domain.dailyproblem.controller.DailyProblemControl
 import org.kwakmunsu.haruhana.domain.dailyproblem.service.DailyProblemService;
 import org.kwakmunsu.haruhana.domain.member.controller.MemberController;
 import org.kwakmunsu.haruhana.domain.member.service.MemberService;
+import org.kwakmunsu.haruhana.domain.submission.service.SubmissionService;
 import org.kwakmunsu.haruhana.security.TestSecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -39,5 +40,8 @@ public abstract class ControllerTestSupport {
 
     @MockitoBean
     protected DailyProblemService dailyProblemService;
+
+    @MockitoBean
+    protected SubmissionService submissionService;
 
 }

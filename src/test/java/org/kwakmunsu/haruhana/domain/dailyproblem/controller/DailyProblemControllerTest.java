@@ -6,13 +6,17 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.ControllerTestSupport;
+import org.kwakmunsu.haruhana.domain.dailyproblem.controller.dto.SubmitSolutionRequest;
 import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.DailyProblemDetailResponse;
 import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.TodayProblemResponse;
+import org.kwakmunsu.haruhana.domain.submission.service.dto.response.SubmissionResponse;
 import org.kwakmunsu.haruhana.security.annotation.TestMember;
+import org.springframework.http.MediaType;
 
 class DailyProblemControllerTest extends ControllerTestSupport {
 
@@ -105,5 +109,36 @@ class DailyProblemControllerTest extends ControllerTestSupport {
                 .hasPathSatisfying("data.submittedAt", v -> v.assertThat().isNotNull());
     }
 
-}
+    @TestMember
+    @Test
+    void 문제_답안을_제출한다() throws JsonProcessingException {
+        // given
+        var dailyProblemId = 1L;
+        var userAnswer = "equals()를 재정의하면 hashCode()도 함께 재정의해야 합니다. 왜냐하면...";
+        var request = new SubmitSolutionRequest(userAnswer);
+        var response = SubmissionResponse.builder()
+                .submissionId(1L)
+                .dailyProblemId(dailyProblemId)
+                .userAnswer(userAnswer)
+                .aiAnswer("equals()와 hashCode()는 객체의 동등성 비교에 사용됩니다...")
+                .submittedAt(LocalDateTime.now())
+                .build();
 
+        given(submissionService.submitSolution(anyLong(), anyLong(), any(String.class)))
+                .willReturn(response);
+
+        // when & then
+        assertThat(mvcTester.post().uri("/v1/daily-problem/{dailyProblemId}/submissions", dailyProblemId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .apply(print())
+                .hasStatusOk()
+                .bodyJson()
+                .hasPathSatisfying("data.submissionId", v -> v.assertThat().isEqualTo(response.submissionId().intValue()))
+                .hasPathSatisfying("data.dailyProblemId", v -> v.assertThat().isEqualTo(response.dailyProblemId().intValue()))
+                .hasPathSatisfying("data.userAnswer", v -> v.assertThat().isEqualTo(response.userAnswer()))
+                .hasPathSatisfying("data.aiAnswer", v -> v.assertThat().isEqualTo(response.aiAnswer()))
+                .hasPathSatisfying("data.submittedAt", v -> v.assertThat().isNotNull());
+    }
+
+}
