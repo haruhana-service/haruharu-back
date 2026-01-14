@@ -26,9 +26,6 @@ import org.kwakmunsu.haruhana.global.entity.EntityStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * MemberJpaRepository 통합 테스트 - findMembersWithoutDateSubmission 쿼리 검증
- */
 @RequiredArgsConstructor
 @Transactional
 class MemberJpaRepositoryTest extends IntegrationTestSupport {
