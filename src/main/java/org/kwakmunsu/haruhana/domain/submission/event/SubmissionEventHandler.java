@@ -38,15 +38,5 @@ public class SubmissionEventHandler {
             log.info("[SubmissionEventHandler] 스트릭 증가 조건 미충족 최초 제출: {} or 시간 내 제출: {}", event.isFirstSubmission(), event.isOnTime());
         }
     }
-    /**
-     * 회원 가입 시 스트릭 생성
-     *
-     * @param guest 신규 회원
-    * */
-    @Async
-    @EventListener
-    public void create(Member guest) {
-        streakManager.create(guest);
-    }
 
 }
