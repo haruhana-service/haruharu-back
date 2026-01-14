@@ -9,6 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.IntegrationTestSupport;
 import org.kwakmunsu.haruhana.domain.category.CategoryFactory;
+import org.kwakmunsu.haruhana.domain.category.entity.CategoryTopic;
+import org.kwakmunsu.haruhana.domain.category.repository.CategoryTopicJpaRepository;
 import org.kwakmunsu.haruhana.domain.member.MemberFixture;
 import org.kwakmunsu.haruhana.domain.member.entity.Member;
 import org.kwakmunsu.haruhana.domain.member.entity.MemberPreference;
@@ -24,13 +26,17 @@ class MemberManagerIntegrationTest extends IntegrationTestSupport {
     final PasswordEncoder passwordEncoder;
     final CategoryFactory categoryFactory;
     final EntityManager entityManager;
+    final CategoryTopicJpaRepository categoryTopicJpaRepository;
+
+    CategoryTopic categoryTopic;
 
     @BeforeEach
     void setUpCategories() {
-        if (categoryFactory != null) {
             categoryFactory.deleteAll();
             categoryFactory.saveAll();
-        }
+
+        categoryTopic = categoryTopicJpaRepository.findByName("Java")
+                .orElseThrow(() -> new RuntimeException("Java 토픽이 존재하지 않습니다"));
     }
 
     @Test
@@ -61,7 +67,7 @@ class MemberManagerIntegrationTest extends IntegrationTestSupport {
         // given
         var newProfile = MemberFixture.createNewProfile();
         var guest = memberManager.create(newProfile);
-        var newPreference = MemberFixture.createNewPreference(1L);
+        var newPreference = MemberFixture.createNewPreference(categoryTopic.getId());
 
         // when
         var memberPreference = memberManager.registerPreference(guest, newPreference);

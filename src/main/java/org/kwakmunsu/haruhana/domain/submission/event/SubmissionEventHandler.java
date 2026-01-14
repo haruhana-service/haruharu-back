@@ -2,6 +2,8 @@ package org.kwakmunsu.haruhana.domain.submission.event;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.kwakmunsu.haruhana.domain.member.entity.Member;
+import org.kwakmunsu.haruhana.domain.streak.service.StreakManager;
 import org.kwakmunsu.haruhana.domain.streak.service.StreakService;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Component;
 public class SubmissionEventHandler {
 
     private final StreakService streakService;
+    private final StreakManager streakManager;
 
     /**
      * 제출 완료 이벤트 처리 <br>
@@ -34,6 +37,16 @@ public class SubmissionEventHandler {
         } else {
             log.info("[SubmissionEventHandler] 스트릭 증가 조건 미충족 최초 제출: {} or 시간 내 제출: {}", event.isFirstSubmission(), event.isOnTime());
         }
+    }
+    /**
+     * 회원 가입 시 스트릭 생성
+     *
+     * @param guest 신규 회원
+    * */
+    @Async
+    @EventListener
+    public void create(Member guest) {
+        streakManager.create(guest);
     }
 
 }
