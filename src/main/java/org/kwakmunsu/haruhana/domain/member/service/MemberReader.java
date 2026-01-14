@@ -1,10 +1,12 @@
 package org.kwakmunsu.haruhana.domain.member.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.kwakmunsu.haruhana.domain.member.entity.Member;
 import org.kwakmunsu.haruhana.domain.member.entity.MemberPreference;
+import org.kwakmunsu.haruhana.domain.member.enums.Role;
 import org.kwakmunsu.haruhana.domain.member.repository.MemberJpaRepository;
 import org.kwakmunsu.haruhana.domain.member.repository.MemberPreferenceJpaRepository;
 import org.kwakmunsu.haruhana.global.entity.EntityStatus;
@@ -35,6 +37,22 @@ public class MemberReader {
     public Member find(Long id) {
         return memberJpaRepository.findByIdAndStatus(id, EntityStatus.ACTIVE)
                 .orElseThrow(() -> new HaruHanaException(ErrorType.NOT_FOUND_MEMBER));
+    }
+
+    /**
+     * 특정 날짜 범위에 제출 기록이 없는 회원들을 조회합니다.
+     *
+     * @param startOfDay 조회 시작 시간 (포함)
+     * @param endOfDay 조회 종료 시간 (제외)
+     * @return 제출 기록이 없는 활성 회원 목록
+     */
+    public List<Member> findMembersWithoutSubmissionBetween(LocalDateTime startOfDay, LocalDateTime endOfDay) {
+        return memberJpaRepository.findMembersWithoutTodaySubmission(
+                startOfDay,
+                endOfDay,
+                Role.ROLE_MEMBER,
+                EntityStatus.ACTIVE
+        );
     }
 
     public List<MemberPreference> getMemberPreferences(LocalDate targetDate) {
