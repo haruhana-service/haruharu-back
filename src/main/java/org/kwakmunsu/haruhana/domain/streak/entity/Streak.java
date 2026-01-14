@@ -19,7 +19,7 @@ import org.kwakmunsu.haruhana.global.entity.BaseEntity;
 public class Streak extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = false, unique = true)
     private Member member;
 
     @Column(nullable = false)

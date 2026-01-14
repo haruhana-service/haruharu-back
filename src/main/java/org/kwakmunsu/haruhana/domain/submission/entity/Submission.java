@@ -4,6 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -12,6 +14,13 @@ import org.kwakmunsu.haruhana.domain.dailyproblem.entity.DailyProblem;
 import org.kwakmunsu.haruhana.domain.member.entity.Member;
 import org.kwakmunsu.haruhana.global.entity.BaseEntity;
 
+@Table(
+        name = "submission",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_submission_member_daily_problem",
+                columnNames = {"member_id", "daily_problem_id", "status"}
+        )
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
