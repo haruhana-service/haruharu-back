@@ -12,6 +12,7 @@ import org.kwakmunsu.haruhana.domain.member.enums.Role;
 import org.kwakmunsu.haruhana.domain.member.repository.MemberJpaRepository;
 import org.kwakmunsu.haruhana.domain.streak.entity.Streak;
 import org.kwakmunsu.haruhana.domain.streak.repository.StreakJpaRepository;
+import org.kwakmunsu.haruhana.global.entity.EntityStatus;
 import org.kwakmunsu.haruhana.global.support.error.ErrorType;
 import org.kwakmunsu.haruhana.global.support.error.HaruHanaException;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,9 +68,51 @@ class StreakManagerIntegrationTest extends IntegrationTestSupport {
         var member = memberJpaRepository.save(MemberFixture.createMemberWithOutId(Role.ROLE_GUEST));
 
         // when & then
-        assertThatThrownBy(() ->streakManager.initStreakForMember(member))
+        assertThatThrownBy(() -> streakManager.initStreakForMember(member))
                 .isInstanceOf(HaruHanaException.class)
                 .hasMessage(ErrorType.NOT_FOUND_STREAK.getMessage());
+    }
+
+    @Test
+    void streak을_생성한다() {
+        // given
+        var member = MemberFixture.createMemberWithOutId(Role.ROLE_MEMBER);
+        memberJpaRepository.save(member);
+
+        // when
+        streakManager.create(member);
+
+        // then
+        var streak = streakJpaRepository.findByMemberIdAndStatus(member.getId(), EntityStatus.ACTIVE).orElseThrow();
+        assertThat(streak).isNotNull().extracting(
+                Streak::getMember,
+                Streak::getCurrentStreak,
+                Streak::getMaxStreak
+        ).containsExactly(
+                member,
+                0L,
+                0L
+        );
+
+    }
+
+    @Test
+    void streak이_이미_존재한다면_아무_일도_일어나지_않는다() {
+        // given
+        var member = MemberFixture.createMemberWithOutId(Role.ROLE_MEMBER);
+        memberJpaRepository.save(member);
+        streakManager.create(member);
+
+        // when
+        streakManager.create(member);
+
+
+        // then
+        var streaks = streakJpaRepository.findAll().stream()
+                .filter(s -> s.getMember().getId().equals(member.getId()))
+                .toList();
+        assertThat(streaks).hasSize(1);
+
     }
 
 }

@@ -2,6 +2,8 @@ package org.kwakmunsu.haruhana.domain.submission.event;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.kwakmunsu.haruhana.domain.member.entity.Member;
+import org.kwakmunsu.haruhana.domain.streak.service.StreakManager;
 import org.kwakmunsu.haruhana.domain.streak.service.StreakService;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Component;
 public class SubmissionEventHandler {
 
     private final StreakService streakService;
+    private final StreakManager streakManager;
 
     /**
      * 제출 완료 이벤트 처리 <br>

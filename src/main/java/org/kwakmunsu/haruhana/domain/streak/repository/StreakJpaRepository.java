@@ -8,4 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface StreakJpaRepository extends JpaRepository<Streak, Long> {
 
     Optional<Streak> findByMemberIdAndStatus(Long memberId, EntityStatus status);
+    boolean existsByMemberIdAndStatus(Long memberId, EntityStatus entityStatus);
 }

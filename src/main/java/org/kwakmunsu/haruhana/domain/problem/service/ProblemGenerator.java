@@ -1,5 +1,6 @@
 package org.kwakmunsu.haruhana.domain.problem.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.List;
@@ -9,15 +10,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kwakmunsu.haruhana.domain.category.entity.CategoryTopic;
 import org.kwakmunsu.haruhana.domain.dailyproblem.service.DailyProblemManager;
+import org.kwakmunsu.haruhana.domain.member.entity.Member;
 import org.kwakmunsu.haruhana.domain.member.entity.MemberPreference;
 import org.kwakmunsu.haruhana.domain.member.service.MemberReader;
 import org.kwakmunsu.haruhana.domain.problem.entity.Problem;
+import org.kwakmunsu.haruhana.domain.problem.enums.ProblemDifficulty;
 import org.kwakmunsu.haruhana.domain.problem.repository.ProblemJpaRepository;
 import org.kwakmunsu.haruhana.domain.problem.service.dto.ProblemGenerationGroup;
 import org.kwakmunsu.haruhana.domain.problem.service.dto.ProblemGenerationKey;
 import org.kwakmunsu.haruhana.domain.problem.service.dto.ProblemResponse;
 import org.kwakmunsu.haruhana.infrastructure.gemini.ChatService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -61,6 +65,41 @@ public class ProblemGenerator {
     }
 
     /**
+     * 회원의 첫 문제를 생성하고 할당
+     * @param member 회원가입 한 첫 회원
+     * @param categoryTopic 카테고리 주제
+     * @param difficulty 난이도
+     *
+     * */
+    public void generateInitialProblem(Member member, CategoryTopic categoryTopic, ProblemDifficulty difficulty) {
+        try {
+            ProblemResponse problemResponse = getProblemToAi(categoryTopic.getName(), difficulty);
+
+            LocalDate today = LocalDate.now();
+            Problem problem = problemJpaRepository.save(Problem.create(
+                    problemResponse.title(),
+                    problemResponse.description(),
+                    problemResponse.aiAnswer(),
+                    categoryTopic,
+                    difficulty,
+                    today,
+                    Prompt.V1_PROMPT.name()
+            ));
+            // 기존 메서드 사용 할려고 그냥 List로 감싸서 보냄
+            dailyProblemManager.assignDailyProblemToMembers(problem, List.of(member), today);
+
+            log.info("[ProblemGenerator] 첫 문제 생성 완료 - 카테고리: {}, 난이도: {}, 대상 회원: {}",
+                    categoryTopic.getName(),
+                    difficulty,
+                    member.getId()
+            );
+        } catch (Exception e) {
+            log.error("[ProblemGenerator] 문제 생성 실패 - 카테고리: {}, 난이도: {}", categoryTopic.getName(), difficulty, e);
+            // TODO: 실패한 그룹은 백업 문제 생성 로직을 호출
+        }
+    }
+
+    /**
      * 카테고리 주제와 난이도별로 회원 학습 정보를 그룹화
      */
     private Map<ProblemGenerationKey, List<MemberPreference>> groupByTopicAndDifficulty(List<MemberPreference> preferences) {
@@ -77,7 +116,8 @@ public class ProblemGenerator {
     /**
      * 그룹화된 데이터를 ProblemGenerationGroup 으로 변환
      */
-    private List<ProblemGenerationGroup> createGenerationGroups(Map<ProblemGenerationKey, List<MemberPreference>> groupedPreferences) {
+    private List<ProblemGenerationGroup> createGenerationGroups(
+            Map<ProblemGenerationKey, List<MemberPreference>> groupedPreferences) {
         return groupedPreferences.entrySet().stream()
                 .map(entry -> {
                     // 첫 번째 Preference 에서 CategoryTopic 가져오기 (모두 동일함)
@@ -101,9 +141,7 @@ public class ProblemGenerator {
     private Problem generateAndSaveProblem(ProblemGenerationGroup group, LocalDate problemAt) throws Exception {
         ProblemGenerationKey key = group.key();
 
-        String prompt = Prompt.V1_PROMPT.generate(key.categoryTopicName(), key.difficulty());
-        String jsonResponse = chatService.sendPrompt(prompt);
-        ProblemResponse problemResponse = objectMapper.readValue(jsonResponse, ProblemResponse.class);
+        ProblemResponse problemResponse = getProblemToAi(key.categoryTopicName(), key.difficulty());
 
         Problem saved = problemJpaRepository.save(Problem.create(
                 problemResponse.title(),
@@ -122,6 +160,13 @@ public class ProblemGenerator {
         );
 
         return saved;
+    }
+
+    private ProblemResponse getProblemToAi(String categoryTopicName, ProblemDifficulty difficulty) throws JsonProcessingException {
+        String prompt = Prompt.V1_PROMPT.generate(categoryTopicName, difficulty);
+        String jsonResponse = chatService.sendPrompt(prompt);
+
+        return objectMapper.readValue(jsonResponse, ProblemResponse.class);
     }
 
 }
