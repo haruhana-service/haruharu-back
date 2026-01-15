@@ -61,7 +61,7 @@ public class MemberReader {
 
     public MemberPreference getMemberPreference(Long memberId) {
         // 회원과 회원 정보는 라이프 사이클이 같기에 예외를 그냥 NOT_FOUND_MEMBER 로 통일
-        return memberPreferenceJpaRepository.findByMemberIdWithMember(memberId)
+        return memberPreferenceJpaRepository.findByMemberIdWithMember(memberId, EntityStatus.ACTIVE)
                 .orElseThrow(() -> new HaruHanaException(ErrorType.NOT_FOUND_MEMBER));
     }
 

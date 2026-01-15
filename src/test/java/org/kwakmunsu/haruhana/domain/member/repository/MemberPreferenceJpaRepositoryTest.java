@@ -14,6 +14,7 @@ import org.kwakmunsu.haruhana.domain.member.MemberFixture;
 import org.kwakmunsu.haruhana.domain.member.entity.MemberPreference;
 import org.kwakmunsu.haruhana.domain.member.enums.Role;
 import org.kwakmunsu.haruhana.domain.problem.enums.ProblemDifficulty;
+import org.kwakmunsu.haruhana.global.entity.EntityStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -38,12 +39,12 @@ class MemberPreferenceJpaRepositoryTest extends IntegrationTestSupport{
     void findByMemberIdWithMember_JOIN_FETCH_확인() {
         // given
         var member = memberJpaRepository.save( MemberFixture.createMemberWithOutId(Role.ROLE_MEMBER));
-
         var memberPreference = MemberPreference.create(member, categoryTopic, ProblemDifficulty.MEDIUM, LocalDate.now());
         memberPreferenceJpaRepository.save(memberPreference);
 
         // when
-        var foundMemberPreference = memberPreferenceJpaRepository.findByMemberIdWithMember(member.getId()).orElseThrow();
+        var foundMemberPreference = memberPreferenceJpaRepository.findByMemberIdWithMember(member.getId(), EntityStatus.ACTIVE)
+                .orElseThrow();
 
         // then
         assertThat(foundMemberPreference.getMember()).isEqualTo(member);

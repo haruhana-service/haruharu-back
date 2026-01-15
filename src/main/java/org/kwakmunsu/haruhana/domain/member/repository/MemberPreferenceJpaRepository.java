@@ -14,6 +14,6 @@ public interface MemberPreferenceJpaRepository extends JpaRepository<MemberPrefe
     List<MemberPreference> findAllByEffectiveAtLessThanEqualAndStatus(LocalDate effectiveAt, EntityStatus status);
     Optional<MemberPreference> findByMemberIdAndStatus(Long memberId, EntityStatus status);
 
-    @Query("SELECT mp FROM MemberPreference mp JOIN FETCH mp.member m WHERE m.id = :memberId")
-    Optional<MemberPreference> findByMemberIdWithMember(@Param("memberId") Long memberId);
+    @Query("SELECT mp FROM MemberPreference mp JOIN FETCH mp.member m WHERE m.id = :memberId AND mp.status = :status")
+    Optional<MemberPreference> findByMemberIdWithMember(@Param("memberId") Long memberId, @Param("status") EntityStatus status);
 }
