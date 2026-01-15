@@ -49,4 +49,10 @@ public class MemberService {
         eventPublisher.publishEvent(new StreakCreateEvent(guest));
     }
 
+    public MemberProfileResponse getProfile(Long memberId) {
+        // memberPreference를 통해 회원 정보와 선호 학습 정보를 함께 조회
+        MemberPreference memberPreference = memberReader.getMemberPreference(memberId);
+
+        return MemberProfileResponse.from(memberPreference);
+    }
 }
