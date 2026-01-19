@@ -10,6 +10,7 @@ import org.kwakmunsu.haruhana.domain.member.enums.Role;
 import org.kwakmunsu.haruhana.domain.member.repository.MemberJpaRepository;
 import org.kwakmunsu.haruhana.domain.member.repository.MemberPreferenceJpaRepository;
 import org.kwakmunsu.haruhana.global.entity.EntityStatus;
+import org.kwakmunsu.haruhana.global.security.jwt.TokenHasher;
 import org.kwakmunsu.haruhana.global.support.error.ErrorType;
 import org.kwakmunsu.haruhana.global.support.error.HaruHanaException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -63,6 +64,11 @@ public class MemberReader {
         // 회원과 회원 정보는 라이프 사이클이 같기에 예외를 그냥 NOT_FOUND_MEMBER 로 통일
         return memberPreferenceJpaRepository.findByMemberIdWithMember(memberId, EntityStatus.ACTIVE)
                 .orElseThrow(() -> new HaruHanaException(ErrorType.NOT_FOUND_MEMBER));
+    }
+
+    public Member findByRefreshToken(String refreshToken) {
+        return memberJpaRepository.findByRefreshTokenAndStatus(TokenHasher.hash(refreshToken), EntityStatus.ACTIVE)
+                .orElseThrow(() -> new HaruHanaException(ErrorType.NOT_FOUND_ACTIVE_MEMBER_BY_REFRESH_TOKEN));
     }
 
 }

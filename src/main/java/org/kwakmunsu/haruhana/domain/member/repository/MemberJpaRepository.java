@@ -16,6 +16,7 @@ public interface MemberJpaRepository extends JpaRepository<Member, Long> {
     boolean existsByNicknameAndStatus(String nickname, EntityStatus status);
     Optional<Member> findByLoginIdAndStatus(String loginId, EntityStatus status);
     Optional<Member> findByIdAndStatus(Long id, EntityStatus entityStatus);
+    Optional<Member> findByRefreshTokenAndStatus(String refreshToken, EntityStatus status);
 
     @Query("""
         SELECT m FROM Member m
