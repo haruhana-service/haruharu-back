@@ -46,9 +46,25 @@ public abstract class AuthDocsController {
     @ApiExceptions(values = {
             ErrorType.BAD_REQUEST,
             ErrorType.NOT_FOUND_MEMBER,
-            ErrorType.TOKEN_THEFT_DETECTED,
+            ErrorType.NOT_FOUND_ACTIVE_MEMBER_BY_REFRESH_TOKEN,
             ErrorType.DEFAULT_ERROR
     })
     public abstract ResponseEntity<ApiResponse<TokenResponse>> reissue(TokenReissueRequest request);
+
+    @Operation(
+            summary = "로그아웃 요청 - JWT [O]",
+            description = """
+                    ### 로그아웃 API 입니다.
+                    - 회원의 refresh token을 삭제하여 더 이상 토큰 재발급이 불가능하도록 합니다.
+                    - 요청 시 유효한 access token을 전달해야 합니다.
+                    """
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "204", description = "로그아웃 성공")
+    @ApiExceptions(values = {
+            ErrorType.BAD_REQUEST,
+            ErrorType.NOT_FOUND_MEMBER,
+            ErrorType.DEFAULT_ERROR
+    })
+    public abstract ResponseEntity<Void> logout(@LoginMember Long memberId);
 
 }

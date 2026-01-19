@@ -35,4 +35,12 @@ public class AuthController extends AuthDocsController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @Override
+    @PostMapping("/v1/auth/logout")
+    public ResponseEntity<Void> logout(@LoginMember Long memberId) {
+        authService.logout(memberId);
+
+        return ResponseEntity.noContent().build();
+    }
+
 }
