@@ -14,11 +14,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.MemberCreateRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.PreferenceRegisterRequest;
 import org.kwakmunsu.haruhana.domain.member.service.MemberProfileResponse;
-import org.kwakmunsu.haruhana.global.annotation.LoginMember;
 import org.kwakmunsu.haruhana.global.support.response.ApiResponse;
 import org.kwakmunsu.haruhana.global.swagger.ApiExceptions;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 
 @Tag(name = "Member Docs", description = "Member 관련 API 문서")
 public abstract class MemberDocsController {

@@ -2,7 +2,6 @@ package org.kwakmunsu.haruhana.domain.submission.event;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.kwakmunsu.haruhana.domain.member.entity.Member;
 import org.kwakmunsu.haruhana.domain.streak.service.StreakManager;
 import org.kwakmunsu.haruhana.domain.streak.service.StreakService;
 import org.springframework.context.event.EventListener;

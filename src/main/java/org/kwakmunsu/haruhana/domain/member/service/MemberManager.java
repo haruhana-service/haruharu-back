@@ -13,7 +13,6 @@ import org.kwakmunsu.haruhana.domain.member.service.dto.request.NewPreference;
 import org.kwakmunsu.haruhana.domain.member.service.dto.request.NewProfile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Component
