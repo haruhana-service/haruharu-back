@@ -13,7 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.ControllerTestSupport;
 import org.kwakmunsu.haruhana.domain.dailyproblem.controller.dto.SubmitSolutionRequest;
 import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.DailyProblemDetailResponse;
+import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.DailyProblemResponse;
 import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.TodayProblemResponse;
+import org.kwakmunsu.haruhana.domain.problem.enums.ProblemDifficulty;
 import org.kwakmunsu.haruhana.domain.submission.service.dto.response.SubmissionResponse;
 import org.kwakmunsu.haruhana.security.annotation.TestMember;
 import org.springframework.http.MediaType;
@@ -62,7 +64,7 @@ class DailyProblemControllerTest extends ControllerTestSupport {
                 .description("Java에서 equals()와 hashCode()를 함께 재정의해야 하는 이유는?")
                 .build();
 
-        given(dailyProblemService.findDailyProblem(anyLong(), anyLong())).willReturn(response);
+        given(dailyProblemService.getDailyProblem(anyLong(), anyLong())).willReturn(response);
 
         // when & then
         assertThat(mvcTester.get().uri("/v1/daily-problem/{dailyProblemId}", dailyProblemId))
@@ -96,7 +98,7 @@ class DailyProblemControllerTest extends ControllerTestSupport {
                 .aiAnswer("equals()와 hashCode()는 객체의 동등성 비교에 사용됩니다...")
                 .build();
 
-        given(dailyProblemService.findDailyProblem(anyLong(), anyLong())).willReturn(response);
+        given(dailyProblemService.getDailyProblem(anyLong(), anyLong())).willReturn(response);
 
         // when & then
         assertThat(mvcTester.get().uri("/v1/daily-problem/{dailyProblemId}", dailyProblemId))
@@ -139,6 +141,34 @@ class DailyProblemControllerTest extends ControllerTestSupport {
                 .hasPathSatisfying("data.userAnswer", v -> v.assertThat().isEqualTo(response.userAnswer()))
                 .hasPathSatisfying("data.aiAnswer", v -> v.assertThat().isEqualTo(response.aiAnswer()))
                 .hasPathSatisfying("data.submittedAt", v -> v.assertThat().isNotNull());
+    }
+
+    @TestMember
+    @Test
+    void 주어진_날짜에_할당된_문제를_조회한다() {
+        // given
+        DailyProblemResponse response = DailyProblemResponse.builder()
+                .id(1L)
+                .difficulty(ProblemDifficulty.MEDIUM.name())
+                .categoryTopic("Java")
+                .title("Java의 equals와 hashCode")
+                .isSolved(false)
+                .build();
+
+        given(dailyProblemService.findDailyProblem(any(LocalDate.class), anyLong())).willReturn(response);
+
+        // when & then
+        assertThat(mvcTester.get().uri("/v1/daily-problem")
+                .param("date", LocalDate.now().toString())
+                .contentType(MediaType.APPLICATION_JSON))
+                .apply(print())
+                .hasStatusOk()
+                .bodyJson()
+                .hasPathSatisfying("data.id", v -> v.assertThat().isEqualTo(response.id().intValue()))
+                .hasPathSatisfying("data.difficulty", v -> v.assertThat().isEqualTo(response.difficulty()))
+                .hasPathSatisfying("data.categoryTopic", v -> v.assertThat().isEqualTo(response.categoryTopic()))
+                .hasPathSatisfying("data.title", v -> v.assertThat().isEqualTo(response.title()))
+                .hasPathSatisfying("data.isSolved", v -> v.assertThat().isEqualTo(false));
     }
 
 }

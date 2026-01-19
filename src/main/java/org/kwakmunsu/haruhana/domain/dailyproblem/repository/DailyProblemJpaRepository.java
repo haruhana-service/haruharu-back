@@ -18,7 +18,8 @@ public interface DailyProblemJpaRepository extends JpaRepository<DailyProblem, L
             WHERE dp.member.id = :memberId
               AND dp.assignedAt = :assignedAt
               AND dp.status = :status
-            """)
+            """
+    )
     Optional<DailyProblem> findByMemberIdAndAssignedAtAndStatus(
             @Param("memberId") Long memberId,
             @Param("assignedAt") LocalDate assignedAt,

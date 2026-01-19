@@ -1,8 +1,11 @@
 package org.kwakmunsu.haruhana.domain.dailyproblem.service;
 
+import java.time.LocalDate;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.kwakmunsu.haruhana.domain.dailyproblem.entity.DailyProblem;
 import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.DailyProblemDetailResponse;
+import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.DailyProblemResponse;
 import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.TodayProblemResponse;
 import org.kwakmunsu.haruhana.domain.submission.entity.Submission;
 import org.kwakmunsu.haruhana.domain.submission.service.SubmissionReader;
@@ -33,7 +36,7 @@ public class DailyProblemService {
      * @param memberId 회원 ID
      */
     @Transactional(readOnly = true)
-    public DailyProblemDetailResponse findDailyProblem(Long dailyProblemId, Long memberId) {
+    public DailyProblemDetailResponse getDailyProblem(Long dailyProblemId, Long memberId) {
         DailyProblem dailyProblem = dailyProblemReader.find(dailyProblemId, memberId);
 
         Submission submission = submissionReader.findByMemberIdAndDailyProblemId(memberId, dailyProblemId)
@@ -41,4 +44,21 @@ public class DailyProblemService {
 
         return DailyProblemDetailResponse.of(dailyProblem, submission);
     }
+
+    /**
+     * 날짜에 해당하는 회원에게 할당된 데일리 문제 미리보기 조회
+     * @param date 조회할 날짜
+     * @param memberId 회원 ID
+     * returns DailyProblemResponse 데일리 문제 미리보기 응답 DTO
+    * */
+    public DailyProblemResponse findDailyProblem(LocalDate date, Long memberId) {
+        Optional<DailyProblem> dailyProblem = dailyProblemReader.findDailyProblem(date, memberId);
+
+        if (dailyProblem.isEmpty()) {
+            return DailyProblemResponse.builder().build();
+        }
+
+        return DailyProblemResponse.from(dailyProblem.get());
+    }
+
 }

@@ -1,20 +1,24 @@
 package org.kwakmunsu.haruhana.domain.dailyproblem.controller;
 
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
+import org.kwakmunsu.haruhana.domain.dailyproblem.controller.dto.SubmitSolutionRequest;
 import org.kwakmunsu.haruhana.domain.dailyproblem.service.DailyProblemService;
 import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.DailyProblemDetailResponse;
+import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.DailyProblemResponse;
 import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.TodayProblemResponse;
 import org.kwakmunsu.haruhana.domain.submission.service.SubmissionService;
-import org.kwakmunsu.haruhana.domain.dailyproblem.controller.dto.SubmitSolutionRequest;
 import org.kwakmunsu.haruhana.domain.submission.service.dto.response.SubmissionResponse;
 import org.kwakmunsu.haruhana.global.annotation.LoginMember;
 import org.kwakmunsu.haruhana.global.support.response.ApiResponse;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -33,12 +37,25 @@ public class DailyProblemController extends DailyProblemDocsController {
     }
 
     @Override
+    @GetMapping("/v1/daily-problem")
+    public ResponseEntity<ApiResponse<DailyProblemResponse>> findDailyProblem(
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate date,
+            @LoginMember Long memberId
+    ) {
+        DailyProblemResponse response = dailyProblemService.findDailyProblem(date, memberId);
+
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @Override
     @GetMapping("/v1/daily-problem/{dailyProblemId}")
-    public ResponseEntity<ApiResponse<DailyProblemDetailResponse>> findDailyProblem(
+    public ResponseEntity<ApiResponse<DailyProblemDetailResponse>> getDailyProblem(
             @PathVariable Long dailyProblemId,
             @LoginMember Long memberId
     ) {
-        DailyProblemDetailResponse response = dailyProblemService.findDailyProblem(dailyProblemId, memberId);
+        DailyProblemDetailResponse response = dailyProblemService.getDailyProblem(dailyProblemId, memberId);
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -56,4 +73,3 @@ public class DailyProblemController extends DailyProblemDocsController {
     }
 
 }
-
