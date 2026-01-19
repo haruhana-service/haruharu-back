@@ -3,6 +3,7 @@ package org.kwakmunsu.haruhana.domain.member.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.kwakmunsu.haruhana.domain.member.entity.Member;
 import org.kwakmunsu.haruhana.domain.member.entity.MemberPreference;
@@ -63,6 +64,10 @@ public class MemberReader {
         // 회원과 회원 정보는 라이프 사이클이 같기에 예외를 그냥 NOT_FOUND_MEMBER 로 통일
         return memberPreferenceJpaRepository.findByMemberIdWithMember(memberId, EntityStatus.ACTIVE)
                 .orElseThrow(() -> new HaruHanaException(ErrorType.NOT_FOUND_MEMBER));
+    }
+
+    public Optional<Member> findByRefreshToken(String refreshToken) {
+        return memberJpaRepository.findByRefreshTokenAndStatus(refreshToken, EntityStatus.ACTIVE);
     }
 
 }
