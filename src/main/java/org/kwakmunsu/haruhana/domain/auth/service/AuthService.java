@@ -41,4 +41,13 @@ public class AuthService {
         return tokenResponse;
     }
 
+    // NOTE: 추후 Access Token 블랙리스트 처리 고려
+    @Transactional
+    public void logout(Long memberId) {
+        Member member = memberReader.find(memberId);
+        member.clearRefreshToken();
+
+        log.info("[AuthService] 로그아웃 성공. memberId: {}", member.getId());
+    }
+
 }

@@ -12,6 +12,7 @@ import org.kwakmunsu.haruhana.domain.auth.controller.dto.LoginRequest;
 import org.kwakmunsu.haruhana.domain.auth.controller.dto.TokenReissueRequest;
 import org.kwakmunsu.haruhana.global.security.jwt.dto.TokenResponse;
 import org.kwakmunsu.haruhana.security.annotation.TestMember;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 class AuthControllerTest extends ControllerTestSupport {
@@ -55,6 +56,15 @@ class AuthControllerTest extends ControllerTestSupport {
                 .bodyJson()
                 .hasPathSatisfying("$.data.accessToken", v -> v.assertThat().isEqualTo(tokenResponse.accessToken()))
                 .hasPathSatisfying("$.data.refreshToken", v -> v.assertThat().isEqualTo(tokenResponse.refreshToken()));
+    }
+
+    @TestMember
+    @Test
+    void 로그아웃을_한다() {
+        // when & then
+        assertThat(mvcTester.post().uri("/v1/auth/logout"))
+                .apply(print())
+                .hasStatus(HttpStatus.NO_CONTENT);
     }
 
 }

@@ -63,6 +63,10 @@ public class Member extends BaseEntity {
         this.refreshToken = TokenHasher.hash(refreshToken);
     }
 
+    public void clearRefreshToken() {
+        this.refreshToken = null;
+    }
+
     public boolean isGuest() {
         return role == Role.ROLE_GUEST;
     }
