@@ -25,7 +25,7 @@ public class DailyProblemController extends DailyProblemDocsController {
     private final SubmissionService submissionService;
 
     @Override
-    @GetMapping("/v1/daily-problem")
+    @GetMapping("/v1/daily-problem/today")
     public ResponseEntity<ApiResponse<TodayProblemResponse>> getTodayProblem(@LoginMember Long memberId) {
         TodayProblemResponse response = dailyProblemService.getTodayProblem(memberId);
 

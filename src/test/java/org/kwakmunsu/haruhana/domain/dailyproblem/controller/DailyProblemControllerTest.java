@@ -36,7 +36,7 @@ class DailyProblemControllerTest extends ControllerTestSupport {
         given(dailyProblemService.getTodayProblem(any())).willReturn(response);
 
         // when & then
-        assertThat(mvcTester.get().uri("/v1/daily-problem"))
+        assertThat(mvcTester.get().uri("/v1/daily-problem/today"))
                 .apply(print())
                 .hasStatusOk()
                 .bodyJson()
