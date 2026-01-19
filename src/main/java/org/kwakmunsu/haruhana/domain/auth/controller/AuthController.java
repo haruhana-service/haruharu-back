@@ -29,11 +29,8 @@ public class AuthController extends AuthDocsController {
 
     @Override
     @PostMapping("/v1/auth/reissue")
-    public ResponseEntity<ApiResponse<TokenResponse>> reissue(
-            @RequestBody @Valid TokenReissueRequest request,
-            @LoginMember Long memberId
-    ) {
-        TokenResponse response = authService.reissue(request.refreshToken(), memberId);
+    public ResponseEntity<ApiResponse<TokenResponse>> reissue(@RequestBody @Valid TokenReissueRequest request) {
+        TokenResponse response = authService.reissue(request.refreshToken());
 
         return ResponseEntity.ok(ApiResponse.success(response));
     }

@@ -49,9 +49,6 @@ public abstract class AuthDocsController {
             ErrorType.TOKEN_THEFT_DETECTED,
             ErrorType.DEFAULT_ERROR
     })
-    public abstract ResponseEntity<ApiResponse<TokenResponse>> reissue(
-            TokenReissueRequest request,
-            Long memberId
-    );
+    public abstract ResponseEntity<ApiResponse<TokenResponse>> reissue(TokenReissueRequest request);
 
 }

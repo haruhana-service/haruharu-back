@@ -44,7 +44,7 @@ class AuthControllerTest extends ControllerTestSupport {
         var requestJson = objectMapper.writeValueAsString(request);
         var tokenResponse = new TokenResponse("testAccessToken", "testRefreshToken");
 
-        given(authService.reissue(any(), any())).willReturn(tokenResponse);
+        given(authService.reissue(any())).willReturn(tokenResponse);
 
         // when & then
         assertThat(mvcTester.post().uri("/v1/auth/reissue")

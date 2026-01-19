@@ -1,8 +1,8 @@
 package org.kwakmunsu.haruhana.domain.auth.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -11,9 +11,9 @@ import org.kwakmunsu.haruhana.domain.member.MemberFixture;
 import org.kwakmunsu.haruhana.domain.member.repository.MemberJpaRepository;
 import org.kwakmunsu.haruhana.domain.member.service.MemberManager;
 import org.kwakmunsu.haruhana.domain.member.service.MemberReader;
+import org.kwakmunsu.haruhana.global.security.jwt.TokenHasher;
 import org.kwakmunsu.haruhana.global.security.jwt.dto.TokenResponse;
-import org.kwakmunsu.haruhana.global.support.error.ErrorType;
-import org.kwakmunsu.haruhana.global.support.error.HaruHanaException;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 class AuthServiceIntegrationTest extends IntegrationTestSupport {
@@ -22,6 +22,7 @@ class AuthServiceIntegrationTest extends IntegrationTestSupport {
     final MemberReader memberReader;
     final MemberManager memberManager;
     final MemberJpaRepository memberJpaRepository;
+    final EntityManager entityManager;
 
     @AfterEach
     void tearDown() {
@@ -48,6 +49,7 @@ class AuthServiceIntegrationTest extends IntegrationTestSupport {
         assertThat(existingMember.getRefreshToken()).isNotNull();
     }
 
+    @Transactional
     @Test
     void 토큰_재발급에_성공한다() {
         // given
@@ -56,7 +58,7 @@ class AuthServiceIntegrationTest extends IntegrationTestSupport {
         var oldRefreshToken = authService.login(member.getLoginId(), newProfile.password()).refreshToken();
 
         // when
-        var tokenResponse = authService.reissue(oldRefreshToken, member.getId());
+        var tokenResponse = authService.reissue(oldRefreshToken);
 
         // then
         assertThat(tokenResponse).extracting(
@@ -65,27 +67,8 @@ class AuthServiceIntegrationTest extends IntegrationTestSupport {
         ).doesNotContainNull();
 
         var existingMember = memberReader.findByAccount(member.getLoginId(), newProfile.password());
-        boolean isEquals = existingMember.isEqualsRefreshToken(tokenResponse.refreshToken());
+        var isEquals = existingMember.getRefreshToken().equals(TokenHasher.hash(tokenResponse.refreshToken()));
         assertThat(isEquals).isTrue();
-    }
-
-    @Test
-    void 회원이_가지고있는_RT와_다른_RT로_재발급_요청이_온다면_탈취_감지로_토큰_무효화_후_예외를_반환한다() {
-        // given
-        var newProfile = MemberFixture.createNewProfile();
-        var member = memberManager.create(newProfile);
-        authService.login(member.getLoginId(), newProfile.password());
-
-        var invalidRefreshToken = "invalidToken";
-
-        // when & then
-        assertThatThrownBy(() -> authService.reissue(invalidRefreshToken, member.getId()))
-                .isInstanceOf(HaruHanaException.class)
-                .hasMessage(ErrorType.TOKEN_THEFT_DETECTED.getMessage());
-
-        var existingMember = memberReader.findByAccount(member.getLoginId(), newProfile.password());
-
-        assertThat(existingMember.getRefreshToken()).isNull();
     }
 
 }

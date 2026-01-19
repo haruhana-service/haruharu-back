@@ -3,7 +3,6 @@ package org.kwakmunsu.haruhana.domain.member.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.kwakmunsu.haruhana.domain.member.entity.Member;
 import org.kwakmunsu.haruhana.domain.member.entity.MemberPreference;
@@ -11,6 +10,7 @@ import org.kwakmunsu.haruhana.domain.member.enums.Role;
 import org.kwakmunsu.haruhana.domain.member.repository.MemberJpaRepository;
 import org.kwakmunsu.haruhana.domain.member.repository.MemberPreferenceJpaRepository;
 import org.kwakmunsu.haruhana.global.entity.EntityStatus;
+import org.kwakmunsu.haruhana.global.security.jwt.TokenHasher;
 import org.kwakmunsu.haruhana.global.support.error.ErrorType;
 import org.kwakmunsu.haruhana.global.support.error.HaruHanaException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -66,8 +66,9 @@ public class MemberReader {
                 .orElseThrow(() -> new HaruHanaException(ErrorType.NOT_FOUND_MEMBER));
     }
 
-    public Optional<Member> findByRefreshToken(String refreshToken) {
-        return memberJpaRepository.findByRefreshTokenAndStatus(refreshToken, EntityStatus.ACTIVE);
+    public Member findByRefreshToken(String refreshToken) {
+        return memberJpaRepository.findByRefreshTokenAndStatus(TokenHasher.hash(refreshToken), EntityStatus.ACTIVE)
+                .orElseThrow(() -> new HaruHanaException(ErrorType.NOT_FOUND_ACTIVE_MEMBER_BY_REFRESH_TOKEN));
     }
 
 }

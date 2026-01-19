@@ -13,14 +13,11 @@ import org.kwakmunsu.haruhana.domain.member.service.dto.request.NewPreference;
 import org.kwakmunsu.haruhana.domain.member.service.dto.request.NewProfile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Component
 public class MemberManager {
 
-    private final MemberReader memberReader;
     private final MemberJpaRepository memberJpaRepository;
     private final MemberPreferenceJpaRepository memberPreferenceJpaRepository;
     private final CategoryReader categoryReader;
@@ -55,14 +52,6 @@ public class MemberManager {
         guest.updateRoleToMember();
 
         return memberPreference;
-    }
-
-    // 해당 메서드는 토큰 탈취 감지 시 초기화 하기위해 사용됨. 트랜잭션 전파 레벨을 아래와 같이 안하면 해당 로직 수행 후 예외 반환을 하는데 그떄 함꼐 롤백되어 초기화가 안됨.
-    // 따라서 전파 레벨을 REQUIRES_NEW로 하여금 독립적인 새 트랜잭션을 생성하여 반드시 초기화 되게 함
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void invalidateRefreshToken(Long memberId) {
-        Member member = memberReader.find(memberId);
-        member.initializeRefreshToken();
     }
 
 }
