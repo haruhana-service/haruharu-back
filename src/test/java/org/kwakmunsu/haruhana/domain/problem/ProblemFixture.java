@@ -46,13 +46,12 @@ public final class ProblemFixture {
     }
 
     public static Problem createProblem(
-            Long id,
             String title,
             String description,
             CategoryTopic categoryTopic,
             ProblemDifficulty difficulty
     ) {
-        Problem problem = Problem.create(
+        return Problem.create(
                 title,
                 description,
                 AI_ANSWER,
@@ -61,8 +60,6 @@ public final class ProblemFixture {
                 LocalDate.now(),
                 PROMPT_VERSION
         );
-        ReflectionTestUtils.setField(problem, "id", id);
-        return problem;
     }
 
 }

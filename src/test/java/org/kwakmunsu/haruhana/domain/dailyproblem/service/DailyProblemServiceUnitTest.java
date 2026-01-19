@@ -2,16 +2,20 @@ package org.kwakmunsu.haruhana.domain.dailyproblem.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.UnitTestSupport;
 import org.kwakmunsu.haruhana.domain.category.CategoryTopicFixture;
+import org.kwakmunsu.haruhana.domain.category.entity.CategoryTopic;
 import org.kwakmunsu.haruhana.domain.dailyproblem.DailyProblemFixture;
 import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.DailyProblemDetailResponse;
+import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.DailyProblemResponse;
 import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.TodayProblemResponse;
 import org.kwakmunsu.haruhana.domain.member.MemberFixture;
 import org.kwakmunsu.haruhana.domain.member.enums.Role;
@@ -97,7 +101,7 @@ class DailyProblemServiceUnitTest extends UnitTestSupport {
                 .willReturn(Optional.empty());
 
         // when
-        DailyProblemDetailResponse response = dailyProblemService.findDailyProblem(dailyProblemId, memberId);
+        DailyProblemDetailResponse response = dailyProblemService.getDailyProblem(dailyProblemId, memberId);
 
         // then
         assertThat(response).isNotNull().extracting(
@@ -141,7 +145,7 @@ class DailyProblemServiceUnitTest extends UnitTestSupport {
                 .willReturn(Optional.of(submission));
 
         // when
-        DailyProblemDetailResponse response = dailyProblemService.findDailyProblem(dailyProblemId, memberId);
+        DailyProblemDetailResponse response = dailyProblemService.getDailyProblem(dailyProblemId, memberId);
 
         // then
         assertThat(response).isNotNull();
@@ -164,9 +168,62 @@ class DailyProblemServiceUnitTest extends UnitTestSupport {
                 .willThrow(new HaruHanaException(ErrorType.NOT_FOUND_DAILY_PROBLEM));
 
         // when & then
-        assertThatThrownBy(() -> dailyProblemService.findDailyProblem(dailyProblemId, memberId))
+        assertThatThrownBy(() -> dailyProblemService.getDailyProblem(dailyProblemId, memberId))
                 .isInstanceOf(HaruHanaException.class)
                 .hasMessage(ErrorType.NOT_FOUND_DAILY_PROBLEM.getMessage());
+    }
+
+    @Test
+    void 날짜에_해당하는_할당된_문제를_조회한다() {
+        // given
+        var dailyProblem = DailyProblemFixture.createDailyProblem(
+                MemberFixture.createMember(Role.ROLE_MEMBER),
+                ProblemFixture.createProblem(CategoryTopic.create(1L, "Java"))
+        );
+
+        given(dailyProblemReader.findDailyProblem(any(), any())).willReturn(Optional.of(dailyProblem));
+
+        // when
+        var response = dailyProblemService.findDailyProblem(dailyProblem.getAssignedAt(), 1L);
+
+        // then
+        assertThat(response).isNotNull().extracting(
+                DailyProblemResponse::id,
+                DailyProblemResponse::difficulty,
+                DailyProblemResponse::categoryTopic,
+                DailyProblemResponse::title,
+                DailyProblemResponse::isSolved
+        ).containsExactly(
+                dailyProblem.getId(),
+                dailyProblem.getProblem().getDifficulty().name(),
+                dailyProblem.getProblem().getCategoryTopic().getName(),
+                dailyProblem.getProblem().getTitle(),
+                dailyProblem.isSolved()
+        );
+    }
+
+    @Test
+    void 날짜에_해당된_문제가_없다() {
+        // given
+        given(dailyProblemReader.findDailyProblem(any(), any())).willReturn(Optional.empty());
+
+        // when
+        var response = dailyProblemService.findDailyProblem(LocalDate.now(), 1L);
+
+        // then
+        assertThat(response).isNotNull().extracting(
+                DailyProblemResponse::id,
+                DailyProblemResponse::difficulty,
+                DailyProblemResponse::categoryTopic,
+                DailyProblemResponse::title,
+                DailyProblemResponse::isSolved
+        ).containsExactly(
+                null,
+                null,
+                null,
+                null,
+                false
+        );
     }
 
 }

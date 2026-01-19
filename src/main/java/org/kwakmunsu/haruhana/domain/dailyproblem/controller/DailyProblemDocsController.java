@@ -3,9 +3,11 @@ package org.kwakmunsu.haruhana.domain.dailyproblem.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.DailyProblemDetailResponse;
-import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.TodayProblemResponse;
+import java.time.LocalDate;
 import org.kwakmunsu.haruhana.domain.dailyproblem.controller.dto.SubmitSolutionRequest;
+import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.DailyProblemDetailResponse;
+import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.DailyProblemResponse;
+import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.TodayProblemResponse;
 import org.kwakmunsu.haruhana.domain.submission.service.dto.response.SubmissionResponse;
 import org.kwakmunsu.haruhana.global.support.error.ErrorType;
 import org.kwakmunsu.haruhana.global.support.response.ApiResponse;
@@ -32,6 +34,24 @@ public abstract class DailyProblemDocsController {
     public abstract ResponseEntity<ApiResponse<TodayProblemResponse>> getTodayProblem(Long memberId);
 
     @Operation(
+            summary = "날짜에 해당하는 회원에게 할당된 데일리 문제 미리보기 조회 - JWT [O]",
+            description = """
+                    ### 특정 날짜에 회원에게 할당된 데일리 문제의 미리보기를 조회합니다.
+                    - date 파라미터가 제공되지 않은 경우, 오늘 날짜로 간주됩니다.
+                    - 해당 날짜에 할당된 문제가 없는 경우, 빈 응답이 반환됩니다.
+                    """
+    )
+    @ApiExceptions(values = {
+            ErrorType.FORBIDDEN_ERROR,
+            ErrorType.UNAUTHORIZED_ERROR,
+            ErrorType.DEFAULT_ERROR
+    })
+    public abstract ResponseEntity<ApiResponse<DailyProblemResponse>> findDailyProblem(
+            LocalDate date,
+            Long memberId
+    );
+
+    @Operation(
             summary = "문제 상세 조회 - JWT [O]",
             description = """
                     ### 문제 상세 정보를 조회합니다.
@@ -48,7 +68,7 @@ public abstract class DailyProblemDocsController {
             ErrorType.UNAUTHORIZED_ERROR,
             ErrorType.DEFAULT_ERROR
     })
-    public abstract ResponseEntity<ApiResponse<DailyProblemDetailResponse>> findDailyProblem(Long dailyProblemId, Long memberId);
+    public abstract ResponseEntity<ApiResponse<DailyProblemDetailResponse>> getDailyProblem(Long dailyProblemId, Long memberId);
 
     @Operation(
             summary = "문제 제출 - JWT [O]",
@@ -75,5 +95,5 @@ public abstract class DailyProblemDocsController {
             Long memberId,
             SubmitSolutionRequest request
     );
-}
 
+}

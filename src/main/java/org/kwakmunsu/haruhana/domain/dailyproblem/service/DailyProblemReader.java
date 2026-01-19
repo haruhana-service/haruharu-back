@@ -1,6 +1,7 @@
 package org.kwakmunsu.haruhana.domain.dailyproblem.service;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.kwakmunsu.haruhana.domain.dailyproblem.entity.DailyProblem;
 import org.kwakmunsu.haruhana.domain.dailyproblem.repository.DailyProblemJpaRepository;
@@ -26,6 +27,18 @@ public class DailyProblemReader {
     public DailyProblem find(Long id, Long memberId) {
         return dailyProblemJpaRepository.findByIdAndMemberIdAndStatus(id, memberId, EntityStatus.ACTIVE)
                 .orElseThrow(() -> new HaruHanaException(ErrorType.NOT_FOUND_DAILY_PROBLEM));
+    }
+
+    public Optional<DailyProblem> findDailyProblem(LocalDate assignedAt, Long memberId) {
+        if (assignedAt == null) {
+            assignedAt = LocalDate.now();
+        }
+
+        return dailyProblemJpaRepository.findByMemberIdAndAssignedAtAndStatus(
+                memberId,
+                assignedAt,
+                EntityStatus.ACTIVE
+        );
     }
 
 }
