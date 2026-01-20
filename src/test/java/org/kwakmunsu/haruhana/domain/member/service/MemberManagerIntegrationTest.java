@@ -113,7 +113,7 @@ class MemberManagerIntegrationTest extends IntegrationTestSupport {
         );
 
         var springCategory = categoryTopicJpaRepository.findByName("Spring")
-                .orElseThrow(() -> new RuntimeException("Java 토픽이 존재하지 않습니다"));
+                .orElseThrow(() -> new RuntimeException("Spring 토픽이 존재하지 않습니다"));
 
         var updatePreference = new UpdatePreference(springCategory.getId(), ProblemDifficulty.HARD);
 
