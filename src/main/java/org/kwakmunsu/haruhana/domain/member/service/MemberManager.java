@@ -69,7 +69,7 @@ public class MemberManager {
             preferenceUpdateForTomorrow(memberPreference, member, categoryTopic, updatePreference);
         }
 
-        log.info("[MemberService] 회원 학습 목록 수정 - 회원 id: {}, category: {}, difficulty: {} ",
+        log.info("[MemberManager] 회원 학습 목록 수정 - 회원 id: {}, category: {}, difficulty: {} ",
                 member.getId(), updatePreference.categoryTopicId(), updatePreference.difficulty());
     }
 
