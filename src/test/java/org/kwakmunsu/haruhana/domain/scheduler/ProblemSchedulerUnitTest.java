@@ -7,14 +7,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.time.LocalDate;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.kwakmunsu.haruhana.UnitTestSupport;
 import org.kwakmunsu.haruhana.domain.problem.service.ProblemGenerator;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 class ProblemSchedulerUnitTest extends UnitTestSupport {
 

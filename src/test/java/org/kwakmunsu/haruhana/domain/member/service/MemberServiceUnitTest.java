@@ -1,18 +1,21 @@
 package org.kwakmunsu.haruhana.domain.member.service;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.UnitTestSupport;
 import org.kwakmunsu.haruhana.domain.category.entity.CategoryTopic;
 import org.kwakmunsu.haruhana.domain.member.MemberFixture;
 import org.kwakmunsu.haruhana.domain.member.entity.MemberPreference;
 import org.kwakmunsu.haruhana.domain.member.enums.Role;
+import org.kwakmunsu.haruhana.domain.member.service.dto.request.UpdatePreference;
 import org.kwakmunsu.haruhana.domain.problem.enums.ProblemDifficulty;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -21,6 +24,9 @@ class MemberServiceUnitTest extends UnitTestSupport {
 
     @Mock
     MemberReader memberReader;
+
+    @Mock
+    MemberManager memberManager;
 
     @InjectMocks
     MemberService memberService;
@@ -49,6 +55,40 @@ class MemberServiceUnitTest extends UnitTestSupport {
                         memberPreference.getCategoryTopic().getName(),
                         memberPreference.getDifficulty().name()
                 );
+    }
+
+    @Test
+    void 회원_학습_정보_변경에_성공한다() {
+        // given
+        var memberPreference = mock(MemberPreference.class);
+
+        given(memberReader.getMemberPreference(any())).willReturn(memberPreference);
+        given(memberPreference.isEqualsPreference(any(), any())).willReturn(false);
+
+        var updatePreference = new UpdatePreference(2L, ProblemDifficulty.MEDIUM);
+
+        // when
+        memberService.updatePreference(updatePreference, 2L);
+
+        // then
+        verify(memberManager, times(1)).updatePreference(any(), any());
+    }
+
+    @Test
+    void 변경_요청_데이터가_기존_학습_정보와_동일하다면_아무_일도_일어나지_않는다() {
+        // given
+        var memberPreference = mock(MemberPreference.class);
+
+        given(memberReader.getMemberPreference(any())).willReturn(memberPreference);
+        given(memberPreference.isEqualsPreference(any(Long.class), any(ProblemDifficulty.class))).willReturn(true);
+
+        var updatePreference = new UpdatePreference(2L, ProblemDifficulty.MEDIUM);
+
+        // when
+        memberService.updatePreference(updatePreference, 2L);
+
+        // then
+        verify(memberManager, never()).updatePreference(any(), any());
     }
 
 }
