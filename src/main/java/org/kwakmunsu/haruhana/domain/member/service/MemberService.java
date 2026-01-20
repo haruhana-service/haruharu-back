@@ -6,6 +6,7 @@ import org.kwakmunsu.haruhana.domain.member.entity.Member;
 import org.kwakmunsu.haruhana.domain.member.entity.MemberPreference;
 import org.kwakmunsu.haruhana.domain.member.service.dto.request.NewPreference;
 import org.kwakmunsu.haruhana.domain.member.service.dto.request.NewProfile;
+import org.kwakmunsu.haruhana.domain.member.service.dto.request.UpdatePreference;
 import org.kwakmunsu.haruhana.domain.problem.service.ProblemGenerator;
 import org.kwakmunsu.haruhana.domain.streak.event.StreakCreateEvent;
 import org.springframework.context.ApplicationEventPublisher;
@@ -55,4 +56,17 @@ public class MemberService {
 
         return MemberProfileResponse.from(memberPreference);
     }
+
+    @Transactional
+    public void updatePreference(UpdatePreference updatePreference, Long memberId) {
+        MemberPreference memberPreference = memberReader.getMemberPreference(memberId);
+
+        // 기존 선호 학습 정보와 동일한 경우 업데이트하지 않음
+        if (memberPreference.isEqualsPreference(updatePreference.categoryTopicId(), updatePreference.difficulty())) {
+            return;
+        }
+
+        memberManager.updatePreference(memberPreference, updatePreference);
+    }
+
 }

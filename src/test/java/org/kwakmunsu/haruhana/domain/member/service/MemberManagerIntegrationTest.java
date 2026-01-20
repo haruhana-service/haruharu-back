@@ -15,6 +15,8 @@ import org.kwakmunsu.haruhana.domain.member.MemberFixture;
 import org.kwakmunsu.haruhana.domain.member.entity.Member;
 import org.kwakmunsu.haruhana.domain.member.entity.MemberPreference;
 import org.kwakmunsu.haruhana.domain.member.enums.Role;
+import org.kwakmunsu.haruhana.domain.member.service.dto.request.UpdatePreference;
+import org.kwakmunsu.haruhana.domain.problem.enums.ProblemDifficulty;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 class MemberManagerIntegrationTest extends IntegrationTestSupport {
 
     final MemberManager memberManager;
+    final MemberReader memberReader;
     final PasswordEncoder passwordEncoder;
     final CategoryFactory categoryFactory;
     final EntityManager entityManager;
@@ -32,8 +35,8 @@ class MemberManagerIntegrationTest extends IntegrationTestSupport {
 
     @BeforeEach
     void setUpCategories() {
-            categoryFactory.deleteAll();
-            categoryFactory.saveAll();
+        categoryFactory.deleteAll();
+        categoryFactory.saveAll();
 
         categoryTopic = categoryTopicJpaRepository.findByName("Java")
                 .orElseThrow(() -> new RuntimeException("Java 토픽이 존재하지 않습니다"));
@@ -86,6 +89,94 @@ class MemberManagerIntegrationTest extends IntegrationTestSupport {
 
         assertThat(guest.getRole()).isEqualTo(Role.ROLE_MEMBER);
         assertThat(memberPreference.getCategoryTopic().getId()).isEqualTo(newPreference.categoryTopicId());
+    }
+
+    @Test
+    void 회원의_학습_정보를_변경한다() {
+        // given
+        var newProfile = MemberFixture.createNewProfile();
+        var member = memberManager.create(newProfile);
+        member.updateRoleToMember();
+
+        var newPreference = MemberFixture.createNewPreference(categoryTopic.getId());
+        var memberPreference = memberManager.registerPreference(member, newPreference);
+        entityManager.flush();
+
+        var oldMemberPreference = memberReader.getMemberPreference(member.getId());
+
+        assertThat(oldMemberPreference).isNotNull().extracting(
+                MemberPreference::getCategoryTopic,
+                MemberPreference::getDifficulty
+        ).containsExactly(
+                categoryTopic,
+                newPreference.difficulty()
+        );
+
+        var springCategory = categoryTopicJpaRepository.findByName("Spring")
+                .orElseThrow(() -> new RuntimeException("Java 토픽이 존재하지 않습니다"));
+
+        var updatePreference = new UpdatePreference(springCategory.getId(), ProblemDifficulty.HARD);
+
+        // when
+        memberManager.updatePreference(memberPreference, updatePreference);
+
+        // then
+        var newMemberPreference = memberReader.getMemberPreference(member.getId());
+        assertThat(newMemberPreference).isNotNull()
+                .extracting(
+                        MemberPreference::getCategoryTopic,
+                        MemberPreference::getDifficulty,
+                        MemberPreference::getEffectiveAt
+                )
+                .containsExactly(
+                        springCategory,
+                        updatePreference.difficulty(),
+                        LocalDate.now().plusDays(1)
+                );
+    }
+
+    @Test
+    void 같은_날짜에_학습_정보_변경_시_기존_엔티티를_업데이트한다() {
+        // given
+        var newProfile = MemberFixture.createNewProfile();
+        var member = memberManager.create(newProfile);
+        member.updateRoleToMember();
+        // 첫 등록
+        var newPreference = MemberFixture.createNewPreference(categoryTopic.getId());
+        var memberPreference = memberManager.registerPreference(member, newPreference);
+        entityManager.flush();
+
+        // 첫번쨰 업데이트
+        var springCategory = categoryTopicJpaRepository.findByName("Spring")
+                .orElseThrow(() -> new RuntimeException("Spring 토픽이 존재하지 않습니다"));
+        var updatePreference = new UpdatePreference(springCategory.getId(), ProblemDifficulty.HARD);
+        memberManager.updatePreference(memberPreference, updatePreference);
+
+        // 같은 날짜에 두번째 업데이트 준비
+        var newMemberPreference = memberReader.getMemberPreference(member.getId());
+        var mysqlCategory = categoryTopicJpaRepository.findByName("MySQL")
+                .orElseThrow(() -> new RuntimeException("MySQL 토픽이 존재하지 않습니다"));
+        var updateSecPreference = new UpdatePreference(mysqlCategory.getId(), ProblemDifficulty.EASY);
+
+        // when
+        memberManager.updatePreference(newMemberPreference, updateSecPreference);
+
+        // then
+        var sameIdPreference = memberReader.getMemberPreference(member.getId());
+
+        // 동일한 엔티티가 업데이트 되었는지 확인
+        assertThat(sameIdPreference.getId()).isEqualTo(newMemberPreference.getId());
+        assertThat(newMemberPreference).isNotNull()
+                .extracting(
+                        MemberPreference::getCategoryTopic,
+                        MemberPreference::getDifficulty,
+                        MemberPreference::getEffectiveAt
+                )
+                .containsExactly(
+                        mysqlCategory,
+                        updateSecPreference.difficulty(),
+                        LocalDate.now().plusDays(1)
+                );
     }
 
 }

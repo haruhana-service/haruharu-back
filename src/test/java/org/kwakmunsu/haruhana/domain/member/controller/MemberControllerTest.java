@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.ControllerTestSupport;
 import org.kwakmunsu.haruhana.domain.member.MemberFixture;
+import org.kwakmunsu.haruhana.domain.member.controller.dto.PreferenceUpdateRequest;
 import org.kwakmunsu.haruhana.domain.member.service.MemberProfileResponse;
 import org.kwakmunsu.haruhana.domain.problem.enums.ProblemDifficulty;
 import org.kwakmunsu.haruhana.security.annotation.TestGuest;
@@ -80,6 +81,21 @@ class MemberControllerTest extends ControllerTestSupport {
                 .hasPathSatisfying("$.data.nickname", v -> v.assertThat().isEqualTo(memberProfileResponse.nickname()))
                 .hasPathSatisfying("$.data.categoryTopicName", v -> v.assertThat().isEqualTo(memberProfileResponse.categoryTopicName()))
                 .hasPathSatisfying("$.data.difficulty", v -> v.assertThat().isEqualTo(memberProfileResponse.difficulty()));
+    }
+
+    @TestMember
+    @Test
+    void 회원_학습_정보를_변경한다() throws JsonProcessingException {
+        // given
+        var request = new PreferenceUpdateRequest(2L, ProblemDifficulty.MEDIUM);
+        String requestJson = objectMapper.writeValueAsString(request);
+
+        // when & then
+        assertThat(mvcTester.patch().uri("/v1/members/preferences")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .apply(print())
+                .hasStatus(HttpStatus.NO_CONTENT);
     }
 
 }

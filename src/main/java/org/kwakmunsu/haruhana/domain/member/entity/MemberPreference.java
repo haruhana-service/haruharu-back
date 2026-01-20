@@ -51,12 +51,18 @@ public class MemberPreference extends BaseEntity {
     // NOTE: 같은 날짜에 회원 설정 변경 시 기존 설정을 업데이트하는 방식으로 처리
     public void updatePreference(
             CategoryTopic categoryTopic,
-            ProblemDifficulty difficulty,
-            LocalDate effectiveAt
+            ProblemDifficulty difficulty
     ) {
         this.categoryTopic = categoryTopic;
         this.difficulty = difficulty;
-        this.effectiveAt = effectiveAt;
+    }
+
+    public boolean isEqualsPreference(Long categoryTopicId, ProblemDifficulty difficulty) {
+        return (this.categoryTopic.getId().equals(categoryTopicId) && this.difficulty == difficulty);
+    }
+
+    public boolean isEffectiveToday() {
+        return this.effectiveAt.isEqual(LocalDate.now().plusDays(1));
     }
 
 }
