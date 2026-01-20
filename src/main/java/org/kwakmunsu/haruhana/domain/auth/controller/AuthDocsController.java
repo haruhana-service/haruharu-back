@@ -2,7 +2,6 @@ package org.kwakmunsu.haruhana.domain.auth.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import org.kwakmunsu.haruhana.domain.auth.controller.dto.LoginRequest;
 import org.kwakmunsu.haruhana.domain.auth.controller.dto.TokenReissueRequest;
 import org.kwakmunsu.haruhana.global.annotation.LoginMember;
@@ -11,8 +10,6 @@ import org.kwakmunsu.haruhana.global.support.error.ErrorType;
 import org.kwakmunsu.haruhana.global.support.response.ApiResponse;
 import org.kwakmunsu.haruhana.global.swagger.ApiExceptions;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Tag(name = "Auth", description = "Auth 관련 API 문서")
 public abstract class AuthDocsController {
