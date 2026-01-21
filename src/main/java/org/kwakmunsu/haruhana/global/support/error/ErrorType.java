@@ -38,6 +38,14 @@ public enum ErrorType {
     NOT_FOUND_CATEGORY_GROUP (HttpStatus.NOT_FOUND, "카테고리 그룹을 찾을 수 없습니다.", LogLevel.INFO),
     NOT_FOUND_CATEGORY_TOPIC (HttpStatus.NOT_FOUND, "카테고리 주제를 찾을 수 없습니다.", LogLevel.INFO),
 
+    // NOTIFICATION
+    NOT_FOUND_NOTIFICATION (HttpStatus.NOT_FOUND, "알림을 찾을 수 없습니다.", LogLevel.INFO),
+    FCM_SEND_ERROR         (HttpStatus.INTERNAL_SERVER_ERROR, "FCM 알림 발송에 실패했습니다.", LogLevel.ERROR),
+
+    // FIREBASE
+    FIREBASE_INIT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Firebase 초기화에 실패했습니다.", LogLevel.ERROR),
+    FIREBASE_AUTH_ERROR          (HttpStatus.UNAUTHORIZED, "Firebase 인증에 실패했습니다.", LogLevel.WARN),
+
     // JWT
     EMPTY_TOKEN                        (HttpStatus.UNAUTHORIZED, "JWT 토큰이 존재하지 않습니다.", LogLevel.WARN),
     INVALID_TOKEN                      (HttpStatus.UNAUTHORIZED, "유효하지 않은 JWT 토큰입니다.", LogLevel.WARN),

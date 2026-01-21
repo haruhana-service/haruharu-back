@@ -34,7 +34,7 @@ public class FirebaseConfig {
             }
         } catch (IOException e) {
             log.error("[FirebaseConfig] Firebase 초기화 실패.", e);
-            throw new HaruHanaException(ErrorType.FiREBASE_INITALIZATION_ERROR);
+            throw new HaruHanaException(ErrorType.FIREBASE_INIT_ERROR);
         }
     }
 

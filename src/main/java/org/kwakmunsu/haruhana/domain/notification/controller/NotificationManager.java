@@ -1,30 +1,32 @@
-package org.kwakmunsu.haruhana.domain.notification.service;
+package org.kwakmunsu.haruhana.domain.notification.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kwakmunsu.haruhana.domain.member.entity.Member;
 import org.kwakmunsu.haruhana.domain.member.service.MemberReader;
-import org.kwakmunsu.haruhana.domain.notification.controller.NotificationManager;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
-@Service
-public class NotificationService {
+@Component
+public class NotificationManager {
 
-    private final NotificationManager notificationManager;
     private final MemberReader memberReader;
 
     @Transactional
     public void registerFcmToken(Long memberId, String fcmToken) {
-        notificationManager.registerFcmToken(memberId, fcmToken);
+        Member member = memberReader.find(memberId);
+        member.updateFcmToken(fcmToken);
+
+        log.info("[NotificationService] FCM 토큰 등록 완료. memberId: {}", memberId);
     }
 
     @Transactional
     public void deleteFcmToken(Long memberId) {
         Member member = memberReader.find(memberId);
         member.clearFcmToken();
+
         log.info("[NotificationService] FCM 토큰 삭제 완료. memberId: {}", memberId);
     }
 
