@@ -27,33 +27,24 @@ public class MemberManager {
     private final CategoryReader categoryReader;
     private final PasswordEncoder passwordEncoder;
 
-    // NOTE: 온본딩 이후 GUEST -> MEMBER로 전환
     public Member create(NewProfile newProfile) {
         return memberJpaRepository.save(Member.createMember(
                 newProfile.loginId(),
                 passwordEncoder.encode(newProfile.password()),
                 newProfile.nickname(),
-                Role.ROLE_GUEST
+                Role.ROLE_MEMBER
         ));
     }
 
-    /**
-     * GUEST 회원의 학습 정보를 등록합니다. 이 메서드는 GUEST 권한으로 최초 1회만 호출 가능하며, 등록 후 자동으로 MEMBER로 승급됩니다. 따라서 중복 등록은 발생하지 않습니다.
-     */
-    public MemberPreference registerPreference(Member guest, NewPreference newPreference) {
+    public MemberPreference registerPreference(Member member, NewPreference newPreference) {
         CategoryTopic categoryTopic = categoryReader.findCategoryTopic(newPreference.categoryTopicId());
 
-        MemberPreference memberPreference = memberPreferenceJpaRepository.save(MemberPreference.create(
-                guest,
+        return memberPreferenceJpaRepository.save(MemberPreference.create(
+                member,
                 categoryTopic,
                 newPreference.difficulty(),
                 LocalDate.now() // 첫 등록은 등록 날짜로 고정
         ));
-
-        // 학습 정보 등록 후 GUEST -> MEMBER로 변경
-        guest.updateRoleToMember();
-
-        return memberPreference;
     }
 
     @Transactional

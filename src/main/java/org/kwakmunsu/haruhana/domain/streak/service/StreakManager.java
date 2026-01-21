@@ -34,8 +34,7 @@ public class StreakManager {
         streak.reset();
     }
 
-    // 첫 회원 가입 시 사용되는 메서드.
-    // 스트릭 생성 혹시 생성되었다면 아무런 일도 하지 않음
+    // 회원 가입 시 사용되는 메서드.
     public void create(Member guest) {
         if (streakJpaRepository.existsByMemberIdAndStatus(guest.getId(), EntityStatus.ACTIVE)) {
             log.info("[StreakManager] 이미 스트릭이 존재하여 생성하지 않음 - memberId: {}", guest.getId());

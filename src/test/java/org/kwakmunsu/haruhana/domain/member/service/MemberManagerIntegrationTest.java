@@ -60,7 +60,7 @@ class MemberManagerIntegrationTest extends IntegrationTestSupport {
                 .containsExactly(
                         newProfile.loginId(),
                         newProfile.nickname(),
-                        Role.ROLE_GUEST
+                        Role.ROLE_MEMBER
                 );
         assertThat(passwordEncoder.matches(newProfile.password(), member.getPassword())).isTrue();
     }
