@@ -34,6 +34,8 @@ public class Member extends BaseEntity {
 
     private String refreshToken;
 
+    private String fcmToken;
+
     public static Member createMember(String loginId, String password, String nickname, Role role) {
         Member member = new Member();
 
@@ -69,6 +71,14 @@ public class Member extends BaseEntity {
 
     public boolean isGuest() {
         return role == Role.ROLE_GUEST;
+    }
+
+    public void updateFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
+
+    public void clearFcmToken() {
+        this.fcmToken = null;
     }
 
 }
