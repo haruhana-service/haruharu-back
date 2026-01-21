@@ -23,16 +23,6 @@ public class MemberService {
     private final ProblemGenerator problemGenerator;
     private final StreakManager streakManager;
 
-    public Long createMember(NewProfile newProfile) {
-        memberValidator.validateNew(newProfile);
-
-        Member member = memberManager.create(newProfile);
-
-        log.info("[MemberService] 회원 생성 :{}", member.getId());
-
-        return member.getId();
-    }
-
     @Transactional
     public Long createMember(NewProfile newProfile, NewPreference newPreference) {
         memberValidator.validateNew(newProfile);
