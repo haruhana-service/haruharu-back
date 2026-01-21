@@ -27,7 +27,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtFilter extends OncePerRequestFilter {
 
     private static final List<String> EXCLUDE_PATHS = List.of(
-            "/", "/health", "/error", "/v1/auth/**", "/test/**","/v1/members/sign-up",
+            "/", "/health", "/error", "/v1/auth/**", "/test/**","/v1/members/sign-up", "/v1/categories",
             "/swagger/**", "/swagger-ui/**", "/v3/api-docs/**"
     );
     private static final AntPathMatcher PATH_MATCHER = new AntPathMatcher();
