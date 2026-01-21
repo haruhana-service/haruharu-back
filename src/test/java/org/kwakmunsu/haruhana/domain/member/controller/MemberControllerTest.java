@@ -25,7 +25,7 @@ class MemberControllerTest extends ControllerTestSupport {
         var request = MemberFixture.createMemberCreateRequest();
         var jsonRequest = objectMapper.writeValueAsString(request);
 
-        given(memberService.createMember(any())).willReturn(1L);
+        given(memberService.createMember(any(), any())).willReturn(1L);
 
         // when & then
         assertThat(mvcTester.post().uri("/v1/members/sign-up")

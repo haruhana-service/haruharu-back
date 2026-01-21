@@ -25,7 +25,7 @@ public class MemberController extends MemberDocsController {
     @Override
     @PostMapping("/v1/members/sign-up")
     public ResponseEntity<ApiResponse<Long>> create(@RequestBody @Valid MemberCreateRequest request) {
-        Long memberId = memberService.createMember(request.toNewProfile());
+        Long memberId = memberService.createMember(request.toNewProfile(), request.toNewPreference());
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
