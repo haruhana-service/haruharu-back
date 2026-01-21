@@ -198,6 +198,7 @@ gradle-app.setting
 !.github/workflows/pull-request.yml
 *.iml
 
+firebase.json
 .env
 
 firebase.json
