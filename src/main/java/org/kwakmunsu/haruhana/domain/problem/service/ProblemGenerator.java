@@ -20,7 +20,9 @@ import org.kwakmunsu.haruhana.domain.problem.service.dto.ProblemGenerationGroup;
 import org.kwakmunsu.haruhana.domain.problem.service.dto.ProblemGenerationKey;
 import org.kwakmunsu.haruhana.domain.problem.service.dto.ProblemResponse;
 import org.kwakmunsu.haruhana.infrastructure.gemini.ChatService;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -70,6 +72,8 @@ public class ProblemGenerator {
      * @param difficulty 난이도
      *
      * */
+    @Async
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void generateInitialProblem(Member member, CategoryTopic categoryTopic, ProblemDifficulty difficulty) {
         try {
             ProblemResponse problemResponse = getProblemToAi(categoryTopic.getName(), difficulty);

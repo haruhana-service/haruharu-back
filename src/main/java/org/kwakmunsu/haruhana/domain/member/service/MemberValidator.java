@@ -1,7 +1,6 @@
 package org.kwakmunsu.haruhana.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
-import org.kwakmunsu.haruhana.domain.member.entity.Member;
 import org.kwakmunsu.haruhana.domain.member.repository.MemberJpaRepository;
 import org.kwakmunsu.haruhana.domain.member.service.dto.request.NewProfile;
 import org.kwakmunsu.haruhana.global.entity.EntityStatus;
@@ -25,10 +24,4 @@ public class MemberValidator {
         }
     }
 
-    public void validateGuest(Member guest) {
-        if (guest.isGuest()) {
-            return;
-        }
-        throw new HaruHanaException(ErrorType.FORBIDDEN_ERROR);
-    }
 }

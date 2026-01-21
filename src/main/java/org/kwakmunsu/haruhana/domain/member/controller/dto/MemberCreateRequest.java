@@ -2,10 +2,13 @@ package org.kwakmunsu.haruhana.domain.member.controller.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
+import org.kwakmunsu.haruhana.domain.member.service.dto.request.NewPreference;
 import org.kwakmunsu.haruhana.domain.member.service.dto.request.NewProfile;
+import org.kwakmunsu.haruhana.domain.problem.enums.ProblemDifficulty;
 
 @Schema(description = "회원 생성 요청 DTO")
 @Builder
@@ -27,7 +30,15 @@ public record MemberCreateRequest(
         @Schema(description = "닉네임", example = "HappyUser")
         @Size(max = 50, message = "닉네임은 최대 50자까지 가능합니다.")
         @NotBlank(message = "닉네임은 필수입니다.")
-        String nickname
+        String nickname,
+
+        @Schema(description = "카테고리 ID", example = "1")
+        @NotNull(message = "카테고리는 필수입니다.")
+        Long categoryTopicId,
+
+        @Schema(description = "문제 난이도", example = "EASY")
+        @NotNull(message = "난이도는 필수입니다.")
+        ProblemDifficulty difficulty
 ) {
 
     public NewProfile toNewProfile() {
@@ -35,6 +46,13 @@ public record MemberCreateRequest(
                 .loginId(loginId)
                 .password(password)
                 .nickname(nickname)
+                .build();
+    }
+
+    public NewPreference toNewPreference() {
+        return NewPreference.builder()
+                .categoryTopicId(categoryTopicId)
+                .difficulty(difficulty)
                 .build();
     }
 

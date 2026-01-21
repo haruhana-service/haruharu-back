@@ -3,7 +3,6 @@ package org.kwakmunsu.haruhana.domain.member.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.MemberCreateRequest;
-import org.kwakmunsu.haruhana.domain.member.controller.dto.PreferenceRegisterRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.PreferenceUpdateRequest;
 import org.kwakmunsu.haruhana.domain.member.service.MemberProfileResponse;
 import org.kwakmunsu.haruhana.domain.member.service.MemberService;
@@ -31,17 +30,6 @@ public class MemberController extends MemberDocsController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.success(memberId));
-    }
-
-    @Override
-    @PostMapping("/v1/members/preferences")
-    public ResponseEntity<ApiResponse<?>> registerPreference(
-            @RequestBody @Valid PreferenceRegisterRequest request,
-            @LoginMember Long memberId
-    ) {
-        memberService.registerPreference(request.toNewPreference(), memberId);
-
-        return ResponseEntity.ok(ApiResponse.success());
     }
 
     @Override

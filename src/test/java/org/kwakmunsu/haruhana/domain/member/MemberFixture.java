@@ -17,12 +17,15 @@ public final class MemberFixture {
     public static final String LOGIN_ID = "testLoginId";
     public static final String NICKNAME = "testNickname";
     public static final String PASSWORD = "testPassword1234!";
+    public static final Long CATEGORY_ID = 1L;
 
     public static MemberCreateRequest createMemberCreateRequest() {
         return new MemberCreateRequest(
                 LOGIN_ID,
                 PASSWORD,
-                NICKNAME
+                NICKNAME,
+                CATEGORY_ID,
+                ProblemDifficulty.MEDIUM
         );
     }
 
