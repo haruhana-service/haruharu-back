@@ -73,12 +73,4 @@ public class Member extends BaseEntity {
         return role == Role.ROLE_GUEST;
     }
 
-    public void updateFcmToken(String fcmToken) {
-        this.fcmToken = fcmToken;
-    }
-
-    public void clearFcmToken() {
-        this.fcmToken = null;
-    }
-
 }
