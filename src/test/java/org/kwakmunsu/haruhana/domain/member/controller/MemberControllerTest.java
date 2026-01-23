@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.ControllerTestSupport;
 import org.kwakmunsu.haruhana.domain.member.MemberFixture;
+import org.kwakmunsu.haruhana.domain.member.controller.dto.DeviceTokenSyncRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.PreferenceUpdateRequest;
 import org.kwakmunsu.haruhana.domain.member.service.MemberProfileResponse;
 import org.kwakmunsu.haruhana.domain.problem.enums.ProblemDifficulty;
@@ -76,6 +77,22 @@ class MemberControllerTest extends ControllerTestSupport {
                 .content(requestJson))
                 .apply(print())
                 .hasStatus(HttpStatus.NO_CONTENT);
+    }
+
+    @TestMember
+    @Test
+    void 디바이스_토큰을_저장한다() throws JsonProcessingException {
+        // given
+        var request = new DeviceTokenSyncRequest("device-token-1234");
+        String requestJson = objectMapper.writeValueAsString(request);
+
+        // when & then
+        assertThat(mvcTester.patch().uri("/v1/members/devices")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .apply(print())
+                .hasStatusOk();
+
     }
 
 }

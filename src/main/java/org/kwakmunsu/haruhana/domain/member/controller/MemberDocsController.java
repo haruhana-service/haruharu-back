@@ -10,6 +10,7 @@ import static org.kwakmunsu.haruhana.global.support.error.ErrorType.UNAUTHORIZED
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.kwakmunsu.haruhana.domain.member.controller.dto.DeviceTokenSyncRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.MemberCreateRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.PreferenceUpdateRequest;
 import org.kwakmunsu.haruhana.domain.member.service.MemberProfileResponse;
@@ -71,5 +72,25 @@ public abstract class MemberDocsController {
             DEFAULT_ERROR
     })
     public abstract ResponseEntity<ApiResponse<MemberProfileResponse>> getProfile(Long memberId);
+
+    @Operation(
+            summary = "디바이스 토큰 동기화 - JWT [O]",
+            description = """
+                    ### 디바이스 토큰을 동기화합니다.
+                    - 사용자가 사용하는 디바이스의 FCM 토큰을 서버에 동기화합니다.
+                    - 로그인 시 또는 디바이스 변경 시 호출됩니다.
+                    - 성공 시 빈 응답을 반환합니다.
+                    """
+    )
+    @ApiExceptions(values = {
+            BAD_REQUEST,
+            UNAUTHORIZED_ERROR,
+            NOT_FOUND_MEMBER,
+            DEFAULT_ERROR
+    })
+    public abstract ResponseEntity<Void> syncDevices(
+            DeviceTokenSyncRequest request,
+            Long memberId
+    ) ;
 
 }
