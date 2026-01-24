@@ -38,4 +38,11 @@ public class MemberDeviceManager {
         log.info("[MemberDeviceManager] new 디바이스 토큰 등록 memberId: {}", memberId);
     }
 
+
+    @Transactional
+    public void deleteAllByMemberId(Long memberId) {
+        // 디바이스 토크은 Hard Delete 처리
+        memberDeviceJpaRepository.deleteAllByMemberId(memberId);
+    }
+
 }

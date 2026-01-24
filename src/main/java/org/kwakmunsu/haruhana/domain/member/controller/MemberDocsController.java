@@ -91,6 +91,22 @@ public abstract class MemberDocsController {
     public abstract ResponseEntity<Void> syncDevices(
             DeviceTokenSyncRequest request,
             Long memberId
-    ) ;
+    );
+
+    @Operation(
+            summary = "디바이스 토큰 삭제 - JWT [O]",
+            description = """
+                    ### 디바이스 토큰을 삭제합니다.
+                    - 사용자가 로그아웃하거나 더 이상 푸시 알림을 받지 않으려는 경우 호출됩니다.
+                    - 성공 시 빈 응답을 반환합니다.
+                    """
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "204", description = "디바이스 토큰 삭제 성공")
+    @ApiExceptions(values = {
+            UNAUTHORIZED_ERROR,
+            NOT_FOUND_MEMBER,
+            DEFAULT_ERROR
+    })
+    public abstract ResponseEntity<Void> deleteDevices(Long memberId);
 
 }

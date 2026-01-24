@@ -74,4 +74,13 @@ public class MemberService {
         memberDeviceManager.syncDeviceToken(memberId, deviceToken, LocalDateTime.now());
     }
 
+    /**
+     * 회원 디바이스 토큰 삭제
+     * @param memberId 회원 식별자
+     * - hard delete 처리
+     * */
+    public void deleteDeviceTokens(Long memberId) {
+        memberDeviceManager.deleteAllByMemberId(memberId);
+    }
+
 }
