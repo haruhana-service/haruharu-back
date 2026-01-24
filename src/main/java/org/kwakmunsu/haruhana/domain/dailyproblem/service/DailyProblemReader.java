@@ -43,14 +43,8 @@ public class DailyProblemReader {
         );
     }
 
-    // NOTE: 여기서 memberId를 반환하는 게 맞을까 아니면 DAILYPROBLEM을 반환하는 게 맞을까?
     public List<Long> findUnsolvedMember(LocalDate targetDate) {
-        List<DailyProblem> unsolvedDailyProblems = dailyProblemJpaRepository.findUnsolvedDailyProblems(targetDate);
-
-        return unsolvedDailyProblems.stream()
-                .map(DailyProblem::getMember)
-                .map(Member::getId)
-                .toList();
+        return dailyProblemJpaRepository.findUnsolvedMemberIds(targetDate, EntityStatus.ACTIVE);
     }
 
 }

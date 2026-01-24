@@ -44,12 +44,15 @@ public interface DailyProblemJpaRepository extends JpaRepository<DailyProblem, L
     );
 
     @Query("""
-            SELECT dp
+            SELECT dp.member.id
             FROM DailyProblem dp
             WHERE dp.assignedAt = :targetDate
               AND dp.isSolved = false
-              AND dp.status = 'ACTIVE'
+              AND dp.status = :status
             """)
-    List<DailyProblem> findUnsolvedDailyProblems(@Param("targetDate") LocalDate targetDate);
+    List<Long> findUnsolvedMemberIds(
+            @Param("targetDate") LocalDate targetDate,
+            @Param("status") EntityStatus status
+    );
 
 }
