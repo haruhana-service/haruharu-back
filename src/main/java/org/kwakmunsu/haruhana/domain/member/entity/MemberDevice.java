@@ -25,7 +25,7 @@ import org.kwakmunsu.haruhana.global.entity.BaseEntity;
 public class MemberDevice extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false)
+    @JoinColumn(nullable = false, unique = true) // 현재는 회원 당 하나의 디바이스 토큰만 허용
     private Member member;
 
     @Column(nullable = false, length = 512)
