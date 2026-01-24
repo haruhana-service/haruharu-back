@@ -24,6 +24,9 @@ import org.springframework.web.cors.CorsConfiguration;
 @Configuration
 public class SecurityConfig {
 
+    private static final List<String> ALLOWED_ORIGINS = List.of("http://localhost:3000", "https://haruharu.vercel.app");
+    private static final List<String> ALLOWED_METHODS = List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS");
+
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtProvider jwtProvider;
@@ -38,6 +41,7 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/**")
@@ -56,12 +60,11 @@ public class SecurityConfig {
                 .cors(
                         corsCustomizer -> corsCustomizer.configurationSource(request -> {
                             CorsConfiguration config = new CorsConfiguration();
-                            config.setAllowedOrigins(List.of("http://localhost:3000", "https://api.kwaktaepung.shop"));
-                            config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE"));
+                            config.setAllowedOrigins(ALLOWED_ORIGINS);
+                            config.setAllowedMethods(ALLOWED_METHODS);
                             config.setAllowedHeaders(List.of("*"));
                             config.setAllowCredentials(true);
                             config.setMaxAge(3600L); // 1 hour
-                            config.setExposedHeaders(List.of("Authorization"));
 
                             return config;
                         })
