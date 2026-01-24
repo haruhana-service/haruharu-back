@@ -67,6 +67,9 @@ dependencies {
     // FCM
     implementation 'com.google.firebase:firebase-admin:9.7.0'
 
+    // S3
+    implementation 'software.amazon.awssdk:s3:2.20.28'
+
 }
 
 tasks.named('test') {
