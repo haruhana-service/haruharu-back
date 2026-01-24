@@ -27,6 +27,9 @@ public enum ErrorType {
     DUPLICATE_LOGIN_ID                       (HttpStatus.CONFLICT, "이미 사용 중인 로그인 아이디입니다.", LogLevel.INFO),
     DUPLICATE_NICKNAME                       (HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다.", LogLevel.INFO),
 
+    // MEMBER DEVICE
+    NOT_FOUND_MEMBER_DEVICE                  (HttpStatus.NOT_FOUND, "회원 디바이스 정보를 찾을 수 없습니다.", LogLevel.INFO),
+
     // STREAK
     NOT_FOUND_STREAK                         (HttpStatus.NOT_FOUND, "스트릭 정보를 찾을 수 없습니다.", LogLevel.INFO),
 
@@ -37,6 +40,14 @@ public enum ErrorType {
     NOT_FOUND_CATEGORY       (HttpStatus.NOT_FOUND, "카테고리를 찾을 수 없습니다.", LogLevel.INFO),
     NOT_FOUND_CATEGORY_GROUP (HttpStatus.NOT_FOUND, "카테고리 그룹을 찾을 수 없습니다.", LogLevel.INFO),
     NOT_FOUND_CATEGORY_TOPIC (HttpStatus.NOT_FOUND, "카테고리 주제를 찾을 수 없습니다.", LogLevel.INFO),
+
+    // NOTIFICATION
+    NOT_FOUND_NOTIFICATION (HttpStatus.NOT_FOUND, "알림을 찾을 수 없습니다.", LogLevel.INFO),
+    FCM_SEND_ERROR         (HttpStatus.INTERNAL_SERVER_ERROR, "FCM 알림 발송에 실패했습니다.", LogLevel.ERROR),
+
+    // FIREBASE
+    FIREBASE_INIT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Firebase 초기화에 실패했습니다.", LogLevel.ERROR),
+    FIREBASE_AUTH_ERROR          (HttpStatus.UNAUTHORIZED, "Firebase 인증에 실패했습니다.", LogLevel.WARN),
 
     // JWT
     EMPTY_TOKEN                        (HttpStatus.UNAUTHORIZED, "JWT 토큰이 존재하지 않습니다.", LogLevel.WARN),

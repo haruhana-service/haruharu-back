@@ -198,7 +198,5 @@ gradle-app.setting
 !.github/workflows/pull-request.yml
 *.iml
 
-.env
-
 firebase.json
-# End *of https://www.toptal.com/developers/gitignore/api/intellij+all,java,gradle,macos,git
+.env

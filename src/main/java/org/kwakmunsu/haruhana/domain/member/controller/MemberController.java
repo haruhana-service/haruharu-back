@@ -2,6 +2,7 @@ package org.kwakmunsu.haruhana.domain.member.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.kwakmunsu.haruhana.domain.member.controller.dto.DeviceTokenSyncRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.MemberCreateRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.PreferenceUpdateRequest;
 import org.kwakmunsu.haruhana.domain.member.service.MemberProfileResponse;
@@ -49,6 +50,16 @@ public class MemberController extends MemberDocsController {
         MemberProfileResponse response = memberService.getProfile(memberId);
 
         return  ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @PatchMapping("/v1/members/devices")
+    public ResponseEntity<Void> syncDevices(
+            @RequestBody @Valid DeviceTokenSyncRequest request,
+            @LoginMember Long memberId
+    ) {
+        memberService.syncDeviceTokens(memberId, request.deviceToken());
+
+        return ResponseEntity.ok().build();
     }
 
 }

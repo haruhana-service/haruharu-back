@@ -1,6 +1,7 @@
 package org.kwakmunsu.haruhana.domain.dailyproblem.service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.kwakmunsu.haruhana.domain.dailyproblem.entity.DailyProblem;
@@ -39,6 +40,10 @@ public class DailyProblemReader {
                 assignedAt,
                 EntityStatus.ACTIVE
         );
+    }
+
+    public List<Long> findUnsolvedMember(LocalDate targetDate) {
+        return dailyProblemJpaRepository.findUnsolvedMemberIds(targetDate, EntityStatus.ACTIVE);
     }
 
 }

@@ -1,5 +1,6 @@
 package org.kwakmunsu.haruhana.domain.member.service;
 
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kwakmunsu.haruhana.domain.member.entity.Member;
@@ -22,6 +23,7 @@ public class MemberService {
     private final MemberValidator memberValidator;
     private final ProblemGenerator problemGenerator;
     private final StreakManager streakManager;
+    private final MemberDeviceManager memberDeviceManager;
 
     @Transactional
     public Long createMember(NewProfile newProfile, NewPreference newPreference) {
@@ -60,6 +62,16 @@ public class MemberService {
         }
 
         memberManager.updatePreference(memberPreference, updatePreference);
+    }
+
+    /**
+    * 회원 디바이스 토큰 동기화
+    * @param memberId 회원 식별자
+    * @param deviceToken 디바이스 토큰
+    *
+    **/
+    public void syncDeviceTokens(Long memberId, String deviceToken) {
+        memberDeviceManager.syncDeviceToken(memberId, deviceToken, LocalDateTime.now());
     }
 
 }
