@@ -34,8 +34,6 @@ public class Member extends BaseEntity {
 
     private String refreshToken;
 
-    private String fcmToken;
-
     public static Member createMember(String loginId, String password, String nickname, Role role) {
         Member member = new Member();
 
