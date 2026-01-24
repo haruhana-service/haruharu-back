@@ -28,7 +28,7 @@ public class MemberDevice extends BaseEntity {
     @JoinColumn(nullable = false)
     private Member member;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false, length = 512)
     private String deviceToken;
 
     @Column(nullable = false)
