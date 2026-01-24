@@ -20,7 +20,6 @@ class MemberDeviceManagerIntegrationTest extends IntegrationTestSupport {
     static final String DEVICE_TOKEN = "device-token-123";
 
     final MemberDeviceManager memberDeviceManager;
-    final MemberReader memberReader;
     final MemberJpaRepository memberJpaRepository;
     final MemberDeviceJpaRepository memberDeviceJpaRepository;
 
