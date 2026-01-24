@@ -27,6 +27,9 @@ public enum ErrorType {
     DUPLICATE_LOGIN_ID                       (HttpStatus.CONFLICT, "이미 사용 중인 로그인 아이디입니다.", LogLevel.INFO),
     DUPLICATE_NICKNAME                       (HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다.", LogLevel.INFO),
 
+    // MEMBER DEVICE
+    NOT_FOUND_MEMBER_DEVICE                  (HttpStatus.NOT_FOUND, "회원 디바이스 정보를 찾을 수 없습니다.", LogLevel.INFO),
+
     // STREAK
     NOT_FOUND_STREAK                         (HttpStatus.NOT_FOUND, "스트릭 정보를 찾을 수 없습니다.", LogLevel.INFO),
 

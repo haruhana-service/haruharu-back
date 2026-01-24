@@ -8,5 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface MemberDeviceJpaRepository extends JpaRepository<MemberDevice, Long> {
 
     Optional<MemberDevice> findByMemberIdAndDeviceTokenAndStatus(Long memberId, String deviceToken, EntityStatus status);
+    Optional<MemberDevice> findByMemberIdAndStatus(Long memberId, EntityStatus status);
 
 }

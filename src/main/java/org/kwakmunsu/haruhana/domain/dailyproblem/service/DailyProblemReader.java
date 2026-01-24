@@ -1,10 +1,12 @@
 package org.kwakmunsu.haruhana.domain.dailyproblem.service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.kwakmunsu.haruhana.domain.dailyproblem.entity.DailyProblem;
 import org.kwakmunsu.haruhana.domain.dailyproblem.repository.DailyProblemJpaRepository;
+import org.kwakmunsu.haruhana.domain.member.entity.Member;
 import org.kwakmunsu.haruhana.global.entity.EntityStatus;
 import org.kwakmunsu.haruhana.global.support.error.ErrorType;
 import org.kwakmunsu.haruhana.global.support.error.HaruHanaException;
@@ -39,6 +41,16 @@ public class DailyProblemReader {
                 assignedAt,
                 EntityStatus.ACTIVE
         );
+    }
+
+    // NOTE: 여기서 memberId를 반환하는 게 맞을까 아니면 DAILYPROBLEM을 반환하는 게 맞을까?
+    public List<Long> findUnsolvedMember(LocalDate targetDate) {
+        List<DailyProblem> unsolvedDailyProblems = dailyProblemJpaRepository.findUnsolvedDailyProblems(targetDate);
+
+        return unsolvedDailyProblems.stream()
+                .map(DailyProblem::getMember)
+                .map(Member::getId)
+                .toList();
     }
 
 }
