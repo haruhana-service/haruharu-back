@@ -41,7 +41,8 @@ class MemberDeviceManagerIntegrationTest extends IntegrationTestSupport {
                 EntityStatus.ACTIVE
         ).orElseThrow();
 
-        assertThat(memberDevice).isNotNull();
+        assertThat(memberDevice.getMember()).isEqualTo(member);
+        assertThat(memberDevice.getDeviceToken()).isEqualTo(DEVICE_TOKEN);
     }
 
     @Test
@@ -65,6 +66,7 @@ class MemberDeviceManagerIntegrationTest extends IntegrationTestSupport {
         ).orElseThrow();
 
         assertThat(memberDevice.getLastSyncedAt()).isEqualTo(now);
+
     }
 
 }
