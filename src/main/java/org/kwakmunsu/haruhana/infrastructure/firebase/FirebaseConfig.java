@@ -20,10 +20,10 @@ public class FirebaseConfig {
 
     @PostConstruct
     public void initialize() {
-        try {
-            if (FirebaseApp.getApps().isEmpty()) {
-                ClassPathResource resource = new ClassPathResource("firebase.json");
-                InputStream serviceAccount = resource.getInputStream();
+        if (FirebaseApp.getApps().isEmpty()) {
+            ClassPathResource resource = new ClassPathResource("firebase.json");
+
+            try (InputStream serviceAccount = resource.getInputStream()) {
 
                 FirebaseOptions options = FirebaseOptions.builder()
                         .setCredentials(GoogleCredentials.fromStream(serviceAccount))
@@ -31,10 +31,11 @@ public class FirebaseConfig {
 
                 FirebaseApp.initializeApp(options);
                 log.info("[FirebaseConfig] Firebase 초기화 완료");
+
+            } catch (IOException e) {
+                log.error("[FirebaseConfig] Firebase 초기화 실패.", e);
+                throw new HaruHanaException(ErrorType.FIREBASE_INIT_ERROR);
             }
-        } catch (IOException e) {
-            log.error("[FirebaseConfig] Firebase 초기화 실패.", e);
-            throw new HaruHanaException(ErrorType.FIREBASE_INIT_ERROR);
         }
     }
 
