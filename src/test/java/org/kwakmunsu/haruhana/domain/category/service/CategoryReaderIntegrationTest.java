@@ -1,14 +1,10 @@
 package org.kwakmunsu.haruhana.domain.category.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.IntegrationTestSupport;
 import org.kwakmunsu.haruhana.domain.category.service.dto.response.CategoryListResponse;
-import org.kwakmunsu.haruhana.domain.category.service.dto.response.CategoryResponse;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestConstructor;
