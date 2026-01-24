@@ -46,14 +46,13 @@ public abstract class MemberDocsController {
                     - 변경 사항은 다음 날부터 적용됩니다.
                     """
     )
-    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "204", description = "학습 정보 수정 성공")
     @ApiExceptions(values = {
             BAD_REQUEST,
             NOT_FOUND_MEMBER,
             NOT_FOUND_CATEGORY,
             DEFAULT_ERROR
     })
-    public abstract ResponseEntity<Void> updatePreference(
+    public abstract ResponseEntity<ApiResponse<?>> updatePreference(
             PreferenceUpdateRequest request,
             Long memberId
     );
@@ -88,7 +87,7 @@ public abstract class MemberDocsController {
             NOT_FOUND_MEMBER,
             DEFAULT_ERROR
     })
-    public abstract ResponseEntity<Void> syncDevices(
+    public abstract ResponseEntity<ApiResponse<?>> syncDevices(
             DeviceTokenSyncRequest request,
             Long memberId
     ) ;
