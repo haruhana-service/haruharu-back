@@ -11,6 +11,7 @@ import org.kwakmunsu.haruhana.global.annotation.LoginMember;
 import org.kwakmunsu.haruhana.global.support.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -61,6 +62,14 @@ public class MemberController extends MemberDocsController {
         memberService.syncDeviceTokens(memberId, request.deviceToken());
 
         return ResponseEntity.ok(ApiResponse.success());
+    }
+
+    @Override
+    @DeleteMapping("/v1/members/devices")
+    public ResponseEntity<Void> deleteDevices(@LoginMember Long memberId) {
+        memberService.deleteDeviceTokens(memberId);
+
+        return ResponseEntity.noContent().build();
     }
 
 }
