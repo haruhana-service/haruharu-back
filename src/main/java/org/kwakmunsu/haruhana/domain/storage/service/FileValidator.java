@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class FileValidator {
 
-    private static final List<String> IMAGE_EXTENSIONS = List.of("jpg", "jpeg", "png", "webp", "heic");
+    private static final List<String> IMAGE_EXTENSIONS = List.of("jpg", "jpeg", "png", "webp", "heic", "gif");
 
     public void validateFile(String fileName) {
         String extension = getFileExtension(fileName);

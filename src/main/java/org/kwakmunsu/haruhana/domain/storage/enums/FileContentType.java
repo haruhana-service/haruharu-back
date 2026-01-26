@@ -9,8 +9,8 @@ import lombok.RequiredArgsConstructor;
 public enum FileContentType {
 
     // 이미지
-    JPEG ("jpg", "image/jpeg", FileCategory.IMAGE),
-    JPG  ("jpeg", "image/jpeg", FileCategory.IMAGE),
+    JPEG ("jpeg", "image/jpeg", FileCategory.IMAGE),
+    JPG  ("jpg", "image/jpg", FileCategory.IMAGE),
     PNG  ("png", "image/png", FileCategory.IMAGE),
     GIF  ("gif", "image/gif", FileCategory.IMAGE),
     WEBP ("webp", "image/webp", FileCategory.IMAGE),
