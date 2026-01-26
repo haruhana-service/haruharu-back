@@ -164,7 +164,7 @@ class MemberServiceIntegrationTest extends IntegrationTestSupport {
         memberJpaRepository.save(member);
         // 이전 프로필 이미지 업로드 및 완료 처리
         var oldPresignedUrlResponse = storageService.createPresignedUrl("oldFilename.png", UploadType.PROFILE_IMAGE, member.getId());
-        doNothing().when(storageProvider).ensureObjectExists(oldPresignedUrlResponse.objectKey());
+        doNothing().when(storageProvider).ensureObjectExists(any());
         storageService.completeUpload(oldPresignedUrlResponse.objectKey(), member.getId());
 
         // 검증
@@ -178,7 +178,6 @@ class MemberServiceIntegrationTest extends IntegrationTestSupport {
 
         // 새로운 프로필 이미지 업로드 준비
         var newPresignedUrlResponse = storageService.createPresignedUrl("newFilename.png", UploadType.PROFILE_IMAGE, member.getId());
-        doNothing().when(storageProvider).ensureObjectExists(newPresignedUrlResponse.objectKey());
         var updateProfile = new UpdateProfile(member.getNickname(), newPresignedUrlResponse.objectKey());
 
         // when
