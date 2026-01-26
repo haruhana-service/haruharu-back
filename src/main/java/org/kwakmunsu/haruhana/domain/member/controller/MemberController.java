@@ -52,6 +52,7 @@ public class MemberController extends MemberDocsController {
         return  ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @Override
     @PatchMapping("/v1/members/devices")
     public ResponseEntity<ApiResponse<?>> syncDevices(
             @RequestBody @Valid DeviceTokenSyncRequest request,
