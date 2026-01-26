@@ -14,7 +14,7 @@ public class FileValidator {
     public void validateFile(String fileName) {
         String extension = getFileExtension(fileName);
 
-        if (!IMAGE_EXTENSIONS.contains(extension.toLowerCase())) {
+        if (!IMAGE_EXTENSIONS.contains(extension)) {
             throw new HaruHanaException(ErrorType.INVALID_FILE_EXTENSION);
         }
     }
