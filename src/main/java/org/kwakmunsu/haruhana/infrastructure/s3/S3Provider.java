@@ -15,9 +15,8 @@ import org.kwakmunsu.haruhana.infrastructure.s3.dto.PresignedUrlResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
@@ -76,13 +75,16 @@ public class S3Provider implements StorageProvider {
                     .bucket(bucket)
                     .key(objectKey)
             );
+        } catch (NoSuchKeyException e) {
+            log.error("[S3Provider] S3 객체 존재 확인 실패 - objectKey: {}", objectKey, e);
+            throw new HaruHanaException(ErrorType.NOT_FOUND_FILE);
         } catch (Exception e) {
+            log.error("[S3Provider] 서버 내부 오류로 인한 S3 객체 존재 확인 실패 - objectKey: {}", objectKey, e);
             throw new HaruHanaException(ErrorType.NOT_FOUND_FILE);
         }
     }
 
     @Async
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
     public void deleteObjectAsync(String oldKey) {
         try {
