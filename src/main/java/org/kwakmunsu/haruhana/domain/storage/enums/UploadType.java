@@ -8,6 +8,7 @@ import lombok.Getter;
 public enum UploadType {
 
     PROFILE_IMAGE("profile"),
+
     ;
 
     private final String directory;

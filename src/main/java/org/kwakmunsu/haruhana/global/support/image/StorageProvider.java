@@ -15,4 +15,17 @@ public interface StorageProvider {
     * */
     PresignedUrlResponse generatePresignedUploadUrl(UploadType uploadType, FileContentType fileContentType);
 
+    /**
+     * S3 객체 존재 여부 확인
+     * @param objectKey - S3 객체 키
+     *
+     * @throws RuntimeException - 객체가 존재하지 않을 경우 예외 발생
+     * */
+    void ensureObjectExists(String objectKey);
+
+    /**
+     * S3 객체 삭제
+     * @param oldKey - 삭제할 S3 객체 키
+     * */
+    void deleteObjectAsync(String oldKey);
 }

@@ -76,7 +76,7 @@ class MemberControllerTest extends ControllerTestSupport {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .apply(print())
-                .hasStatus(HttpStatus.NO_CONTENT);
+                .hasStatusOk();
     }
 
     @TestMember

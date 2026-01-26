@@ -13,7 +13,11 @@ import org.kwakmunsu.haruhana.global.support.error.HaruHanaException;
 import org.kwakmunsu.haruhana.global.support.image.StorageProvider;
 import org.kwakmunsu.haruhana.infrastructure.s3.dto.PresignedUrlResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
@@ -25,6 +29,7 @@ public class S3Provider implements StorageProvider {
 
     private static final int DEFAULT_UPLOAD_EXPIRATION_MINUTES = 3;
 
+    private final S3Client s3Client;
     private final S3Presigner s3Presigner;
 
     @Value("${cloud.aws.s3.bucket}")
@@ -62,7 +67,32 @@ public class S3Provider implements StorageProvider {
             log.error("[S3Provider] Upload Presigned URL 생성 실패", e);
             throw new HaruHanaException(ErrorType.S3_PRESIGNED_URL_ERROR);
         }
+    }
 
+    @Override
+    public void ensureObjectExists(String objectKey) {
+        try {
+            s3Client.headObject(r -> r
+                    .bucket(bucket)
+                    .key(objectKey)
+            );
+        } catch (Exception e) {
+            throw new HaruHanaException(ErrorType.NOT_FOUND_FILE);
+        }
+    }
+
+    @Async
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Override
+    public void deleteObjectAsync(String oldKey) {
+        try {
+            s3Client.deleteObject(r -> r
+                    .bucket(bucket)
+                    .key(oldKey)
+            );
+        } catch (Exception e) {
+            log.error("[S3Provider] S3 객체 삭제 실패 - objectKey: {}", oldKey, e);
+        }
     }
 
     /**
