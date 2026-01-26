@@ -83,4 +83,8 @@ public class Member extends BaseEntity {
                 && this.profileImageObjectKey.equals(objectKey);
     }
 
+    public boolean hasMatchingNickname(String nickname) {
+        return this.nickname.equals(nickname);
+    }
+
 }

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.DeviceTokenSyncRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.MemberCreateRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.PreferenceUpdateRequest;
+import org.kwakmunsu.haruhana.domain.member.controller.dto.ProfileUpdateRequest;
 import org.kwakmunsu.haruhana.domain.member.service.MemberProfileResponse;
 import org.kwakmunsu.haruhana.domain.member.service.MemberService;
 import org.kwakmunsu.haruhana.global.annotation.LoginMember;
@@ -50,7 +51,18 @@ public class MemberController extends MemberDocsController {
     public ResponseEntity<ApiResponse<MemberProfileResponse>> getProfile(@LoginMember Long memberId) {
         MemberProfileResponse response = memberService.getProfile(memberId);
 
-        return  ResponseEntity.ok(ApiResponse.success(response));
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @Override
+    @PatchMapping("/v1/members")
+    public ResponseEntity<ApiResponse<?>> updateProfile(
+            @RequestBody @Valid ProfileUpdateRequest request,
+            @LoginMember Long memberId
+    ) {
+        memberService.updateProfile(request.toUpdateProfile(), memberId);
+
+        return ResponseEntity.noContent().build();
     }
 
     @Override

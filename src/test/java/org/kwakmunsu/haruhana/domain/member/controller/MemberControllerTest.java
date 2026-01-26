@@ -3,6 +3,8 @@ package org.kwakmunsu.haruhana.domain.member.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -12,6 +14,7 @@ import org.kwakmunsu.haruhana.ControllerTestSupport;
 import org.kwakmunsu.haruhana.domain.member.MemberFixture;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.DeviceTokenSyncRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.PreferenceUpdateRequest;
+import org.kwakmunsu.haruhana.domain.member.controller.dto.ProfileUpdateRequest;
 import org.kwakmunsu.haruhana.domain.member.service.MemberProfileResponse;
 import org.kwakmunsu.haruhana.domain.problem.enums.ProblemDifficulty;
 import org.kwakmunsu.haruhana.security.annotation.TestMember;
@@ -92,7 +95,23 @@ class MemberControllerTest extends ControllerTestSupport {
                 .content(requestJson))
                 .apply(print())
                 .hasStatusOk();
+    }
 
+    @TestMember
+    @Test
+    void 회원_프로필을_업데이트_한다() throws JsonProcessingException {
+        // given
+        var profileUpdateRequest = new ProfileUpdateRequest("새닉네임", "profile-image-key-1234");
+        String requestJson = objectMapper.writeValueAsString(profileUpdateRequest);
+
+        // when
+        assertThat(mvcTester.patch().uri("/v1/members")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .apply(print())
+                .hasStatus(HttpStatus.NO_CONTENT);
+
+        verify(memberService, times(1)).updateProfile(any(), any());
     }
 
 }

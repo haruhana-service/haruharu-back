@@ -8,7 +8,9 @@ import org.kwakmunsu.haruhana.domain.member.entity.MemberPreference;
 import org.kwakmunsu.haruhana.domain.member.service.dto.request.NewPreference;
 import org.kwakmunsu.haruhana.domain.member.service.dto.request.NewProfile;
 import org.kwakmunsu.haruhana.domain.member.service.dto.request.UpdatePreference;
+import org.kwakmunsu.haruhana.domain.member.service.dto.request.UpdateProfile;
 import org.kwakmunsu.haruhana.domain.problem.service.ProblemGenerator;
+import org.kwakmunsu.haruhana.domain.storage.service.StorageManager;
 import org.kwakmunsu.haruhana.domain.streak.service.StreakManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,7 @@ public class MemberService {
     private final ProblemGenerator problemGenerator;
     private final StreakManager streakManager;
     private final MemberDeviceManager memberDeviceManager;
+    private final StorageManager storageManager;
 
     @Transactional
     public Long createMember(NewProfile newProfile, NewPreference newPreference) {
@@ -44,12 +47,28 @@ public class MemberService {
         return member.getId();
     }
 
-
     public MemberProfileResponse getProfile(Long memberId) {
         // memberPreference를 통해 회원 정보와 선호 학습 정보를 함께 조회
         MemberPreference memberPreference = memberReader.getMemberPreference(memberId);
 
         return MemberProfileResponse.from(memberPreference);
+    }
+
+    /**
+     * 회원 프로필 업데이트 <br>
+     * 회원 프로필 이미지가 변경된 경우 StorageManager를 통해 업로드 완료 처리 및 이전 이미지 S3 삭제 처리
+     * @param updateProfile 회원 프로필 업데이트 정보
+     * @param memberId 회원 식별자
+     *
+    * */
+    @Transactional
+    public void updateProfile(UpdateProfile updateProfile, Long memberId) {
+        Member member = memberReader.find(memberId);
+        memberValidator.validateUpdateProfile(updateProfile, member);
+
+        storageManager.completeUpload(updateProfile.profileImageKey(), member);
+
+        member.updateProfile(updateProfile.nickname());
     }
 
     @Transactional

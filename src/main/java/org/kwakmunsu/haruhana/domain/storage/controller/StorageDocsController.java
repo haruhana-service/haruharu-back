@@ -1,7 +1,7 @@
 package org.kwakmunsu.haruhana.domain.storage.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.kwakmunsu.haruhana.domain.storage.controller.dto.PresignedCreateRequest;
 import org.kwakmunsu.haruhana.domain.storage.controller.dto.StorageUploadCompleteRequest;
 import org.kwakmunsu.haruhana.global.support.error.ErrorType;
@@ -10,7 +10,7 @@ import org.kwakmunsu.haruhana.global.swagger.ApiExceptions;
 import org.kwakmunsu.haruhana.infrastructure.s3.dto.PresignedUrlResponse;
 import org.springframework.http.ResponseEntity;
 
-@Schema(title = "Storage Docs", description = "저장소 관련 API 문서")
+@Tag(name = "Storage Docs", description = "Storage 관련 API 문서")
 public abstract class StorageDocsController {
 
     @Operation(
