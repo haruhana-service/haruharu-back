@@ -18,7 +18,7 @@ public record ProfileUpdateRequest(
     public UpdateProfile toUpdateProfile() {
         return UpdateProfile.builder()
                 .nickname(nickname)
-                .profileImageKey(profileImageKey)
+                .profileImageKey((profileImageKey != null && !profileImageKey.isBlank()) ? profileImageKey : null)
                 .build();
     }
 
