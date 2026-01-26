@@ -34,6 +34,8 @@ public class Member extends BaseEntity {
 
     private String refreshToken;
 
+    private String profileImageObjectKey; // s3 object key
+
     public static Member createMember(String loginId, String password, String nickname, Role role) {
         Member member = new Member();
 
@@ -43,6 +45,7 @@ public class Member extends BaseEntity {
         member.role = role;
         member.lastLoginAt = null;
         member.refreshToken = null;
+        member.profileImageObjectKey = null;
 
         return member;
     }
@@ -69,6 +72,15 @@ public class Member extends BaseEntity {
 
     public boolean isGuest() {
         return role == Role.ROLE_GUEST;
+    }
+
+    public void updateProfileImageObjectKey(String profileImageObjectKey) {
+        this.profileImageObjectKey = profileImageObjectKey;
+    }
+
+    public boolean hasMatchingObjectKey(String objectKey) {
+        return this.profileImageObjectKey != null
+                && this.profileImageObjectKey.equals(objectKey);
     }
 
 }

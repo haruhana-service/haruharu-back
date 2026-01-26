@@ -9,6 +9,8 @@ import org.kwakmunsu.haruhana.domain.dailyproblem.controller.DailyProblemControl
 import org.kwakmunsu.haruhana.domain.dailyproblem.service.DailyProblemService;
 import org.kwakmunsu.haruhana.domain.member.controller.MemberController;
 import org.kwakmunsu.haruhana.domain.member.service.MemberService;
+import org.kwakmunsu.haruhana.domain.storage.controller.StorageController;
+import org.kwakmunsu.haruhana.domain.storage.service.StorageService;
 import org.kwakmunsu.haruhana.domain.streak.controller.StreakController;
 import org.kwakmunsu.haruhana.domain.streak.service.StreakService;
 import org.kwakmunsu.haruhana.domain.submission.service.SubmissionService;
@@ -28,7 +30,8 @@ import org.springframework.test.web.servlet.assertj.MockMvcTester;
                 AuthController.class,
                 DailyProblemController.class,
                 StreakController.class,
-                CategoryController.class
+                CategoryController.class,
+                StorageController.class
         })
 public abstract class ControllerTestSupport {
 
@@ -55,5 +58,8 @@ public abstract class ControllerTestSupport {
 
     @MockitoBean
     protected CategoryService categoryService;
+
+    @MockitoBean
+    protected StorageService storageService;
 
 }

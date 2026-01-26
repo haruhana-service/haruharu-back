@@ -6,6 +6,7 @@ spring:
   config:
     import:
       - application-ai.yml
+      - application-s3.yml
   web:
     resources:
       add-mappings: false

@@ -35,13 +35,13 @@ public class MemberController extends MemberDocsController {
 
     @Override
     @PatchMapping("/v1/members/preferences")
-    public ResponseEntity<Void> updatePreference(
+    public ResponseEntity<ApiResponse<?>> updatePreference(
             @RequestBody @Valid PreferenceUpdateRequest request,
             @LoginMember Long memberId
     ) {
         memberService.updatePreference(request.toUpdatePreference(), memberId);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponse.success());
     }
 
     @Override
@@ -52,14 +52,15 @@ public class MemberController extends MemberDocsController {
         return  ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @Override
     @PatchMapping("/v1/members/devices")
-    public ResponseEntity<Void> syncDevices(
+    public ResponseEntity<ApiResponse<?>> syncDevices(
             @RequestBody @Valid DeviceTokenSyncRequest request,
             @LoginMember Long memberId
     ) {
         memberService.syncDeviceTokens(memberId, request.deviceToken());
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ApiResponse.success());
     }
 
 }
