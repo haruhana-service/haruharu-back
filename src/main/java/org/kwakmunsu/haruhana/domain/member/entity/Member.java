@@ -78,11 +78,9 @@ public class Member extends BaseEntity {
         this.profileImageObjectKey = profileImageObjectKey;
     }
 
-    public boolean isEqualsObjectKey(String objectKey) {
-        if (this.profileImageObjectKey == null) {
-            return false;
-        }
-        return this.profileImageObjectKey.equals(objectKey);
+    public boolean hasMatchingObjectKey(String objectKey) {
+        return this.profileImageObjectKey != null
+                && this.profileImageObjectKey.equals(objectKey);
     }
 
 }

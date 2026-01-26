@@ -37,7 +37,7 @@ public class StorageManager {
         storage.complete(member.getId());
         member.updateProfileImageObjectKey(objectKey);
 
-        if (oldKey != null && !member.isEqualsObjectKey(objectKey)) {
+        if (oldKey != null && !member.hasMatchingObjectKey(objectKey)) {
             storageProvider.deleteObjectAsync(oldKey);
         }
     }
