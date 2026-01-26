@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.DeviceTokenSyncRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.MemberCreateRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.PreferenceUpdateRequest;
+import org.kwakmunsu.haruhana.domain.member.controller.dto.ProfileUpdateRequest;
 import org.kwakmunsu.haruhana.domain.member.service.MemberProfileResponse;
 import org.kwakmunsu.haruhana.global.support.response.ApiResponse;
 import org.kwakmunsu.haruhana.global.swagger.ApiExceptions;
@@ -89,6 +90,30 @@ public abstract class MemberDocsController {
     })
     public abstract ResponseEntity<ApiResponse<?>> syncDevices(
             DeviceTokenSyncRequest request,
+            Long memberId
+    );
+
+    @Operation(
+            summary = "회원 프로필 수정 - JWT [O]",
+            description = """
+                    ### 회원의 프로필 정보를 수정합니다.
+                    - 닉네임과 프로필 이미지를 포함한 요청을 받습니다.
+                    - S3에 프로필 이미지 업로드가 선행되어야 합니다.
+                    - s3 업로드가 완료된 프로필 이미지 키를 함께 전달해야 합니다.
+                    - 닉네임만 변경 시 프로필 이미지 키는 null로 전달할 수 있습니다.
+                    - 성공 시 빈 응답을 반환합니다.
+                    """
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "204", description = "회원 프로필 수정 성공")
+    @ApiExceptions(values = {
+            BAD_REQUEST,
+            DUPLICATE_NICKNAME,
+            UNAUTHORIZED_ERROR,
+            NOT_FOUND_MEMBER,
+            DEFAULT_ERROR
+    })
+    public abstract ResponseEntity<ApiResponse<?>> updateProfile(
+            ProfileUpdateRequest request,
             Long memberId
     );
 

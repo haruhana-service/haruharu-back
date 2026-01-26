@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StorageJpaRepository extends JpaRepository<Storage, Long> {
 
-    boolean existsByMemberIdAndObjectKeyAndStatus(Long memberId, String objectKey, EntityStatus status);
     Optional<Storage> findByMemberIdAndObjectKeyAndStatus(
             Long memberId,
             String objectKey,
