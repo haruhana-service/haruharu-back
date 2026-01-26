@@ -10,7 +10,7 @@ public enum FileContentType {
 
     // 이미지
     JPEG ("jpeg", "image/jpeg", FileCategory.IMAGE),
-    JPG  ("jpg", "image/jpg", FileCategory.IMAGE),
+    JPG  ("jpg", "image/jpeg", FileCategory.IMAGE),
     PNG  ("png", "image/png", FileCategory.IMAGE),
     GIF  ("gif", "image/gif", FileCategory.IMAGE),
     WEBP ("webp", "image/webp", FileCategory.IMAGE),
