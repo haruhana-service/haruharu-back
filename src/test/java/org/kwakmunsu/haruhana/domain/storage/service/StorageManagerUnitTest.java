@@ -14,6 +14,7 @@ import org.kwakmunsu.haruhana.domain.member.MemberFixture;
 import org.kwakmunsu.haruhana.domain.member.enums.Role;
 import org.kwakmunsu.haruhana.domain.storage.entity.Storage;
 import org.kwakmunsu.haruhana.domain.storage.enums.UploadType;
+import org.kwakmunsu.haruhana.domain.storage.repository.StorageJpaRepository;
 import org.kwakmunsu.haruhana.global.support.error.ErrorType;
 import org.kwakmunsu.haruhana.global.support.error.HaruHanaException;
 import org.kwakmunsu.haruhana.global.support.image.StorageProvider;
@@ -28,6 +29,9 @@ class StorageManagerUnitTest extends UnitTestSupport {
     @Mock
     StorageProvider storageProvider;
 
+    @Mock
+    StorageJpaRepository storageJpaRepository;
+
     @InjectMocks
     StorageManager storageManager;
 
@@ -36,6 +40,24 @@ class StorageManagerUnitTest extends UnitTestSupport {
 
     @Test
     void 정상_업로드_확인() {
+        // given
+        var member = MemberFixture.createMember(Role.ROLE_MEMBER);
+        var issue = Storage.issue(member.getId(), UploadType.PROFILE_IMAGE, OLD_OBJECT_KEY);
+
+        given(storageReader.findByMemberIdAndObjectKey(any(), any())).willReturn(issue);
+
+        // when
+        storageManager.completeUpload(OLD_OBJECT_KEY, member);
+
+        // then
+        assertThat(member.getProfileImageObjectKey()).isEqualTo(OLD_OBJECT_KEY);
+        assertThat(issue.isComplete()).isTrue();
+
+        verify(storageProvider, times(1)).ensureObjectExists(any());
+    }
+
+    @Test
+    void 기존에_OBJECT_KEY가_존재하고_새로운_OBJECT_KEY로_업로드_후_완료_요청_시_OBJECT_KEY가_변경된다() {
         // given
         var member = MemberFixture.createMember(Role.ROLE_MEMBER);
         var issue = Storage.issue(member.getId(), UploadType.PROFILE_IMAGE, OLD_OBJECT_KEY);
@@ -63,7 +85,7 @@ class StorageManagerUnitTest extends UnitTestSupport {
         given(storageReader.findByMemberIdAndObjectKey(any(), any())).willReturn(issue);
 
         // when
-        storageManager.completeUpload(NEW_OBJECT_KEY, member);
+        storageManager.completeUpload(OLD_OBJECT_KEY, member);
 
         // then
         verify(storageProvider, never()).ensureObjectExists(any());
@@ -78,7 +100,7 @@ class StorageManagerUnitTest extends UnitTestSupport {
                 .willThrow(new HaruHanaException(ErrorType.STORAGE_ISSUE_NOT_FOUND));
 
         // when
-        assertThatThrownBy(() ->      storageManager.completeUpload(NEW_OBJECT_KEY, member))
+        assertThatThrownBy(() -> storageManager.completeUpload(NEW_OBJECT_KEY, member))
                 .isInstanceOf(HaruHanaException.class)
                 .hasMessage(ErrorType.STORAGE_ISSUE_NOT_FOUND.getMessage());
 
