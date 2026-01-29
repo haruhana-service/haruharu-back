@@ -192,11 +192,16 @@ gradle-app.setting
 
 *.yml
 !application.yml
-!docker-compose.yml
-!docker-compose.local.yml
-!.github/workflows/deploy.yml
-!.github/workflows/pull-request.yml
+
+!docker-compose-local.yml
+!docker-compose-staging.yml
+!docker-compose-prod.yml
+
+!.github/workflows/*.yml
 *.iml
 
 firebase.json
+
 .env
+.env.prod
+.env.staging
