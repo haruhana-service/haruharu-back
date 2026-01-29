@@ -74,8 +74,8 @@ jobs:
             ${{ secrets.DOCKER_COMPOSE_STAGING_YML }}
             EOF
             
-            docker-compose pull app
-            docker-compose up -d --force-recreate --no-deps app
+            docker-compose -f docker-compose-staging.yml pull app
+            docker-compose -f docker-compose-staging.yml up -d --force-recreate --no-deps app
             # haruharu-staging 관련 오래된 이미지만 삭제 (latest 제외)
             docker images "${{ secrets.DOCKER_USERNAME }}/haruharu-staging" --format "{{.ID}} {{.Tag}}" | \
             grep -v "latest" | \
