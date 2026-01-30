@@ -65,9 +65,9 @@ jobs:
             
             cat > .env << 'EOF'
             DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
-            DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}
-            DB_USER=${{ secrets.DB_USERNAME }}
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            MYSQL_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}
+            MYSQL_USER=${{ secrets.DB_USERNAME }}
+            MYSQL_PASSWORD=${{ secrets.DB_PASSWORD }}
             EOF
 
             cat > docker-compose-staging.yml << 'EOF'
