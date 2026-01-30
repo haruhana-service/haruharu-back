@@ -65,16 +65,16 @@ jobs:
             
             cat > .env << 'EOF'
             DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
-            MYSQL_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}
-            MYSQL_USER=${{ secrets.DB_USER }}
-            MYSQL_PASSWORD=${{ secrets.DB_PASSWORD }}
+            DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             EOF
 
             cat > docker-compose-staging.yml << 'EOF'
             ${{ secrets.DOCKER_COMPOSE_STAGING_YML }}
             EOF
             
-            docker-compose -f docker-compose-staging.yml pull app
+            docker-compose -f docker-compose-staging.yml pull
             docker-compose -f docker-compose-staging.yml up -d
             # haruharu-staging 관련 오래된 이미지만 삭제 (latest 제외)
             docker images "${{ secrets.DOCKER_USERNAME }}/haruharu-staging" --format "{{.ID}} {{.Tag}}" | \
