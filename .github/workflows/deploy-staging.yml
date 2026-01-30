@@ -73,11 +73,42 @@ jobs:
             cat > docker-compose-staging.yml << 'EOF'
             ${{ secrets.DOCKER_COMPOSE_STAGING_YML }}
             EOF
-            
-            docker-compose -f docker-compose-staging.yml pull
-            docker-compose -f docker-compose-staging.yml up -d
-            # haruharu-staging 관련 오래된 이미지만 삭제 (latest 제외)
+
+            # 1. 기존 app 컨테이너 중지 및 제거 (메모리 확보)
+            docker-compose -f docker-compose-staging.yml stop app || true
+            docker-compose -f docker-compose-staging.yml rm -f app || true
+
+            # 2. 사용하지 않는 이미지 정리 (디스크 및 메모리 확보)
             docker images "${{ secrets.DOCKER_USERNAME }}/haruharu-staging" --format "{{.ID}} {{.Tag}}" | \
             grep -v "latest" | \
             awk '{print $1}' | \
             xargs -r docker rmi -f || true
+
+            # 3. dangling 이미지 정리
+            docker image prune -f
+
+            # 4. 새 이미지 pull
+            docker-compose -f docker-compose-staging.yml pull app
+
+            # 5. MySQL이 없으면 시작 (이미 있으면 재시작하지 않음)
+            docker-compose -f docker-compose-staging.yml up -d mysql
+
+            # 6. MySQL이 healthy 상태가 될 때까지 대기
+            echo "MySQL이 준비될 때까지 대기 중..."
+            for i in {1..30}; do
+              if docker-compose -f docker-compose-staging.yml exec -T mysql mysqladmin ping -h localhost --silent; then
+                echo "MySQL 준비 완료"
+                break
+              fi
+              echo "대기 중... ($i/30)"
+              sleep 2
+            done
+
+            # 7. app 컨테이너 시작
+            docker-compose -f docker-compose-staging.yml up -d app
+
+            # 8. 로그 확인 (문제 발생 시 디버깅용)
+            echo "=== 컨테이너 상태 ==="
+            docker-compose -f docker-compose-staging.yml ps
+            echo "=== App 로그 (최근 20줄) ==="
+            docker-compose -f docker-compose-staging.yml logs --tail=20 app
