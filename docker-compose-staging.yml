@@ -10,16 +10,6 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
       - mysql-staging-data:/var/lib/mysql
-    command:
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
-      # t3.micro 메모리 최적화 설정
-      - --innodb-buffer-pool-size=134217728  # 128MB
-      - --innodb-log-file-size=33554432      # 32MB
-      - --max-connections=50
-      - --thread-cache-size=8
-      - --query-cache-size=0
-      - --query-cache-type=0
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--silent"]
       interval: 10s

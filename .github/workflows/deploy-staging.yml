@@ -17,7 +17,6 @@ jobs:
           distribution: liberica
           java-version: 21
 
-      # Gradle 캐시 최적화: gradle/actions 사용
       - name: Gradle 설정 및 캐싱
         uses: gradle/actions/setup-gradle@v4
         with:
@@ -36,11 +35,9 @@ jobs:
       - name: Gradlew 실행 권한 부여
         run: chmod +x gradlew
 
-      # 빌드 시간 로그 출력 및 병렬 빌드 활성화
       - name: Spring Boot JAR 빌드
         run: ./gradlew bootJar --parallel --build-cache --console=plain
 
-      # Docker Buildx 설정
       - name: Docker Buildx 설정
         uses: docker/setup-buildx-action@v3
 
@@ -50,7 +47,6 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Docker 빌드 캐시 최적화
       - name: Docker 이미지 빌드 및 푸시
         uses: docker/build-push-action@v5
         with:
@@ -69,11 +65,9 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           port: 22
           script: |
-            # 디렉토리 생성 (없으면)
             mkdir -p ~/haruharu-staging
             cd ~/haruharu-staging
 
-            # .env 파일 생성
             cat > .env << 'EOF'
             DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
             DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}
@@ -81,26 +75,21 @@ jobs:
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             EOF
 
-            # docker-compose 파일 생성
             cat > docker-compose-staging.yml << 'EOF'
             ${{ secrets.DOCKER_COMPOSE_STAGING_YML }}
             EOF
 
-            # nginx 디렉토리 및 설정 파일 생성
             mkdir -p nginx certbot/conf certbot/www
             cat > nginx/staging.conf << 'EOF'
             ${{ secrets.NGINX_STAGING_CONF }}
             EOF
 
-            # 새 이미지 다이제스트 확인
             NEW_DIGEST=$(docker pull ${{ secrets.DOCKER_USERNAME }}/haruharu-staging:latest 2>&1 | grep Digest | awk '{print $2}')
             CURRENT_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ secrets.DOCKER_USERNAME }}/haruharu-staging:latest 2>/dev/null | cut -d'@' -f2 || echo "none")
 
-            # 이미지가 변경된 경우에만 재배포
             if [ "$NEW_DIGEST" != "$CURRENT_DIGEST" ]; then
               echo "New image detected, deploying..."
 
-              # 기존 app 컨테이너 중지 및 제거
               docker-compose -f docker-compose-staging.yml stop app || true
               docker-compose -f docker-compose-staging.yml rm -f app || true
 
@@ -113,21 +102,10 @@ jobs:
               # dangling 이미지 정리
               docker image prune -f
 
-              # MySQL이 없으면 시작
-              docker-compose -f docker-compose-staging.yml up -d mysql
+            docker-compose -f docker-compose-staging.yml up -d
+          
 
-              # MySQL 준비 대기 (헬스 체크)
-              echo "Waiting for MySQL to be ready..."
-              timeout 60 sh -c 'until docker-compose -f docker-compose-staging.yml exec -T mysql mysqladmin ping -h localhost --silent; do sleep 2; done' || echo "MySQL health check timeout"
-
-              # 애플리케이션 시작
-              docker-compose -f docker-compose-staging.yml up -d app
-            
-              # Nginx 시작 또는 재시작
-              docker-compose -f docker-compose-staging.yml up -d nginx
-
-
-              # 로그 확인
+          # 로그 확인
               echo "=== Container Status ==="
               docker-compose -f docker-compose-staging.yml ps
               echo "=== App Logs (last 20 lines) ==="
