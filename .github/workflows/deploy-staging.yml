@@ -86,6 +86,12 @@ jobs:
             ${{ secrets.DOCKER_COMPOSE_STAGING_YML }}
             EOF
 
+            # nginx 디렉토리 및 설정 파일 생성
+            mkdir -p nginx certbot/conf certbot/www
+            cat > nginx/staging.conf << 'EOF'
+            ${{ secrets.NGINX_STAGING_CONF }}
+            EOF
+
             # 새 이미지 다이제스트 확인
             NEW_DIGEST=$(docker pull ${{ secrets.DOCKER_USERNAME }}/haruharu-staging:latest 2>&1 | grep Digest | awk '{print $2}')
             CURRENT_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ secrets.DOCKER_USERNAME }}/haruharu-staging:latest 2>/dev/null | cut -d'@' -f2 || echo "none")
