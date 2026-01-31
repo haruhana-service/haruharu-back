@@ -69,8 +69,10 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           port: 22
           script: |
+            # 디렉토리 생성 (없으면)
+            mkdir -p ~/haruharu-staging
             cd ~/haruharu-staging
-            
+
             # .env 파일 생성
             cat > .env << 'EOF'
             DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
@@ -91,7 +93,7 @@ jobs:
             # 이미지가 변경된 경우에만 재배포
             if [ "$NEW_DIGEST" != "$CURRENT_DIGEST" ]; then
               echo "New image detected, deploying..."
-            
+
               # 기존 app 컨테이너 중지 및 제거
               docker-compose -f docker-compose-staging.yml stop app || true
               docker-compose -f docker-compose-staging.yml rm -f app || true
@@ -107,10 +109,19 @@ jobs:
 
               # MySQL이 없으면 시작
               docker-compose -f docker-compose-staging.yml up -d mysql
-            
+
               # MySQL 준비 대기 (헬스 체크)
               echo "Waiting for MySQL to be ready..."
               timeout 60 sh -c 'until docker-compose -f docker-compose-staging.yml exec -T mysql mysqladmin ping -h localhost --silent; do sleep 2; done' || echo "MySQL health check timeout"
 
               # 애플리케이션 시작
               docker-compose -f docker-compose-staging.yml up -d app
+
+              # 로그 확인
+              echo "=== Container Status ==="
+              docker-compose -f docker-compose-staging.yml ps
+              echo "=== App Logs (last 20 lines) ==="
+              docker-compose -f docker-compose-staging.yml logs --tail=20 app
+            else
+              echo "No new image, skipping deployment"
+            fi
