@@ -65,51 +65,51 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           port: 22
           script: |
-            mkdir -p ~/haruharu-staging
-            cd ~/haruharu-staging
-
-            cat > .env << 'EOF'
-            DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
-            DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}
-            DB_USER=${{ secrets.DB_USER }}
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            EOF
-
-            cat > docker-compose-staging.yml << 'EOF'
-            ${{ secrets.DOCKER_COMPOSE_STAGING_YML }}
-            EOF
-
-            mkdir -p nginx certbot/conf certbot/www
-            cat > nginx/staging.conf << 'EOF'
-            ${{ secrets.NGINX_STAGING_CONF }}
-            EOF
-
-            NEW_DIGEST=$(docker pull ${{ secrets.DOCKER_USERNAME }}/haruharu-staging:latest 2>&1 | grep Digest | awk '{print $2}')
-            CURRENT_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ secrets.DOCKER_USERNAME }}/haruharu-staging:latest 2>/dev/null | cut -d'@' -f2 || echo "none")
-
-            if [ "$NEW_DIGEST" != "$CURRENT_DIGEST" ]; then
-              echo "New image detected, deploying..."
-
-              docker-compose -f docker-compose-staging.yml stop app || true
-              docker-compose -f docker-compose-staging.yml rm -f app || true
-
-              # 사용하지 않는 이미지 정리 (메모리 확보)
-              docker images "${{ secrets.DOCKER_USERNAME }}/haruharu-staging" --format "{{.ID}} {{.Tag}}" | \
-              grep -v "latest" | \
-              awk '{print $1}' | \
-              xargs -r docker rmi -f || true
-
-              # dangling 이미지 정리
-              docker image prune -f
-
-            docker-compose -f docker-compose-staging.yml up -d
-          
-
-          # 로그 확인
-              echo "=== Container Status ==="
-              docker-compose -f docker-compose-staging.yml ps
-              echo "=== App Logs (last 20 lines) ==="
-              docker-compose -f docker-compose-staging.yml logs --tail=20 app
-            else
-              echo "No new image, skipping deployment"
-            fi
+                    mkdir -p ~/haruharu-staging
+                    cd ~/haruharu-staging
+                    
+                    cat > .env << 'EOF'
+                    DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
+                    DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}
+                    DB_USER=${{ secrets.DB_USER }}
+                    DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+                    EOF
+                    
+                    cat > docker-compose-staging.yml << 'EOF'
+                    ${{ secrets.DOCKER_COMPOSE_STAGING_YML }}
+                    EOF
+                    
+                    mkdir -p nginx certbot/conf certbot/www
+                    cat > nginx/staging.conf << 'EOF'
+                    ${{ secrets.NGINX_STAGING_CONF }}
+                    EOF
+                    
+                    NEW_DIGEST=$(docker pull ${{ secrets.DOCKER_USERNAME }}/haruharu-staging:latest 2>&1 | grep Digest | awk '{print $2}')
+                    CURRENT_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ secrets.DOCKER_USERNAME }}/haruharu-staging:latest 2>/dev/null | cut -d'@' -f2 || echo "none")
+                    
+                    if [ "$NEW_DIGEST" != "$CURRENT_DIGEST" ]; then
+                    echo "New image detected, deploying..."
+                    
+                    docker-compose -f docker-compose-staging.yml stop app || true
+                    docker-compose -f docker-compose-staging.yml rm -f app || true
+                    
+                    # 사용하지 않는 이미지 정리 (메모리 확보)
+                    docker images "${{ secrets.DOCKER_USERNAME }}/haruharu-staging" --format "{{.ID}} {{.Tag}}" | \
+                    grep -v "latest" | \
+                    awk '{print $1}' | \
+                    xargs -r docker rmi -f || true
+                    
+                    # dangling 이미지 정리
+                    docker image prune -f
+                    
+                    docker-compose -f docker-compose-staging.yml up -d
+            
+            
+            # 로그 확인
+                    echo "=== Container Status ==="
+                    docker-compose -f docker-compose-staging.yml ps
+                    echo "=== App Logs (last 20 lines) ==="
+                    docker-compose -f docker-compose-staging.yml logs --tail=20 app
+                    else
+                    echo "No new image, skipping deployment"
+                    fi
