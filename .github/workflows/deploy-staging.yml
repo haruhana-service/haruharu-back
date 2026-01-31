@@ -122,6 +122,10 @@ jobs:
 
               # 애플리케이션 시작
               docker-compose -f docker-compose-staging.yml up -d app
+            
+              # Nginx 시작 또는 재시작
+              docker-compose -f docker-compose-staging.yml up -d nginx
+
 
               # 로그 확인
               echo "=== Container Status ==="
