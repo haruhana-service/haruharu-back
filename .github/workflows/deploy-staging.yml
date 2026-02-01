@@ -65,31 +65,54 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           port: 22
           script: |
+            mkdir -p ~/haruharu-staging/nginx
             cd ~/haruharu-staging
             
-            cat > .env << 'EOF'
-            DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
-            DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}
-            DB_USER=${{ secrets.DB_USER }}
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            EOF
+            # 환경변수 파일 생성
+            echo 'DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}' > .env
+            echo 'DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}' >> .env
+            echo 'DB_USER=${{ secrets.DB_USER }}' >> .env
+            echo 'DB_PASSWORD=${{ secrets.DB_PASSWORD }}' >> .env
             
-            cat > docker-compose-staging.yml << 'EOF'
-            ${{ secrets.DOCKER_COMPOSE_STAGING_YML }}
-            EOF
+            # docker-compose 파일 생성 (GitHub Secrets에서 가져옴)
+            echo '${{ secrets.DOCKER_COMPOSE_STAGING_YML }}' > docker-compose-staging.yml
             
+            # nginx 설정 파일 생성 (GitHub Secrets에서 가져옴)
+            echo '${{ secrets.NGINX_STAGING_CONF }}' > nginx/staging.conf
+            
+            echo "📦 최신 이미지 가져오는 중..."
             docker pull ${{ secrets.DOCKER_USERNAME }}/haruharu-staging:latest
             
-            # 기존 컨테이너 중지 및 제거
+            echo "🛑 기존 컨테이너 중지 중..."
             docker-compose -f docker-compose-staging.yml down --remove-orphans || true
             
-            # 새 컨테이너 시작
+            echo "🚀 새 컨테이너 시작 중..."
             docker-compose -f docker-compose-staging.yml up -d
             
-            # 사용하지 않는 이미지 정리
+            echo "⏳ 컨테이너 시작 대기 중..."
+            sleep 30
+            
+            echo "📊 컨테이너 상태:"
+            docker-compose -f docker-compose-staging.yml ps
+            
+            echo "🏥 헬스체크 수행 중..."
+            for i in {1..10}; do
+              if curl -sf http://localhost/health > /dev/null 2>&1; then
+                echo "✅ 헬스체크 성공!"
+                break
+              else
+                echo "⏳ 헬스체크 재시도 중... ($i/10)"
+                sleep 5
+              fi
+              if [ $i -eq 10 ]; then
+                echo "⚠️ 헬스체크 실패 - 로그 확인 필요"
+                docker-compose -f docker-compose-staging.yml logs --tail 30
+              fi
+            done
+            
+            echo "🧹 사용하지 않는 이미지 정리 중..."
             docker image prune -f
             
-            # 오래된 이미지 정리 (latest 제외)
             docker images "${{ secrets.DOCKER_USERNAME }}/haruharu-staging" --format "{{.ID}} {{.Tag}}" | \
             grep -v "latest" | \
             awk '{print $1}' | \
