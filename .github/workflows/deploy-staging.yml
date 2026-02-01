@@ -65,7 +65,6 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           port: 22
           script: |
-            mkdir -p ~/haruharu-staging/nginx ~/haruharu-staging/certbot/{conf,www}
             cd ~/haruharu-staging
             
             cat > .env << 'EOF'
@@ -79,11 +78,6 @@ jobs:
             ${{ secrets.DOCKER_COMPOSE_STAGING_YML }}
             EOF
             
-            cat > nginx/staging.conf << 'EOF'
-            ${{ secrets.NGINX_STAGING_CONF }}
-            EOF
-            
-            # 최신 이미지 풀
             docker pull ${{ secrets.DOCKER_USERNAME }}/haruharu-staging:latest
             
             # 기존 컨테이너 중지 및 제거
@@ -100,3 +94,5 @@ jobs:
             grep -v "latest" | \
             awk '{print $1}' | \
             xargs -r docker rmi -f || true
+            
+            echo "✅ 배포 완료!"
