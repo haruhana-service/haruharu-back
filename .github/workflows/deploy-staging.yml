@@ -75,11 +75,17 @@ jobs:
             echo 'DB_USER=${{ secrets.DB_USER }}' >> .env
             echo 'DB_PASSWORD=${{ secrets.DB_PASSWORD }}' >> .env
             
-            # docker-compose 파일 생성 (GitHub Secrets에서 가져옴)
+            # docker-compose 파일 생성
             echo '${{ secrets.DOCKER_COMPOSE_STAGING_YML }}' > docker-compose-staging.yml
             
+            # nginx 설정 파일 생성
+            mkdir -p ~/haruharu-staging/nginx
+            echo '${{ secrets.NGINX_STAGING_CONF }}' > ./nginx/staging.conf
+            
+            # Docker 이미지 가져오기
             docker pull ${{ secrets.DOCKER_USERNAME }}/haruharu-staging:latest
             
+            # 기존 컨테이너 중지
             docker-compose -f docker-compose-staging.yml down --remove-orphans || true
             
             docker-compose -f docker-compose-staging.yml up -d --build
