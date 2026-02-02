@@ -26,8 +26,8 @@ services:
     image: ${DOCKER_USERNAME}/haruharu-staging:latest
     container_name: haruharu-app
     restart: unless-stopped
-    expose:
-      - "8080"
+    ports:
+      - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: staging
       JAVA_OPTS: -Xms256m -Xmx512m -XX:+UseG1GC -XX:MaxGCPauseMillis=100
