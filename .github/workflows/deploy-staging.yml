@@ -31,12 +31,11 @@ jobs:
           echo "${{ secrets.APPLICATION_S3_YML }}" > ./application-s3.yml
           echo "${{ secrets.APPLICATION_AI_YML }}" > ./application-ai.yml
 
-      - name: Firebase 서비스계정 키 파일 생성 (firebase.json)
-        shell: bash
+      - name: Firebase 서비스계정 키 파일 생성
         run: |
-          set -euo pipefail
           mkdir -p ./src/main/resources
-          echo "${{ secrets.FIREBASE_JSON }}" | base64 -d > ./firebase.json
+          cd ./src/main/resources
+          echo '${{ secrets.FIREBASE_JSON }}' > ./firebase.json
 
       - name: Gradlew 실행 권한 부여
         run: chmod +x gradlew
