@@ -22,7 +22,7 @@ jobs:
         with:
           cache-read-only: false
 
-      - name: application.yml files 및 firebase.json 생성
+      - name: application.yml files
         run: |
           mkdir -p ./src/main/resources
           cd ./src/main/resources
@@ -30,6 +30,12 @@ jobs:
           echo "${{ secrets.APPLICATION_STAGING_YML }}" > ./application-staging.yml
           echo "${{ secrets.APPLICATION_S3_YML }}" > ./application-s3.yml
           echo "${{ secrets.APPLICATION_AI_YML }}" > ./application-ai.yml
+
+      - name: Firebase 서비스계정 키 파일 생성 (firebase.json)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ./src/main/resources
           echo "${{ secrets.FIREBASE_JSON }}" | base64 -d > ./firebase.json
 
       - name: Gradlew 실행 권한 부여
