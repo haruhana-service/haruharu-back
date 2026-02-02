@@ -2,7 +2,7 @@ name: haruharu-deploy-staging
 on:
   push:
     branches:
-      - Setting/#49
+      - dev
 
 jobs:
   deploy:
@@ -41,7 +41,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Spring Boot JAR 빌드
-        run: ./gradlew bootJar
+        run: ./gradlew bootJar --parallel --build-cache
 
       - name: Docker Buildx 설정
         uses: docker/setup-buildx-action@v3
@@ -68,8 +68,6 @@ jobs:
           port: 22
           script: |
             mkdir -p ~/haruharu-staging/nginx
-            mkdir -p ~/haruharu-staging/certbot/conf
-            mkdir -p ~/haruharu-staging/certbot/www
             cd ~/haruharu-staging
             
             # 환경변수 파일 생성
