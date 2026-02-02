@@ -68,6 +68,8 @@ jobs:
           port: 22
           script: |
             mkdir -p ~/haruharu-staging/nginx
+            mkdir -p ~/haruharu-staging/certbot/conf
+            mkdir -p ~/haruharu-staging/certbot/www
             cd ~/haruharu-staging
             
             # 환경변수 파일 생성
