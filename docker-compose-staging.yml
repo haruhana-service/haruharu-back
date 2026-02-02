@@ -44,7 +44,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx/staging.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/staging.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - app
     networks:
