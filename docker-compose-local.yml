@@ -1,0 +1,32 @@
+services:
+  mysql:
+    image: mysql:8.4.0
+    ports:
+      - "3306:3306"
+    container_name: haruharu-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: haruharu
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - haruharu-local-network
+
+volumes:
+  mysql-data:
+    driver: local
+
+networks:
+  haruharu-local-network:
+    driver: bridge

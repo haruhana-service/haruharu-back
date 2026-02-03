@@ -27,8 +27,8 @@ spring.config.activate.on-profile: local
 spring.config.import: application-local.yml
 
 ---
-spring.config.activate.on-profile: dev
-spring.config.import: application-dev.yml
+spring.config.activate.on-profile: staging
+spring.config.import: application-staging.yml
 
 ---
 spring.config.activate.on-profile: prod
