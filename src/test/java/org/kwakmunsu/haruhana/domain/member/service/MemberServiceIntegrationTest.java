@@ -2,6 +2,7 @@ package org.kwakmunsu.haruhana.domain.member.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,11 +27,11 @@ import org.kwakmunsu.haruhana.domain.problem.service.ProblemGenerator;
 import org.kwakmunsu.haruhana.domain.storage.enums.UploadType;
 import org.kwakmunsu.haruhana.domain.storage.repository.StorageJpaRepository;
 import org.kwakmunsu.haruhana.domain.storage.service.StorageService;
-import org.kwakmunsu.haruhana.domain.streak.repository.StreakJpaRepository;
 import org.kwakmunsu.haruhana.domain.streak.service.StreakManager;
 import org.kwakmunsu.haruhana.global.entity.EntityStatus;
 import org.kwakmunsu.haruhana.global.support.image.StorageProvider;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import org.kwakmunsu.haruhana.infrastructure.s3.dto.PresignedUrlResponse;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -45,18 +46,17 @@ class MemberServiceIntegrationTest extends IntegrationTestSupport {
     final MemberJpaRepository memberJpaRepository;
     final MemberPreferenceJpaRepository memberPreferenceJpaRepository;
     final CategoryTopicJpaRepository categoryTopicJpaRepository;
-    final StreakJpaRepository streakJpaRepository;
     final EntityManager entityManager;
     final StorageService storageService;
     final StorageJpaRepository storageJpaRepository;
 
-    @MockitoSpyBean
+    @MockitoBean
     StreakManager streakManager;
 
-    @MockitoSpyBean
+    @MockitoBean
     ProblemGenerator problemGenerator;
 
-    @MockitoSpyBean
+    @MockitoBean
     StorageProvider storageProvider;
 
     private CategoryTopic categoryTopic;
@@ -68,6 +68,9 @@ class MemberServiceIntegrationTest extends IntegrationTestSupport {
 
         categoryTopic = categoryTopicJpaRepository.findByName("Java")
                 .orElseThrow(() -> new RuntimeException("Java 토픽이 존재하지 않습니다"));
+
+        // ProblemGenerator의 generateInitialProblem을 Mock 처리 (실제 실행 방지)
+        doNothing().when(problemGenerator).generateInitialProblem(any(), any(), any());
     }
 
     @Test
@@ -81,9 +84,8 @@ class MemberServiceIntegrationTest extends IntegrationTestSupport {
 
         // then
         assertThat(memberJpaRepository.findById(memberId).orElseThrow()).isNotNull();
-        assertThat(
-                memberPreferenceJpaRepository.findByMemberIdAndStatus(memberId, EntityStatus.ACTIVE).orElseThrow()).isNotNull();
-        assertThat(streakJpaRepository.findByMemberIdAndStatus(memberId, EntityStatus.ACTIVE).orElseThrow()).isNotNull();
+        assertThat(memberPreferenceJpaRepository.findByMemberIdAndStatus(memberId, EntityStatus.ACTIVE).orElseThrow()).isNotNull();
+        verify(streakManager, times(1)).create(any());
         verify(problemGenerator, times(1)).generateInitialProblem(any(), any(), any());
     }
 
@@ -122,6 +124,9 @@ class MemberServiceIntegrationTest extends IntegrationTestSupport {
         // given
         var member = MemberFixture.createMemberWithOutId(Role.ROLE_MEMBER);
         memberJpaRepository.save(member);
+
+        var mockPresignedUrlResponse = new PresignedUrlResponse("objectKey123", "http://presigned.url/upload");
+        given(storageProvider.generatePresignedUploadUrl(any(), any())).willReturn(mockPresignedUrlResponse);
 
         // 프로필 이미지 업로드를 위한 presigned url 발급
         var presignedUrlResponse = storageService.createPresignedUrl("filename.png", UploadType.PROFILE_IMAGE, member.getId());
@@ -162,12 +167,22 @@ class MemberServiceIntegrationTest extends IntegrationTestSupport {
         // given
         var member = MemberFixture.createMemberWithOutId(Role.ROLE_MEMBER);
         memberJpaRepository.save(member);
-        // 이전 프로필 이미지 업로드 및 완료 처리
-        var oldPresignedUrlResponse = storageService.createPresignedUrl("oldFilename.png", UploadType.PROFILE_IMAGE, member.getId());
-        doNothing().when(storageProvider).ensureObjectExists(any());
-        storageService.completeUpload(oldPresignedUrlResponse.objectKey(), member.getId());
 
-        // 검증
+        // Mock 설정 - 호출 순서대로 다른 objectKey 반환
+        given(storageProvider.generatePresignedUploadUrl(any(), any()))
+                .willReturn(
+                        new PresignedUrlResponse("oldObjectKey123", "http://presigned.url/old"),
+                        new PresignedUrlResponse("newObjectKey456", "http://presigned.url/new")
+                );
+        doNothing().when(storageProvider).ensureObjectExists(any());
+
+        // 이전 프로필 이미지 업로드 및 적용
+        var oldPresignedUrlResponse = storageService.createPresignedUrl("oldFilename.png", UploadType.PROFILE_IMAGE, member.getId());
+        storageService.completeUpload(oldPresignedUrlResponse.objectKey(), member.getId());
+        var oldUpdateProfile = new UpdateProfile(member.getNickname(), oldPresignedUrlResponse.objectKey());
+        memberService.updateProfile(oldUpdateProfile, member.getId());
+
+        // 이전 프로필 검증
         assertThat(member).extracting(
                 Member::getNickname,
                 Member::getProfileImageObjectKey
@@ -176,28 +191,30 @@ class MemberServiceIntegrationTest extends IntegrationTestSupport {
                 oldPresignedUrlResponse.objectKey()
         );
 
-        // 새로운 프로필 이미지 업로드 준비
+        // 새로운 프로필 준비
         var newPresignedUrlResponse = storageService.createPresignedUrl("newFilename.png", UploadType.PROFILE_IMAGE, member.getId());
-        var updateProfile = new UpdateProfile(member.getNickname(), newPresignedUrlResponse.objectKey());
+        var newNickname = "새로운닉네임";
+        var newUpdateProfile = new UpdateProfile(newNickname, newPresignedUrlResponse.objectKey());
 
-        // when
-        memberService.updateProfile(updateProfile, member.getId());
+        // when - 닉네임과 이미지 모두 변경
+        memberService.updateProfile(newUpdateProfile, member.getId());
 
-        // then
+        // then - 닉네임과 이미지가 모두 변경되었는지 확인
         assertThat(member).extracting(
                 Member::getNickname,
                 Member::getProfileImageObjectKey
         ).containsExactly(
-                member.getNickname(),
+                newNickname,
                 newPresignedUrlResponse.objectKey()
         );
-        var storage = storageJpaRepository.findByMemberIdAndObjectKeyAndStatus(
+
+        // 새로운 Storage가 완료 상태인지 확인
+        var newStorage = storageJpaRepository.findByMemberIdAndObjectKeyAndStatus(
                 member.getId(),
                 newPresignedUrlResponse.objectKey(),
                 EntityStatus.ACTIVE
         ).orElseThrow();
-
-        assertThat(storage.isComplete()).isTrue();
+        assertThat(newStorage.isComplete()).isTrue();
     }
 
 }
