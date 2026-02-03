@@ -28,7 +28,8 @@ jobs:
           cd ./src/main/resources
           echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
           echo "${{ secrets.APPLICATION_STAGING_YML }}" > ./application-staging.yml
-           echo "${{ secrets.APPLICATION_LOCAL_YML }}" > ./application-local.yml
+          echo "${{ secrets.APPLICATION_LOCAL_YML }}" > ./application-local.yml
+          echo "${{ secrets.APPLICATION_TEST_YML }}" > ./application-test.yml
           echo "${{ secrets.APPLICATION_S3_YML }}" > ./application-s3.yml
           echo "${{ secrets.APPLICATION_AI_YML }}" > ./application-ai.yml
 
