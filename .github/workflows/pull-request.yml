@@ -30,6 +30,7 @@ jobs:
           echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
           echo "${{ secrets.APPLICATION_STAGING_YML }}" > ./application-staging.yml
           echo "${{ secrets.APPLICATION_S3_YML }}" > ./application-s3.yml
+          echo "${{ secrets.APPLICATION_TEST_YML }}" > ./application-test.yml
           echo "${{ secrets.APPLICATION_AI_YML }}" > ./application-ai.yml
 
       - name: Firebase 서비스계정 키 파일 생성
