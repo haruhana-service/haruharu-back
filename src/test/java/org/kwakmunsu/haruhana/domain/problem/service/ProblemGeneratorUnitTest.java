@@ -38,7 +38,7 @@ class ProblemGeneratorUnitTest extends UnitTestSupport {
     ChatService chatService;
 
     @Spy
-    ObjectMapper objectMapper = new ObjectMapper();
+    ObjectMapper objectMapper;  // 실제 JSON 파싱이 필요하므로 Spy 사용
 
     @Mock
     ProblemJpaRepository problemJpaRepository;
