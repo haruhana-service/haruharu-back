@@ -6,7 +6,7 @@ on:
       - dev
 
 jobs:
-  deploy:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - name: 소스코드 체크아웃
@@ -43,8 +43,8 @@ jobs:
 
       - name: 테스트 실행
         run: ./gradlew test --parallel --continue
-          # 은 테스트 실행 시 자세한 로그와 오류 추적을 제공하여 문제 해결에 도움을 줍니다. 필요 시 사용하세요
-         # ./gradlew test --stacktrace --info
+        # 아래 명령어는 테스트 실행 시 자세한 로그와 오류 추적을 제공하여 문제 해결에 도움을 줍니다. 필요 시 사용하세요
+        # ./gradlew test --stacktrace --info
 
       - name: 빌드 확인
         run: ./gradlew bootJar --parallel --build-cache
