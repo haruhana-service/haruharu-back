@@ -21,16 +21,12 @@
     <logger name="org.kwakmunsu.haruhana" level="INFO"/>
 
     <!-- Spring -->
-    <logger name="org.springframework" level="INFO"/>
-    <logger name="org.springframework.security" level="DEBUG"/>
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="org.springframework.security" level="WARN"/>
     <logger name="org.springframework.web" level="INFO"/>
-    <logger name="org.springframework.jdbc.core.JdbcTemplate" level="DEBUG"/>
-    <logger name="org.springframework.jdbc.core.StatementCreatorUtils" level="TRACE"/>
 
     <!-- Hibernate -->
-    <logger name="org.hibernate.SQL" level="DEBUG"/>
-    <logger name="org.hibernate.type.descriptor.sql" level="TRACE"/>
-    <logger name="org.hibernate.SQL_SLOW" level="INFO"/>
+    <logger name="org.hibernate.SQL" level="WARN"/>
 
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
