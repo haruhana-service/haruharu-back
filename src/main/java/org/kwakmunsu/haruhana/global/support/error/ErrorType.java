@@ -37,9 +37,12 @@ public enum ErrorType {
     NOT_FOUND_DAILY_PROBLEM  (HttpStatus.NOT_FOUND, "오늘의 문제를 찾을 수 없습니다.", LogLevel.INFO),
 
     // CATEGORY
-    NOT_FOUND_CATEGORY       (HttpStatus.NOT_FOUND, "카테고리를 찾을 수 없습니다.", LogLevel.INFO),
-    NOT_FOUND_CATEGORY_GROUP (HttpStatus.NOT_FOUND, "카테고리 그룹을 찾을 수 없습니다.", LogLevel.INFO),
-    NOT_FOUND_CATEGORY_TOPIC (HttpStatus.NOT_FOUND, "카테고리 주제를 찾을 수 없습니다.", LogLevel.INFO),
+    NOT_FOUND_CATEGORY            (HttpStatus.NOT_FOUND, "카테고리를 찾을 수 없습니다.", LogLevel.INFO),
+    NOT_FOUND_CATEGORY_GROUP      (HttpStatus.NOT_FOUND, "카테고리 그룹을 찾을 수 없습니다.", LogLevel.INFO),
+    NOT_FOUND_CATEGORY_TOPIC      (HttpStatus.NOT_FOUND, "카테고리 주제를 찾을 수 없습니다.", LogLevel.INFO),
+    DUPLICATE_CATEGORY_NAME       (HttpStatus.CONFLICT, "이미 존재하는 카테고리 이름입니다.", LogLevel.INFO),
+    DUPLICATE_CATEGORY_GROUP_NAME (HttpStatus.CONFLICT, "이미 존재하는 카테고리 그룹 이름입니다.", LogLevel.INFO),
+    DUPLICATE_CATEGORY_TOPIC_NAME (HttpStatus.CONFLICT, "이미 존재하는 카테고리 주제 이름입니다.", LogLevel.INFO),
 
     // NOTIFICATION
     NOT_FOUND_NOTIFICATION (HttpStatus.NOT_FOUND, "알림을 찾을 수 없습니다.", LogLevel.INFO),

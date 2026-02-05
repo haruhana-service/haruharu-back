@@ -8,10 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CategoryTopicJpaRepository extends JpaRepository<CategoryTopic, Long> {
 
-    Optional<CategoryTopic> findByIdAndStatus(Long id, EntityStatus entityStatus);
-
+    Optional<CategoryTopic> findByIdAndStatus(Long id, EntityStatus status);
     Optional<CategoryTopic> findByName(String name);
-
     List<CategoryTopic> findByGroupId(Long groupId);
+    boolean existsByNameAndStatus(String name, EntityStatus status);
 
 }
