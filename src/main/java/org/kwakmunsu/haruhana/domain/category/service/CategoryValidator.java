@@ -34,7 +34,7 @@ public class CategoryValidator {
         }
     }
 
-    public void validateMewTopic(Long groupId, String name) {
+    public void validateNewTopic(Long groupId, String name) {
         if (!categoryGroupJpaRepository.existsByIdAndStatus(groupId, EntityStatus.ACTIVE)) {
             throw new HaruHanaException(ErrorType.NOT_FOUND_CATEGORY_GROUP);
         }

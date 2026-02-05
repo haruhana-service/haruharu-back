@@ -37,7 +37,7 @@ public class CategoryManager {
     }
 
     public CategoryTopic createCategoryTopic(Long groupId, String name) {
-        categoryValidator.validateMewTopic(groupId, name);
+        categoryValidator.validateNewTopic(groupId, name);
 
         return categoryTopicJpaRepository.save(CategoryTopic.create(
                 groupId,
