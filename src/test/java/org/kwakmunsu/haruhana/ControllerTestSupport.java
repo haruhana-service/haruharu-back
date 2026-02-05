@@ -3,7 +3,9 @@ package org.kwakmunsu.haruhana;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.kwakmunsu.haruhana.domain.auth.controller.AuthController;
 import org.kwakmunsu.haruhana.domain.auth.service.AuthService;
+import org.kwakmunsu.haruhana.domain.category.controller.AdminCategoryController;
 import org.kwakmunsu.haruhana.domain.category.controller.CategoryController;
+import org.kwakmunsu.haruhana.domain.category.service.AdminCategoryService;
 import org.kwakmunsu.haruhana.domain.category.service.CategoryService;
 import org.kwakmunsu.haruhana.domain.dailyproblem.controller.DailyProblemController;
 import org.kwakmunsu.haruhana.domain.dailyproblem.service.DailyProblemService;
@@ -30,6 +32,7 @@ import org.springframework.test.web.servlet.assertj.MockMvcTester;
                 AuthController.class,
                 DailyProblemController.class,
                 StreakController.class,
+                AdminCategoryController.class,
                 CategoryController.class,
                 StorageController.class
         })
@@ -55,6 +58,9 @@ public abstract class ControllerTestSupport {
 
     @MockitoBean
     protected StreakService streakService;
+
+    @MockitoBean
+    protected AdminCategoryService adminCategoryService;
 
     @MockitoBean
     protected CategoryService categoryService;
