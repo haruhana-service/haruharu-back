@@ -20,7 +20,7 @@ public class TestAdminSecurityContextFactory implements WithSecurityContextFacto
         GrantedAuthority authority = new SimpleGrantedAuthority(annotation.role());
         String adminId = String.valueOf(annotation.id());
 
-        log.info("Admin ID: {}, Role: {}", adminId, authority);
+        log.debug("Admin ID: {}, Role: {}", adminId, authority);
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                 adminId,

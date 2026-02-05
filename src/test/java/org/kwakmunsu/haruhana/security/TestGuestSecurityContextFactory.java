@@ -19,7 +19,7 @@ public class TestGuestSecurityContextFactory implements WithSecurityContextFacto
         GrantedAuthority authority = new SimpleGrantedAuthority(annotation.role());
         String guestId = String.valueOf(annotation.id());
 
-        log.info("Guest ID: {}, Role: {}", guestId, authority);
+        log.debug("Guest ID: {}, Role: {}", guestId, authority);
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                 guestId,
