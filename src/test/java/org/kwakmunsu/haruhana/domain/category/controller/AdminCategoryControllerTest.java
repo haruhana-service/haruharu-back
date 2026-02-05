@@ -6,8 +6,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.ControllerTestSupport;
-import org.kwakmunsu.haruhana.domain.category.controller.dto.request.CategoryGroupCreateRequest;
 import org.kwakmunsu.haruhana.domain.category.controller.dto.request.CategoryCreateRequest;
+import org.kwakmunsu.haruhana.domain.category.controller.dto.request.CategoryGroupCreateRequest;
 import org.kwakmunsu.haruhana.domain.category.controller.dto.request.CategoryTopicCreateRequest;
 import org.kwakmunsu.haruhana.security.annotation.TestAdmin;
 import org.springframework.http.MediaType;
@@ -32,7 +32,7 @@ class AdminCategoryControllerTest extends ControllerTestSupport {
 
     @TestAdmin
     @Test
-    void 카테고리_그룹을_생성한다() throws Exception {
+    void 카테고리_그룹을_생성한다() throws JsonProcessingException {
         // given
         var request = new CategoryGroupCreateRequest(1L, "자료구조");
         String requestJson = objectMapper.writeValueAsString(request);
@@ -47,7 +47,7 @@ class AdminCategoryControllerTest extends ControllerTestSupport {
 
     @TestAdmin
     @Test
-    void 카테고리_토픽을_생성한다() throws Exception {
+    void 카테고리_토픽을_생성한다() throws JsonProcessingException {
         // given
         var request = new CategoryTopicCreateRequest(1L, "배열");
         String requestJson = objectMapper.writeValueAsString(request);
