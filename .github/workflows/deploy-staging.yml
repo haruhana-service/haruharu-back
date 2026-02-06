@@ -90,7 +90,7 @@ jobs:
             # 기존 컨테이너 중지
             docker-compose -f docker-compose-staging.yml down --remove-orphans || true
             
-            docker-compose -f docker-compose-staging.yml up -d --build
+            docker-compose -f docker-compose-staging.yml up -d
             docker image prune -f
             
             docker images "${{ secrets.DOCKER_USERNAME }}/haruharu-staging" --format "{{.ID}} {{.Tag}}" | \
