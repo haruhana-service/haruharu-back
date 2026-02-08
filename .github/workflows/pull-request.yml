@@ -8,6 +8,8 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Seoul  # 타임존 설정 (테스트 일관성 보장)
     steps:
       - name: 소스코드 체크아웃
         uses: actions/checkout@v4

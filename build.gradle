@@ -74,6 +74,10 @@ dependencies {
     implementation 'io.sentry:sentry-spring-boot-starter-jakarta:7.20.1'
     implementation 'io.sentry:sentry-logback:7.20.1'
 
+    // Monitoring: Actuator + Prometheus
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
 }
 
 tasks.named('test') {

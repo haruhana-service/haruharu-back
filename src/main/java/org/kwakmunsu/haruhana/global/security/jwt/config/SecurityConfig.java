@@ -26,15 +26,6 @@ public class SecurityConfig {
 
     private static final List<String> ALLOWED_ORIGINS = List.of("http://localhost:3000", "https://haruharu.vercel.app");
     private static final List<String> ALLOWED_METHODS = List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS");
-    private static final List<String> PERMITTED_PATHS = List.of(
-            "/v1/auth/**",
-            "/health",
-            "/swagger/**",
-            "/swagger-ui/**",
-            "/v3/api-docs/**",
-            "/v1/categories",
-            "/v1/members/sign-up"
-    );
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
@@ -56,6 +47,7 @@ public class SecurityConfig {
                         .requestMatchers("/v1/categories").permitAll()
                         .requestMatchers("/v1/auth/login", "/v1/auth/reissue").permitAll()
                         .requestMatchers("/v1/members/sign-up").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/swagger/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/v1/admin/**").hasRole("ADMIN")
                         .anyRequest().hasRole("MEMBER")
