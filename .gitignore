@@ -205,3 +205,11 @@ firebase.json
 .env
 .env.prod
 .env.staging
+
+# 성능 테스트용 민감 데이터
+k6-tests/*.sql
+
+# 모니터링 설정 파일은 포함하되 데이터는 제외
+!monitoring/prometheus/prometheus.yml
+!monitoring/grafana/provisioning/**/*.yml
+
