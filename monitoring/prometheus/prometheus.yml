@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'haruhana-staging'
+    environment: 'staging'
+
+scrape_configs:
+  - job_name: 'spring-boot-haruhana'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['app:8080']
+        labels:
+          application: 'haruhana'
+          instance: 'staging-server'
