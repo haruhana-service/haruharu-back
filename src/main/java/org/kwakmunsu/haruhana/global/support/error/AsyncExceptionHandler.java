@@ -25,12 +25,12 @@ public class AsyncExceptionHandler implements AsyncUncaughtExceptionHandler {
             );
 
             switch (e.getErrorType().getLogLevel()) {
-                case LogLevel.ERROR -> log.error(logMessage);
-                case LogLevel.WARN ->  log.warn(logMessage);
-                default ->             log.info(logMessage);
+                case LogLevel.ERROR -> log.error(logMessage, e);
+                case LogLevel.WARN ->  log.warn(logMessage, e);
+                default ->             log.info(logMessage, e);
             }
         } else {
-            log.error("비동기 작업 중 Exception  발생 - Method: {}, Args: {}, Error: {}",
+            log.error("비동기 작업 중 Exception 발생 - Method: {}, Args: {}, Error: {}",
                     method.getName(),
                     params,
                     throwable.getMessage(),
