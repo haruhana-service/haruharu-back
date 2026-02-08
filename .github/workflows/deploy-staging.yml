@@ -61,6 +61,17 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/haruharu-staging:latest
 
+      - name: monitoring 설정 파일 EC2로 복사
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          port: 22
+          source: "monitoring/"
+          target: "~/haruharu-staging/"
+          strip_components: 0
+
       - name: AWS EC2에 배포
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -71,7 +82,7 @@ jobs:
           script: |
             mkdir -p ~/haruharu-staging/nginx
             cd ~/haruharu-staging
-            
+
             # 환경변수 파일 생성
             echo 'DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}' > .env
             echo 'DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}' >> .env
@@ -79,10 +90,10 @@ jobs:
             echo 'DB_PASSWORD=${{ secrets.DB_PASSWORD }}' >> .env
             echo 'GRAFANA_ADMIN_USER=${{ secrets.GRAFANA_ADMIN_USER }}' >> .env
             echo 'GRAFANA_ADMIN_PASSWORD=${{ secrets.GRAFANA_ADMIN_PASSWORD }}' >> .env
-            
+
             # docker-compose 파일 생성
             echo '${{ secrets.DOCKER_COMPOSE_STAGING_YML }}' > docker-compose-staging.yml
-            
+
             # nginx 설정 파일 생성
             echo '${{ secrets.NGINX_STAGING_CONF }}' > ./nginx/staging.conf
             
