@@ -10,11 +10,17 @@ services:
       MYSQL_DATABASE: haruharu
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
+      TZ: Asia/Seoul  # 타임존 설정
     volumes:
       - mysql-data:/var/lib/mysql
     command:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
+      - --character-set-client-handshake=FALSE
+      - --init-connect=SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci
+      - --init-connect=SET collation_connection = utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+      - --default-time-zone=+09:00  # MySQL 타임존 설정
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
