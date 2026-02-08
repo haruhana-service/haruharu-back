@@ -35,6 +35,8 @@ public class AsyncConfig implements AsyncConfigurer {
         executor.setThreadNamePrefix("haruharu-async-");
         executor.setWaitForTasksToCompleteOnShutdown(true); // 종료 시 작업을 완료할 때까지 대기
         executor.setAwaitTerminationSeconds(30); // 종료 시 최대 대기 시간 설정
+        executor.setRejectedExecutionHandler(new java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy()); // 작업 거부 시 호출한 스레드에서 실행
+
         executor.setTaskDecorator(new MdcTaskDecorator()); // MDC 전파
         executor.initialize();
 
