@@ -60,13 +60,12 @@ services:
     networks:
       - haruharu-network
 
-  # Monitoring: Prometheus
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:3.5.1
     container_name: haruharu-prometheus
     restart: unless-stopped
-    ports:
-      - "9090:9090"
+    expose:
+      - "9090"  # 컨테이너 간 통신만 허용 (외부 노출 X)
     volumes:
       - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
@@ -74,19 +73,17 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
       - '--storage.tsdb.retention.time=7d'
-      - '--web.enable-lifecycle'
     networks:
       - haruharu-network
     depends_on:
       - app
 
-  # Monitoring: Grafana
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:12.3.2
     container_name: haruharu-grafana
     restart: unless-stopped
-    ports:
-      - "3001:3000"
+    expose:
+      - "3000"  # 컨테이너 간 통신만 허용 (외부 노출 X)
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
