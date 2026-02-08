@@ -77,6 +77,8 @@ jobs:
             echo 'DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}' >> .env
             echo 'DB_USER=${{ secrets.DB_USER }}' >> .env
             echo 'DB_PASSWORD=${{ secrets.DB_PASSWORD }}' >> .env
+            echo 'GRAFANA_ADMIN_USER=${{ secrets.GRAFANA_ADMIN_USER }}' >> .env
+            echo 'GRAFANA_ADMIN_PASSWORD=${{ secrets.GRAFANA_ADMIN_PASSWORD }}' >> .env
             
             # docker-compose 파일 생성
             echo '${{ secrets.DOCKER_COMPOSE_STAGING_YML }}' > docker-compose-staging.yml
