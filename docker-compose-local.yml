@@ -1,16 +1,16 @@
 services:
   mysql:
-    image: mysql:8.4.0
+    image: mysql:8.0
     ports:
       - "3306:3306"
-    container_name: haruharu-mysql
+    container_name: haruharu-mysql-local
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: haruharu
       MYSQL_USER: ${DB_USER}
       MYSQL_PASSWORD: ${DB_PASSWORD}
-      TZ: Asia/Seoul  # 타임존 설정
+      TZ: Asia/Seoul
     volumes:
       - mysql-data:/var/lib/mysql
     command:
@@ -20,7 +20,7 @@ services:
       - --init-connect=SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci
       - --init-connect=SET collation_connection = utf8mb4_unicode_ci
       - --skip-character-set-client-handshake
-      - --default-time-zone=+09:00  # MySQL 타임존 설정
+      - --default-time-zone=+09:00
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
