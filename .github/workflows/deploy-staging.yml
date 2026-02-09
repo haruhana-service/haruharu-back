@@ -84,18 +84,24 @@ jobs:
             cd ~/haruharu-staging
 
             # 환경변수 파일 생성
-            echo 'DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}' > .env
-            echo 'DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}' >> .env
-            echo 'DB_USER=${{ secrets.DB_USER }}' >> .env
-            echo 'DB_PASSWORD=${{ secrets.DB_PASSWORD }}' >> .env
-            echo 'GRAFANA_ADMIN_USER=${{ secrets.GRAFANA_ADMIN_USER }}' >> .env
-            echo 'GRAFANA_ADMIN_PASSWORD=${{ secrets.GRAFANA_ADMIN_PASSWORD }}' >> .env
+            cat > .env << 'EOF'
+            DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
+            DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            GRAFANA_ADMIN_USER=${{ secrets.GRAFANA_ADMIN_USER }}
+            GRAFANA_ADMIN_PASSWORD=${{ secrets.GRAFANA_ADMIN_PASSWORD }}
+            EOF
 
             # docker-compose 파일 생성
-            echo '${{ secrets.DOCKER_COMPOSE_STAGING_YML }}' > docker-compose-staging.yml
+            cat > docker-compose-staging.yml << 'EOF'
+            ${{ secrets.DOCKER_COMPOSE_STAGING_YML }}
+            EOF
 
             # nginx 설정 파일 생성
-            echo '${{ secrets.NGINX_STAGING_CONF }}' > ./nginx/staging.conf
+            cat > ./nginx/staging.conf << 'EOF'
+            ${{ secrets.NGINX_STAGING_CONF }}
+            EOF
 
             # 1. app 컨테이너만 중지 (인프라 컨테이너는 유지)
             docker-compose -f docker-compose-staging.yml stop app || true

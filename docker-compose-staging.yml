@@ -116,7 +116,7 @@ services:
     expose:
       - "9104"
     environment:
-      DATA_SOURCE_NAME: "${DB_USER}:${DB_PASSWORD}@(mysql:3306)/"
+      DATA_SOURCE_NAME: ${DB_USER}:${DB_PASSWORD}@tcp(mysql:3306)/
     networks:
       - haruharu-network
     depends_on:
