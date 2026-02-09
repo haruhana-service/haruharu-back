@@ -6,6 +6,7 @@ global:
     environment: 'staging'
 
 scrape_configs:
+  # Spring Boot Application
   - job_name: 'spring-boot-haruhana'
     metrics_path: '/actuator/prometheus'
     static_configs:
@@ -13,3 +14,17 @@ scrape_configs:
         labels:
           application: 'haruhana'
           instance: 'staging-server'
+
+  # System Metrics (Node Exporter)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          instance: 'staging-server'
+
+  # MySQL Metrics (MySQL Exporter)
+  - job_name: 'mysql-exporter'
+    static_configs:
+      - targets: ['mysql-exporter:9104']
+        labels:
+          instance: 'staging-mysql'
