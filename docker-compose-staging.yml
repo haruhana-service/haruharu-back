@@ -92,6 +92,37 @@ services:
     depends_on:
       - prometheus
 
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: haruharu-node-exporter
+    restart: unless-stopped
+    expose:
+      - "9100"
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    networks:
+      - haruharu-network
+
+  mysql-exporter:
+    image: prom/mysqld-exporter:latest
+    container_name: haruharu-mysql-exporter
+    restart: unless-stopped
+    expose:
+      - "9104"
+    environment:
+      DATA_SOURCE_NAME: "${DB_USER}:${DB_PASSWORD}@(mysql:3306)/"
+    networks:
+      - haruharu-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+
 volumes:
   mysql-data:
     driver: local
