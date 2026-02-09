@@ -12,9 +12,9 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
     command:
-    - --character-set-server=utf8mb4
-    - --collation-server=utf8mb4_unicode_ci
-    - --default-time-zone=+09:00
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-time-zone=+09:00
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
@@ -108,20 +108,6 @@ services:
       - /:/rootfs:ro
     networks:
       - haruharu-network
-
-  mysql-exporter:
-    image: prom/mysqld-exporter:latest
-    container_name: haruharu-mysql-exporter
-    restart: unless-stopped
-    expose:
-      - "9104"
-    environment:
-      DATA_SOURCE_NAME: ${DB_USER}:${DB_PASSWORD}@tcp(mysql:3306)/
-    networks:
-      - haruharu-network
-    depends_on:
-      mysql:
-        condition: service_healthy
 
 volumes:
   mysql-data:
