@@ -61,7 +61,7 @@ services:
       - haruharu-network
 
   prometheus:
-    image: prom/prometheus:3.5.1
+    image: prom/prometheus:v3.5.1
     container_name: haruharu-prometheus
     restart: unless-stopped
     expose:
