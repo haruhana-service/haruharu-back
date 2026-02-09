@@ -60,8 +60,8 @@ services:
     image: prom/prometheus:v3.5.1
     container_name: haruharu-prometheus
     restart: unless-stopped
-    expose:
-      - "9090"  # 컨테이너 간 통신만 허용 (외부 노출 X)
+    ports:
+      - "127.0.0.1:9090:9090"  # 로컬에서만 접근 가능 (보안)
     volumes:
       - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
@@ -78,8 +78,8 @@ services:
     image: grafana/grafana:12.3.2
     container_name: haruharu-grafana
     restart: unless-stopped
-    expose:
-      - "3000"  # 컨테이너 간 통신만 허용 (외부 노출 X)
+    ports:
+      - "127.0.0.1:3000:3000"
     environment:
       - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
