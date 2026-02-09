@@ -97,8 +97,8 @@ jobs:
             # nginx 설정 파일 생성
             echo '${{ secrets.NGINX_STAGING_CONF }}' > ./nginx/staging.conf
 
-            # 1. 기존 컨테이너 중지 및 제거
-            docker-compose -f docker-compose-staging.yml down --remove-orphans || true
+            # 1. app 컨테이너만 중지 (인프라 컨테이너는 유지)
+            docker-compose -f docker-compose-staging.yml stop app || true
 
             # 2. 디스크 공간 확보 - 사용하지 않는 이미지 정리
             docker image prune -a -f || true
@@ -119,8 +119,14 @@ jobs:
             # 6. 새 Docker 이미지 가져오기
             docker pull ${{ secrets.DOCKER_USERNAME }}/haruharu-staging:latest
 
-            # 7. 컨테이너 시작
-            docker-compose -f docker-compose-staging.yml up -d
+            # 7. 인프라 컨테이너 확인 및 시작 (MySQL, Nginx, Prometheus, Grafana)
+            docker-compose -f docker-compose-staging.yml up -d mysql nginx prometheus grafana
 
-            # 8. 최종 정리
+            # 8. app 컨테이너만 재배포 (Zero-downtime deployment)
+            docker-compose -f docker-compose-staging.yml up -d --no-deps --force-recreate app
+
+            # 9. 최종 정리
             docker image prune -f || true
+
+            # 10. 배포 완료 확인
+            docker-compose -f docker-compose-staging.yml ps
