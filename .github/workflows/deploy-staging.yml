@@ -96,17 +96,31 @@ jobs:
 
             # nginx 설정 파일 생성
             echo '${{ secrets.NGINX_STAGING_CONF }}' > ./nginx/staging.conf
-            
-            # Docker 이미지 가져오기
-            docker pull ${{ secrets.DOCKER_USERNAME }}/haruharu-staging:latest
-            
-            # 기존 컨테이너 중지
+
+            # 1. 기존 컨테이너 중지 및 제거
             docker-compose -f docker-compose-staging.yml down --remove-orphans || true
-            
-            docker-compose -f docker-compose-staging.yml up -d
-            docker image prune -f
-            
+
+            # 2. 디스크 공간 확보 - 사용하지 않는 이미지 정리
+            docker image prune -a -f || true
+
+            # 3. 오래된 haruharu-staging 이미지 삭제 (latest 제외)
             docker images "${{ secrets.DOCKER_USERNAME }}/haruharu-staging" --format "{{.ID}} {{.Tag}}" | \
             grep -v "latest" | \
             awk '{print $1}' | \
             xargs -r docker rmi -f || true
+
+            # 4. 빌드 캐시 및 dangling 볼륨 정리
+            docker builder prune -f || true
+            docker volume prune -f || true
+
+            # 5. 디스크 공간 확인
+            df -h / | grep -v Filesystem
+
+            # 6. 새 Docker 이미지 가져오기
+            docker pull ${{ secrets.DOCKER_USERNAME }}/haruharu-staging:latest
+
+            # 7. 컨테이너 시작
+            docker-compose -f docker-compose-staging.yml up -d
+
+            # 8. 최종 정리
+            docker image prune -f || true
