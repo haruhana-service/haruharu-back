@@ -24,7 +24,7 @@ import org.springframework.web.cors.CorsConfiguration;
 @Configuration
 public class SecurityConfig {
 
-    private static final List<String> ALLOWED_ORIGINS = List.of("http://localhost:3000", "https://haruharu.vercel.app");
+    private static final List<String> ALLOWED_ORIGINS = List.of("http://localhost:5173", "https://haruharu.vercel.app");
     private static final List<String> ALLOWED_METHODS = List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS");
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
