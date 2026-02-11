@@ -5,9 +5,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
+import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.ControllerTestSupport;
 import org.kwakmunsu.haruhana.domain.streak.service.dto.response.StreakResponse;
+import org.kwakmunsu.haruhana.domain.streak.service.dto.response.WeeklySolvedStatusResponse;
 import org.kwakmunsu.haruhana.security.annotation.TestMember;
 
 class StreakControllerTest extends ControllerTestSupport {
@@ -19,6 +22,7 @@ class StreakControllerTest extends ControllerTestSupport {
         var streakResponse = StreakResponse.builder()
                 .currentStreak(5L)
                 .maxStreak(10L)
+                .weeklySolvedStatus(List.of(new WeeklySolvedStatusResponse(LocalDate.now(), true)))
                 .build();
         given(streakService.getStreak(any())).willReturn(streakResponse);
 
@@ -28,7 +32,8 @@ class StreakControllerTest extends ControllerTestSupport {
                 .hasStatusOk()
                 .bodyJson()
                 .hasPathSatisfying("data.currentStreak", v -> v.assertThat().isEqualTo(streakResponse.currentStreak().intValue()))
-                .hasPathSatisfying("data.maxStreak", v -> v.assertThat().isEqualTo(streakResponse.maxStreak().intValue()));
+                .hasPathSatisfying("data.maxStreak", v -> v.assertThat().isEqualTo(streakResponse.maxStreak().intValue()))
+                .hasPathSatisfying("data.weeklySolvedStatus", v -> v.assertThat().isNotNull());
     }
 
 }

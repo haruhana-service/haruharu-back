@@ -1,6 +1,7 @@
 package org.kwakmunsu.haruhana.domain.streak.service.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
 import lombok.Builder;
 import org.kwakmunsu.haruhana.domain.streak.entity.Streak;
 
@@ -11,13 +12,17 @@ public record StreakResponse(
         Long currentStreak,
 
         @Schema(description = "최대 연속 일수", example = "10")
-        Long maxStreak
+        Long maxStreak,
+
+        @Schema(description = "주간 풀이 여부 리스트")
+        List<WeeklySolvedStatusResponse> weeklySolvedStatus
 ) {
 
-    public static StreakResponse from(Streak streak) {
+    public static StreakResponse from(Streak streak, List<WeeklySolvedStatusResponse> weeklySolvedStatus) {
         return StreakResponse.builder()
                 .currentStreak(streak.getCurrentStreak())
                 .maxStreak(streak.getMaxStreak())
+                .weeklySolvedStatus(weeklySolvedStatus)
                 .build();
     }
 

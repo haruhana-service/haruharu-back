@@ -1,10 +1,12 @@
 package org.kwakmunsu.haruhana.domain.streak.service;
 
 import jakarta.persistence.OptimisticLockException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kwakmunsu.haruhana.domain.streak.entity.Streak;
 import org.kwakmunsu.haruhana.domain.streak.service.dto.response.StreakResponse;
+import org.kwakmunsu.haruhana.domain.streak.service.dto.response.WeeklySolvedStatusResponse;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -36,12 +38,14 @@ public class StreakService {
     }
 
     // NOTE: Caching 적용 필요성 검토
+    @Transactional(readOnly = true)
     public StreakResponse getStreak(Long memberId) {
         Streak streak = streakReader.getByMemberId(memberId);
+        List<WeeklySolvedStatusResponse> weeklySolvedStatus = streakReader.getWeeklySolvedStatus(memberId);
 
         log.debug("[StreakService] 현재 스트릭 조회 완료 - memberId: {}, currentStreak: {}", memberId, streak.getCurrentStreak());
 
-        return StreakResponse.from(streak);
+        return StreakResponse.from(streak, weeklySolvedStatus);
     }
 
 }
