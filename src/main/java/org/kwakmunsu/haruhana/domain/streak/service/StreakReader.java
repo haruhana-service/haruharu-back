@@ -25,26 +25,24 @@ public class StreakReader {
                 .orElseThrow(() -> new HaruHanaException(ErrorType.NOT_FOUND_STREAK));
     }
 
-
     /**
      *  회원의 최근 7일간 풀이 현황을 조회한다.
      *  @param memberId 회원 ID
-
+     *
      *  @return List<WeeklySolvedStatusResponse> 최근 7일간 풀이 현황 리스트
-    * */
+    **/
     public List<WeeklySolvedStatusResponse> getWeeklySolvedStatus(Long memberId) {
         LocalDate today = LocalDate.now();
         LocalDate sevenDaysAgo = today.minusDays(6);
 
-        List<DailyProblem> dailyProblems = dailyProblemJpaRepository.findByMemberIdAndAssignedAtBetweenAndIsSolvedTrueAndStatus(
+        List<DailyProblem> dailyProblems = dailyProblemJpaRepository.findSolvedByMemberIdAndDateRange(
                 memberId,
                 sevenDaysAgo,
                 today,
                 EntityStatus.ACTIVE
         );
 
-        return WeeklySolvedStatusResponse.from(dailyProblems);
-
+        return WeeklySolvedStatusResponse.from(dailyProblems, today);
     }
 
 }

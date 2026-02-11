@@ -2,10 +2,10 @@ package org.kwakmunsu.haruhana.domain.streak.service.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import lombok.Builder;
 import org.kwakmunsu.haruhana.domain.dailyproblem.entity.DailyProblem;
 
@@ -19,20 +19,13 @@ public record WeeklySolvedStatusResponse(
         boolean isSolved
 ) {
 
-    public static List<WeeklySolvedStatusResponse> from(List<DailyProblem> dailyProblems) {
-        LocalDate today = LocalDate.now();
-        List<LocalDate> last7Days = new ArrayList<>();
-        for (int i = 6; i >= 0; i--) {
-            last7Days.add(today.minusDays(i));
-        }
-
-        // solved된 날짜들만
+    public static List<WeeklySolvedStatusResponse> from(List<DailyProblem> dailyProblems, LocalDate today) {
         Set<LocalDate> solvedDates = dailyProblems.stream()
-                .filter(DailyProblem::isSolved)
                 .map(DailyProblem::getAssignedAt)
                 .collect(Collectors.toSet());
 
-        return last7Days.stream()
+        return IntStream.rangeClosed(0, 6)
+                .mapToObj(i -> today.minusDays(6 - i))
                 .map(date -> WeeklySolvedStatusResponse.builder()
                         .date(date)
                         .isSolved(solvedDates.contains(date))
