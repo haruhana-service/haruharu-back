@@ -55,4 +55,11 @@ public interface DailyProblemJpaRepository extends JpaRepository<DailyProblem, L
             @Param("status") EntityStatus status
     );
 
+    List<DailyProblem> findByMemberIdAndAssignedAtBetweenAndIsSolvedTrueAndStatus(
+            Long memberId,
+            LocalDate startDate,
+            LocalDate endDate,
+            EntityStatus status
+    );
+
 }

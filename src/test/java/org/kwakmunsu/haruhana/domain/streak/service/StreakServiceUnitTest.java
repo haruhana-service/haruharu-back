@@ -6,12 +6,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 
+import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.UnitTestSupport;
 import org.kwakmunsu.haruhana.domain.member.MemberFixture;
 import org.kwakmunsu.haruhana.domain.member.enums.Role;
 import org.kwakmunsu.haruhana.domain.streak.entity.Streak;
 import org.kwakmunsu.haruhana.domain.streak.service.dto.response.StreakResponse;
+import org.kwakmunsu.haruhana.domain.streak.service.dto.response.WeeklySolvedStatusResponse;
 import org.kwakmunsu.haruhana.global.support.error.ErrorType;
 import org.kwakmunsu.haruhana.global.support.error.HaruHanaException;
 import org.mockito.InjectMocks;
@@ -31,7 +34,9 @@ class StreakServiceUnitTest extends UnitTestSupport {
         var member = MemberFixture.createMember(Role.ROLE_MEMBER);
         var streak = Streak.create(member);
 
+        var weeklySolvedStatusResponse = new WeeklySolvedStatusResponse(LocalDate.now(), true);
         given(streakReader.getByMemberId(any())).willReturn(streak);
+        given(streakReader.getWeeklySolvedStatus(any())).willReturn(List.of(weeklySolvedStatusResponse));
 
         // when
         StreakResponse response = streakService.getStreak(member.getId());
@@ -39,10 +44,12 @@ class StreakServiceUnitTest extends UnitTestSupport {
         // then
         assertThat(response).isNotNull().extracting(
                 StreakResponse::currentStreak,
-                StreakResponse::maxStreak
+                StreakResponse::maxStreak,
+                StreakResponse::weeklySolvedStatus
         ).containsExactly(
                 streak.getCurrentStreak(),
-                streak.getMaxStreak()
+                streak.getMaxStreak(),
+                List.of(weeklySolvedStatusResponse)
         );
     }
 
