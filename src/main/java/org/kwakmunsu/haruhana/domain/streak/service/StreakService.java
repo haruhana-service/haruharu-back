@@ -38,6 +38,7 @@ public class StreakService {
     }
 
     // NOTE: Caching 적용 필요성 검토
+    @Transactional(readOnly = true)
     public StreakResponse getStreak(Long memberId) {
         Streak streak = streakReader.getByMemberId(memberId);
         List<WeeklySolvedStatusResponse> weeklySolvedStatus = streakReader.getWeeklySolvedStatus(memberId);
