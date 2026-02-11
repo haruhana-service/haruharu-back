@@ -23,6 +23,7 @@ public record MemberProfileResponse(
         @Schema(description = "학습 문제 난이도", example = "EASY")
         String difficulty,
 
+        @Schema(description = "조회용 presignedUrl", example = "https://example.com/profile-image.jpg")
         String profileImageUrl
 ) {
 

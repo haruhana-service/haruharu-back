@@ -15,6 +15,12 @@ public interface StorageProvider {
     * */
     PresignedUrlResponse generatePresignedUploadUrl(UploadType uploadType, FileContentType fileContentType);
 
+    /**
+     * 읽기용 Presigned URL 생성
+     * @param objectKey - S3 객체 키
+     *
+     * @return String - 읽기용 Presigned URL - 1시간 유효
+     * */
     String generatePresignedReadUrl(String objectKey);
 
     /**
