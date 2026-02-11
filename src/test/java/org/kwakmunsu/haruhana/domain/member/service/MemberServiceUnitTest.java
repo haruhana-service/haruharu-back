@@ -17,6 +17,7 @@ import org.kwakmunsu.haruhana.domain.member.entity.MemberPreference;
 import org.kwakmunsu.haruhana.domain.member.enums.Role;
 import org.kwakmunsu.haruhana.domain.member.service.dto.request.UpdatePreference;
 import org.kwakmunsu.haruhana.domain.problem.enums.ProblemDifficulty;
+import org.kwakmunsu.haruhana.global.support.image.StorageProvider;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
@@ -28,6 +29,9 @@ class MemberServiceUnitTest extends UnitTestSupport {
     @Mock
     MemberManager memberManager;
 
+    @Mock
+    StorageProvider storageProvider;
+
     @InjectMocks
     MemberService memberService;
 
@@ -37,7 +41,11 @@ class MemberServiceUnitTest extends UnitTestSupport {
         var member = MemberFixture.createMember(Role.ROLE_MEMBER);
         var memberPreference = MemberPreference.create(member, CategoryTopic.create(1L, "알고리즘"), ProblemDifficulty.EASY, LocalDate.now());
 
+        member.updateProfileImageObjectKey("profile-image-key");
+        var profileImageUrl = "https://presigned-url.com/profile-image";
+
         given(memberReader.getMemberPreference(member.getId())).willReturn(memberPreference);
+        given(storageProvider.generatePresignedReadUrl(member.getProfileImageObjectKey())).willReturn(profileImageUrl);
 
         // when
         var memberProfileResponse = memberService.getProfile(member.getId());
@@ -48,12 +56,14 @@ class MemberServiceUnitTest extends UnitTestSupport {
                         MemberProfileResponse::loginId,
                         MemberProfileResponse::nickname,
                         MemberProfileResponse::categoryTopicName,
-                        MemberProfileResponse::difficulty
+                        MemberProfileResponse::difficulty,
+                        MemberProfileResponse::profileImageUrl
                 ).containsExactly(
                         member.getLoginId(),
                         member.getNickname(),
                         memberPreference.getCategoryTopic().getName(),
-                        memberPreference.getDifficulty().name()
+                        memberPreference.getDifficulty().name(),
+                        profileImageUrl
                 );
     }
 

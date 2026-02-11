@@ -52,7 +52,8 @@ class MemberControllerTest extends ControllerTestSupport {
                 "nickname",
                 LocalDateTime.now(),
                 "알고리즘",
-                ProblemDifficulty.EASY.name()
+                ProblemDifficulty.EASY.name(),
+                null
         );
         given(memberService.getProfile(any())).willReturn(memberProfileResponse);
 
