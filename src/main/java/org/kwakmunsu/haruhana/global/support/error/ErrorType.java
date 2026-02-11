@@ -69,7 +69,7 @@ public enum ErrorType {
     AWS_S3_ERROR           (HttpStatus.INTERNAL_SERVER_ERROR, "AWS S3 내부 에러", LogLevel.ERROR),
     FAILED_TO_UPLOAD_FILE  (HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패하였습니다.", LogLevel.ERROR),
     FILE_SIZE_EXCEEDED     (HttpStatus.INTERNAL_SERVER_ERROR, "파일 크기가 허용된 최대 크기를 초과하였습니다.", LogLevel.ERROR),
-    S3_PRESIGNED_URL_ERROR (HttpStatus.INTERNAL_SERVER_ERROR,"업로드용 presigned-url 생성에 실패하였습니다." , LogLevel.ERROR),
+    S3_PRESIGNED_URL_ERROR (HttpStatus.INTERNAL_SERVER_ERROR,"presigned-url 생성에 실패하였습니다." , LogLevel.ERROR),
     ;
 
     private final HttpStatus status;

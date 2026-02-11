@@ -21,10 +21,12 @@ public record MemberProfileResponse(
         String categoryTopicName,
 
         @Schema(description = "학습 문제 난이도", example = "EASY")
-        String difficulty
+        String difficulty,
+
+        String profileImageUrl
 ) {
 
-    public static MemberProfileResponse from(MemberPreference memberPreference) {
+    public static MemberProfileResponse from(MemberPreference memberPreference, String profileImageUrl) {
         // NOTE: fetch join 사용으로 N + 1 문제 안터져요!
         return MemberProfileResponse.builder()
                 .loginId(memberPreference.getMember().getLoginId())
@@ -32,6 +34,7 @@ public record MemberProfileResponse(
                 .createdAt(memberPreference.getMember().getCreatedAt())
                 .categoryTopicName(memberPreference.getCategoryTopic().getName())
                 .difficulty(memberPreference.getDifficulty().name())
+                .profileImageUrl(profileImageUrl)
                 .build();
     }
 

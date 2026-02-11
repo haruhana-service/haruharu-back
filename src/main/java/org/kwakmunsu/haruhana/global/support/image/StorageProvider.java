@@ -15,6 +15,8 @@ public interface StorageProvider {
     * */
     PresignedUrlResponse generatePresignedUploadUrl(UploadType uploadType, FileContentType fileContentType);
 
+    String generatePresignedReadUrl(String objectKey);
+
     /**
      * S3 객체 존재 여부 확인
      * @param objectKey - S3 객체 키

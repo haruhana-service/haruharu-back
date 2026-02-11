@@ -18,6 +18,8 @@ import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
@@ -27,6 +29,7 @@ import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignReques
 public class S3Provider implements StorageProvider {
 
     private static final int DEFAULT_UPLOAD_EXPIRATION_MINUTES = 3;
+    private static final int DEFAULT_READ_EXPIRATION_HOURS = 1;
 
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
@@ -69,6 +72,25 @@ public class S3Provider implements StorageProvider {
     }
 
     @Override
+    public String generatePresignedReadUrl(String objectKey) {
+        try {
+            GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                    .signatureDuration(Duration.ofHours(DEFAULT_READ_EXPIRATION_HOURS))
+                    .getObjectRequest(g -> {
+                        g.bucket(bucket);
+                        g.key(objectKey);
+                    })
+                    .build();
+            PresignedGetObjectRequest presignedGetObjectRequest = s3Presigner.presignGetObject(presignRequest);
+
+            return presignedGetObjectRequest.url().toString();
+        } catch (Exception e) {
+            log.error("[S3Provider] Get Presigned URL 생성 실패", e);
+            throw new HaruHanaException(ErrorType.S3_PRESIGNED_URL_ERROR);
+        }
+    }
+
+    @Override
     public void ensureObjectExists(String objectKey) {
         try {
             s3Client.headObject(r -> r
@@ -87,7 +109,9 @@ public class S3Provider implements StorageProvider {
     @Async
     @Override
     public void deleteObjectAsync(String oldKey) {
-        if (oldKey == null || oldKey.isBlank()) return;
+        if (oldKey == null || oldKey.isBlank()) {
+            return;
+        }
 
         try {
             s3Client.deleteObject(r -> r

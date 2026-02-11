@@ -12,6 +12,7 @@ import org.kwakmunsu.haruhana.domain.member.service.dto.request.UpdateProfile;
 import org.kwakmunsu.haruhana.domain.problem.service.ProblemGenerator;
 import org.kwakmunsu.haruhana.domain.storage.service.StorageManager;
 import org.kwakmunsu.haruhana.domain.streak.service.StreakManager;
+import org.kwakmunsu.haruhana.global.support.image.StorageProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,7 @@ public class MemberService {
     private final StreakManager streakManager;
     private final MemberDeviceManager memberDeviceManager;
     private final StorageManager storageManager;
+    private final StorageProvider storageProvider;
 
     @Transactional
     public Long createMember(NewProfile newProfile, NewPreference newPreference) {
@@ -51,7 +53,12 @@ public class MemberService {
         // memberPreference를 통해 회원 정보와 선호 학습 정보를 함께 조회
         MemberPreference memberPreference = memberReader.getMemberPreference(memberId);
 
-        return MemberProfileResponse.from(memberPreference);
+        String profileImageObjectKey = memberPreference.getMember().getProfileImageObjectKey();
+        String presignedReadUrl = profileImageObjectKey != null
+                ? storageProvider.generatePresignedReadUrl(profileImageObjectKey)
+                : null;
+
+        return MemberProfileResponse.from(memberPreference, presignedReadUrl);
     }
 
     /**

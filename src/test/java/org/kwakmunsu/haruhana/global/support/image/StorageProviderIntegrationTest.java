@@ -17,7 +17,7 @@ class StorageProviderIntegrationTest extends IntegrationTestSupport {
     final StorageProvider storageProvider;
 
     @Test
-    void presignedUrl을_생성한다() {
+    void 업로드용_presignedUrl을_생성한다() {
         // when
         var presignedUrlResponse = storageProvider.generatePresignedUploadUrl(UploadType.PROFILE_IMAGE, FileContentType.GIF);
 
@@ -28,6 +28,19 @@ class StorageProviderIntegrationTest extends IntegrationTestSupport {
         ).doesNotContainNull();
 
         log.info("presignedUrlResponse={}", presignedUrlResponse.toString());
+    }
+
+    @Test
+    void 읽기용_presignedUrl을_생성한다() {
+        // when
+        var uploadPresignedUrlResponse = storageProvider.generatePresignedUploadUrl(UploadType.PROFILE_IMAGE, FileContentType.GIF);
+
+        var readPresignedUrl = storageProvider.generatePresignedReadUrl(uploadPresignedUrlResponse.objectKey());
+
+        // then
+        assertThat(readPresignedUrl).isNotNull();
+
+        log.info("readPresignedUrl={}", readPresignedUrl);
     }
 
 }
