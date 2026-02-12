@@ -44,7 +44,8 @@ public class MemberDevice extends BaseEntity {
         return memberDevice;
     }
 
-    public void updateLastSyncedAt(LocalDateTime now) {
+    public void updateDeviceToken(String deviceToken, LocalDateTime now) {
+        this.deviceToken = deviceToken;
         this.lastSyncedAt = now;
     }
 

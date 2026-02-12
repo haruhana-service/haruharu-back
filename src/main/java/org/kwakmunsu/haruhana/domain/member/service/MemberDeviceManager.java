@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.kwakmunsu.haruhana.domain.member.entity.Member;
 import org.kwakmunsu.haruhana.domain.member.entity.MemberDevice;
 import org.kwakmunsu.haruhana.domain.member.repository.MemberDeviceJpaRepository;
-import org.kwakmunsu.haruhana.global.entity.EntityStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,9 +19,10 @@ public class MemberDeviceManager {
 
     @Transactional
     public void syncDeviceToken(Long memberId, String deviceToken, LocalDateTime now) {
-        memberDeviceJpaRepository.findByMemberIdAndDeviceTokenAndStatus(memberId, deviceToken, EntityStatus.ACTIVE)
+        // NOTE: 현재 회원당 디바이스 토큰은 1명이라 findByMemberId로 처리 가능하지만, 추후 다중 디바이스 지원을 위해 MemberIdAndDeviceToken 기준으로 조회하도록 변경
+        memberDeviceJpaRepository.findByMemberId(memberId)
                 .ifPresentOrElse(
-                        memberDevice -> memberDevice.updateLastSyncedAt(now),
+                        memberDevice -> memberDevice.updateDeviceToken(deviceToken, now),
                         () -> registerNewDeviceToken(memberId, deviceToken, now)
                 );
     }
