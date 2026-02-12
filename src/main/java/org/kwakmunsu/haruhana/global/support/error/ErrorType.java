@@ -46,7 +46,7 @@ public enum ErrorType {
 
     // NOTIFICATION
     NOT_FOUND_NOTIFICATION (HttpStatus.NOT_FOUND, "알림을 찾을 수 없습니다.", LogLevel.INFO),
-    FCM_SEND_ERROR         (HttpStatus.INTERNAL_SERVER_ERROR, "FCM 알림 발송에 실패했습니다.", LogLevel.ERROR),
+    FCM_SEND_ERROR         (HttpStatus.INTERNAL_SERVER_ERROR, "FCM 메세지 전송에 실패했습니다.", LogLevel.ERROR),
 
     // STORAGE
     STORAGE_ISSUE_NOT_FOUND(HttpStatus.FORBIDDEN, "해당 이슈의 파일이 존재하지 않거나 접근 권한이 없습니다.", LogLevel.WARN),
