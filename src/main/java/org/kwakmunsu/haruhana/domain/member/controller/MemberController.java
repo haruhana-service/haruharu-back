@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -78,8 +79,11 @@ public class MemberController extends MemberDocsController {
 
     @Override
     @DeleteMapping("/v1/members/devices")
-    public ResponseEntity<Void> deleteDevices(@LoginMember Long memberId) {
-        memberService.deleteDeviceTokens(memberId);
+    public ResponseEntity<Void> deleteDevices(
+            @RequestParam String deviceToken,
+            @LoginMember Long memberId
+    ) {
+        memberService.deleteDeviceTokens(deviceToken, memberId);
 
         return ResponseEntity.noContent().build();
     }

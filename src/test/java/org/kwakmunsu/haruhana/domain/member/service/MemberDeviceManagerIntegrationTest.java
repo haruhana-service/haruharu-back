@@ -7,10 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.IntegrationTestSupport;
 import org.kwakmunsu.haruhana.domain.member.MemberFixture;
+import org.kwakmunsu.haruhana.domain.member.entity.MemberDevice;
 import org.kwakmunsu.haruhana.domain.member.enums.Role;
 import org.kwakmunsu.haruhana.domain.member.repository.MemberDeviceJpaRepository;
 import org.kwakmunsu.haruhana.domain.member.repository.MemberJpaRepository;
-import org.kwakmunsu.haruhana.global.entity.EntityStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
@@ -35,18 +35,19 @@ class MemberDeviceManagerIntegrationTest extends IntegrationTestSupport {
         memberDeviceManager.syncDeviceToken(member.getId(), DEVICE_TOKEN, now);
 
         // then
-        var memberDevice = memberDeviceJpaRepository.findByMemberIdAndDeviceTokenAndStatus(
-                member.getId(),
-                DEVICE_TOKEN,
-                EntityStatus.ACTIVE
-        ).orElseThrow();
+        var memberDevice = memberDeviceJpaRepository.findByMemberIdAndDeviceToken(member.getId(), DEVICE_TOKEN).orElseThrow();
 
-        assertThat(memberDevice.getMember()).isEqualTo(member);
-        assertThat(memberDevice.getDeviceToken()).isEqualTo(DEVICE_TOKEN);
+        assertThat(memberDevice).extracting(
+                MemberDevice::getDeviceToken,
+                MemberDevice::getLastSyncedAt
+        ).containsExactly(
+                DEVICE_TOKEN,
+                now
+        );
     }
 
     @Test
-    void 이미_등록된_디바이스_토큰이_있다면_동기화_시간만_업데이트_한다() {
+    void 이미_등록된_디바이스_토큰이_있다면_동기화_시간을_업데이트_한다() {
         // given
         LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
         var member = MemberFixture.createMemberWithOutId(Role.ROLE_MEMBER);
@@ -59,14 +60,15 @@ class MemberDeviceManagerIntegrationTest extends IntegrationTestSupport {
         memberDeviceManager.syncDeviceToken(member.getId(), DEVICE_TOKEN, now);
 
         // then
-        var memberDevice = memberDeviceJpaRepository.findByMemberIdAndDeviceTokenAndStatus(
-                member.getId(),
+        var memberDevice = memberDeviceJpaRepository.findByMemberIdAndDeviceToken(member.getId(), DEVICE_TOKEN).orElseThrow();
+
+        assertThat(memberDevice).extracting(
+                MemberDevice::getDeviceToken,
+                MemberDevice::getLastSyncedAt
+        ).containsExactly(
                 DEVICE_TOKEN,
-                EntityStatus.ACTIVE
-        ).orElseThrow();
-
-        assertThat(memberDevice.getLastSyncedAt()).isEqualTo(now);
-
+                now
+        );
     }
 
 }

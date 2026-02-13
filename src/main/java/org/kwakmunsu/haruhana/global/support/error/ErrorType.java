@@ -28,10 +28,10 @@ public enum ErrorType {
     DUPLICATE_NICKNAME                       (HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다.", LogLevel.INFO),
 
     // MEMBER DEVICE
-    NOT_FOUND_MEMBER_DEVICE                  (HttpStatus.NOT_FOUND, "회원 디바이스 정보를 찾을 수 없습니다.", LogLevel.INFO),
+    NOT_FOUND_MEMBER_DEVICE (HttpStatus.NOT_FOUND, "회원 디바이스 정보를 찾을 수 없습니다.", LogLevel.INFO),
 
     // STREAK
-    NOT_FOUND_STREAK                         (HttpStatus.NOT_FOUND, "스트릭 정보를 찾을 수 없습니다.", LogLevel.INFO),
+    NOT_FOUND_STREAK (HttpStatus.NOT_FOUND, "스트릭 정보를 찾을 수 없습니다.", LogLevel.INFO),
 
     // DAILY PROBLEM
     NOT_FOUND_DAILY_PROBLEM  (HttpStatus.NOT_FOUND, "오늘의 문제를 찾을 수 없습니다.", LogLevel.INFO),
@@ -46,14 +46,16 @@ public enum ErrorType {
 
     // NOTIFICATION
     NOT_FOUND_NOTIFICATION (HttpStatus.NOT_FOUND, "알림을 찾을 수 없습니다.", LogLevel.INFO),
-    FCM_SEND_ERROR         (HttpStatus.INTERNAL_SERVER_ERROR, "FCM 알림 발송에 실패했습니다.", LogLevel.ERROR),
+    FCM_SEND_ERROR         (HttpStatus.INTERNAL_SERVER_ERROR, "FCM 메세지 전송에 실패했습니다.", LogLevel.ERROR),
 
     // STORAGE
     STORAGE_ISSUE_NOT_FOUND(HttpStatus.FORBIDDEN, "해당 이슈의 파일이 존재하지 않거나 접근 권한이 없습니다.", LogLevel.WARN),
 
     // FIREBASE
-    FIREBASE_INIT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Firebase 초기화에 실패했습니다.", LogLevel.ERROR),
-    FIREBASE_AUTH_ERROR          (HttpStatus.UNAUTHORIZED, "Firebase 인증에 실패했습니다.", LogLevel.WARN),
+    FIREBASE_AUTH_ERROR (HttpStatus.UNAUTHORIZED, "Firebase 인증에 실패했습니다.", LogLevel.WARN),
+    INVALID_FCM_TOKEN   (HttpStatus.BAD_REQUEST, "유효하지 않은 FCM 토큰입니다.", LogLevel.INFO),
+    NOT_FOUND_FCM_TOKEN (HttpStatus.NOT_FOUND, "FCM 토큰을 찾을 수 없습니다.", LogLevel.INFO),
+    FIREBASE_INIT_ERROR (HttpStatus.INTERNAL_SERVER_ERROR, "Firebase 초기화에 실패했습니다.", LogLevel.ERROR),
 
     // JWT
     EMPTY_TOKEN                        (HttpStatus.UNAUTHORIZED, "JWT 토큰이 존재하지 않습니다.", LogLevel.WARN),

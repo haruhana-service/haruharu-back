@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.kwakmunsu.haruhana.domain.member.entity.Member;
 import org.kwakmunsu.haruhana.domain.member.entity.MemberDevice;
 import org.kwakmunsu.haruhana.domain.member.repository.MemberDeviceJpaRepository;
-import org.kwakmunsu.haruhana.global.entity.EntityStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +19,7 @@ public class MemberDeviceManager {
 
     @Transactional
     public void syncDeviceToken(Long memberId, String deviceToken, LocalDateTime now) {
-        memberDeviceJpaRepository.findByMemberIdAndDeviceTokenAndStatus(memberId, deviceToken, EntityStatus.ACTIVE)
+        memberDeviceJpaRepository.findByMemberIdAndDeviceToken(memberId, deviceToken)
                 .ifPresentOrElse(
                         memberDevice -> memberDevice.updateLastSyncedAt(now),
                         () -> registerNewDeviceToken(memberId, deviceToken, now)
@@ -38,11 +37,10 @@ public class MemberDeviceManager {
         log.info("[MemberDeviceManager] new 디바이스 토큰 등록 memberId: {}", memberId);
     }
 
-
     @Transactional
-    public void deleteAllByMemberId(Long memberId) {
+    public void deleteDeviceToken(String deviceToken, Long memberId) {
         // 디바이스 토크은 Hard Delete 처리
-        memberDeviceJpaRepository.deleteAllByMemberId(memberId);
+        memberDeviceJpaRepository.deleteByMemberIdAndDeviceToken(memberId, deviceToken);
     }
 
 }

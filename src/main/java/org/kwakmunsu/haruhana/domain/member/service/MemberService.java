@@ -21,12 +21,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class MemberService {
 
+    // NOTE: 의존성이 너무 많이 엮여있는데 리팩토링이 필요해 보임
     private final MemberManager memberManager;
     private final MemberReader memberReader;
     private final MemberValidator memberValidator;
     private final ProblemGenerator problemGenerator;
     private final StreakManager streakManager;
     private final MemberDeviceManager memberDeviceManager;
+    private final MemberDeviceValidator memberDeviceValidator;
     private final StorageManager storageManager;
     private final StorageProvider storageProvider;
 
@@ -102,11 +104,14 @@ public class MemberService {
 
     /**
      * 회원 디바이스 토큰 삭제
-     * @param memberId 회원 식별자
-     * - hard delete 처리
-     * */
-    public void deleteDeviceTokens(Long memberId) {
-        memberDeviceManager.deleteAllByMemberId(memberId);
+     *
+     * @param deviceToken 디바이스 토큰 - hard delete 처리
+     * @param memberId 회원 식별자 - hard delete 처리
+     **/
+    public void deleteDeviceTokens(String deviceToken, Long memberId) {
+        memberDeviceValidator.validateDeleteDeviceToken(deviceToken, memberId);
+
+        memberDeviceManager.deleteDeviceToken(deviceToken, memberId);
     }
 
 }
