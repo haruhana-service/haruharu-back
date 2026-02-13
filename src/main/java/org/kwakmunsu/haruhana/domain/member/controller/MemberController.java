@@ -2,7 +2,6 @@ package org.kwakmunsu.haruhana.domain.member.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.kwakmunsu.haruhana.domain.member.controller.dto.DeviceTokenDeleteRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.DeviceTokenSyncRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.MemberCreateRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.PreferenceUpdateRequest;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -80,10 +80,10 @@ public class MemberController extends MemberDocsController {
     @Override
     @DeleteMapping("/v1/members/devices")
     public ResponseEntity<Void> deleteDevices(
-            @RequestBody @Valid DeviceTokenDeleteRequest request,
+            @RequestParam String deviceToken,
             @LoginMember Long memberId
     ) {
-        memberService.deleteDeviceTokens(request.deviceToken(), memberId);
+        memberService.deleteDeviceTokens(deviceToken, memberId);
 
         return ResponseEntity.noContent().build();
     }
