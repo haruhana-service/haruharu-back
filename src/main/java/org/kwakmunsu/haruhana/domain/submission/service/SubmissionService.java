@@ -1,6 +1,7 @@
 package org.kwakmunsu.haruhana.domain.submission.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.kwakmunsu.haruhana.domain.dailyproblem.entity.DailyProblem;
 import org.kwakmunsu.haruhana.domain.dailyproblem.service.DailyProblemReader;
 import org.kwakmunsu.haruhana.domain.submission.entity.Submission;
@@ -11,6 +12,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class SubmissionService {
@@ -47,6 +49,9 @@ public class SubmissionService {
                 submission.isOnTime(),
                 result.isFirstSubmission()
         ));
+
+        log.info("[SubmissionService] 문제 제출 완료 - memberId: {}, dailyProblemId: {}, submissionId: {}, isOnTime: {}, isFirstSubmission: {}",
+                memberId, dailyProblemId, submission.getId(), submission.isOnTime(), result.isFirstSubmission());
 
         return SubmissionResponse.of(submission, dailyProblem);
     }
