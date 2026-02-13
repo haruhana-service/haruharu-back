@@ -17,7 +17,7 @@ import org.kwakmunsu.haruhana.global.entity.BaseEntity;
 public class MemberDevice extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, unique = true)
+    @JoinColumn(nullable = false)
     private Member member;
 
     @Column(nullable = false, length = 512)
