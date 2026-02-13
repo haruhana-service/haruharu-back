@@ -28,7 +28,6 @@ public class MemberService {
     private final ProblemGenerator problemGenerator;
     private final StreakManager streakManager;
     private final MemberDeviceManager memberDeviceManager;
-    private final MemberDeviceValidator memberDeviceValidator;
     private final StorageManager storageManager;
     private final StorageProvider storageProvider;
 
@@ -99,8 +98,6 @@ public class MemberService {
     *
     **/
     public void syncDeviceTokens(Long memberId, String deviceToken) {
-        memberDeviceValidator.validateDeviceToken(deviceToken);
-
         memberDeviceManager.syncDeviceToken(memberId, deviceToken, LocalDateTime.now());
     }
 

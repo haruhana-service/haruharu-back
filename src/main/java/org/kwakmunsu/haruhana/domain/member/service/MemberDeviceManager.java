@@ -19,10 +19,9 @@ public class MemberDeviceManager {
 
     @Transactional
     public void syncDeviceToken(Long memberId, String deviceToken, LocalDateTime now) {
-        // NOTE: 현재 회원당 디바이스 토큰은 1명이라 findByMemberId로 처리 가능하지만, 추후 다중 디바이스 지원을 위해 MemberIdAndDeviceToken 기준으로 조회하도록 변경
-        memberDeviceJpaRepository.findByMemberId(memberId)
+        memberDeviceJpaRepository.findByMemberIdAndDeviceToken(memberId, deviceToken)
                 .ifPresentOrElse(
-                        memberDevice -> memberDevice.updateDeviceToken(deviceToken, now),
+                        memberDevice -> memberDevice.updateLastSyncedAt(now),
                         () -> registerNewDeviceToken(memberId, deviceToken, now)
                 );
     }
@@ -37,7 +36,6 @@ public class MemberDeviceManager {
 
         log.info("[MemberDeviceManager] new 디바이스 토큰 등록 memberId: {}", memberId);
     }
-
 
     @Transactional
     public void deleteAllByMemberId(Long memberId) {

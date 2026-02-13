@@ -7,8 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MemberDeviceJpaRepository extends JpaRepository<MemberDevice, Long> {
 
-    Optional<MemberDevice> findByMemberId(Long memberId);
+    Optional<MemberDevice> findByMemberIdAndDeviceToken(Long memberId, String deviceToken);
     Optional<MemberDevice> findByMemberIdAndStatus(Long memberId, EntityStatus status);
     void deleteAllByMemberId(Long memberId);
+    void deleteByMemberIdAndDeviceToken(Long memberId, String deviceToken);
 
 }

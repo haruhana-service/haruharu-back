@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 class MemberDeviceManagerIntegrationTest extends IntegrationTestSupport {
 
     static final String DEVICE_TOKEN = "device-token-123";
-    static final String NEW_DEVICE_TOKEN = "new-device-token-123";
 
     final MemberDeviceManager memberDeviceManager;
     final MemberJpaRepository memberJpaRepository;
@@ -36,14 +35,19 @@ class MemberDeviceManagerIntegrationTest extends IntegrationTestSupport {
         memberDeviceManager.syncDeviceToken(member.getId(), DEVICE_TOKEN, now);
 
         // then
-        var memberDevice = memberDeviceJpaRepository.findByMemberId(member.getId()).orElseThrow();
+        var memberDevice = memberDeviceJpaRepository.findByMemberIdAndDeviceToken(member.getId(), DEVICE_TOKEN).orElseThrow();
 
-        assertThat(memberDevice.getMember()).isEqualTo(member);
-        assertThat(memberDevice.getDeviceToken()).isEqualTo(DEVICE_TOKEN);
+        assertThat(memberDevice).extracting(
+                MemberDevice::getDeviceToken,
+                MemberDevice::getLastSyncedAt
+        ).containsExactly(
+                DEVICE_TOKEN,
+                now
+        );
     }
 
     @Test
-    void 이미_등록된_디바이스_토큰이_있다면_토큰과_동기화_시간을_업데이트_한다() {
+    void 이미_등록된_디바이스_토큰이_있다면_동기화_시간을_업데이트_한다() {
         // given
         LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
         var member = MemberFixture.createMemberWithOutId(Role.ROLE_MEMBER);
@@ -53,16 +57,16 @@ class MemberDeviceManagerIntegrationTest extends IntegrationTestSupport {
 
         // when
         LocalDateTime now = LocalDateTime.now();
-        memberDeviceManager.syncDeviceToken(member.getId(), NEW_DEVICE_TOKEN, now);
+        memberDeviceManager.syncDeviceToken(member.getId(), DEVICE_TOKEN, now);
 
         // then
-        var memberDevice = memberDeviceJpaRepository.findByMemberId(member.getId()).orElseThrow();
+        var memberDevice = memberDeviceJpaRepository.findByMemberIdAndDeviceToken(member.getId(), DEVICE_TOKEN).orElseThrow();
 
         assertThat(memberDevice).extracting(
                 MemberDevice::getDeviceToken,
                 MemberDevice::getLastSyncedAt
         ).containsExactly(
-                NEW_DEVICE_TOKEN,
+                DEVICE_TOKEN,
                 now
         );
     }
