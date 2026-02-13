@@ -79,8 +79,8 @@ public class MemberService {
 
         member.updateProfile(updateProfile.nickname());
 
-        log.info("[MemberService] 프로필 업데이트 완료 - memberId: {}, nickname: {}, hasProfileImage: {}",
-                memberId, updateProfile.nickname(), updateProfile.profileImageKey() != null);
+        log.info("[MemberService] 프로필 업데이트 완료 - memberId: {}, hasProfileImage: {}",
+                memberId, updateProfile.profileImageKey() != null);
     }
 
     @Transactional
