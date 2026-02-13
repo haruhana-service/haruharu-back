@@ -38,9 +38,9 @@ public class MemberDeviceManager {
     }
 
     @Transactional
-    public void deleteAllByMemberId(Long memberId) {
+    public void deleteDeviceToken(String deviceToken, Long memberId) {
         // 디바이스 토크은 Hard Delete 처리
-        memberDeviceJpaRepository.deleteAllByMemberId(memberId);
+        memberDeviceJpaRepository.deleteByMemberIdAndDeviceToken(memberId, deviceToken);
     }
 
 }

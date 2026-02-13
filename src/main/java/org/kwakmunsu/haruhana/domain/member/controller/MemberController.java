@@ -2,6 +2,7 @@ package org.kwakmunsu.haruhana.domain.member.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.kwakmunsu.haruhana.domain.member.controller.dto.DeviceTokenDeleteRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.DeviceTokenSyncRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.MemberCreateRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.PreferenceUpdateRequest;
@@ -78,8 +79,11 @@ public class MemberController extends MemberDocsController {
 
     @Override
     @DeleteMapping("/v1/members/devices")
-    public ResponseEntity<Void> deleteDevices(@LoginMember Long memberId) {
-        memberService.deleteDeviceTokens(memberId);
+    public ResponseEntity<Void> deleteDevices(
+            @RequestBody @Valid DeviceTokenDeleteRequest request,
+            @LoginMember Long memberId
+    ) {
+        memberService.deleteDeviceTokens(request.deviceToken(), memberId);
 
         return ResponseEntity.noContent().build();
     }

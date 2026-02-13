@@ -5,11 +5,13 @@ import static org.kwakmunsu.haruhana.global.support.error.ErrorType.DEFAULT_ERRO
 import static org.kwakmunsu.haruhana.global.support.error.ErrorType.DUPLICATE_LOGIN_ID;
 import static org.kwakmunsu.haruhana.global.support.error.ErrorType.DUPLICATE_NICKNAME;
 import static org.kwakmunsu.haruhana.global.support.error.ErrorType.NOT_FOUND_CATEGORY;
+import static org.kwakmunsu.haruhana.global.support.error.ErrorType.NOT_FOUND_FCM_TOKEN;
 import static org.kwakmunsu.haruhana.global.support.error.ErrorType.NOT_FOUND_MEMBER;
 import static org.kwakmunsu.haruhana.global.support.error.ErrorType.UNAUTHORIZED_ERROR;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.kwakmunsu.haruhana.domain.member.controller.dto.DeviceTokenDeleteRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.DeviceTokenSyncRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.MemberCreateRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.PreferenceUpdateRequest;
@@ -129,8 +131,12 @@ public abstract class MemberDocsController {
     @ApiExceptions(values = {
             UNAUTHORIZED_ERROR,
             NOT_FOUND_MEMBER,
+            NOT_FOUND_FCM_TOKEN,
             DEFAULT_ERROR
     })
-    public abstract ResponseEntity<Void> deleteDevices(Long memberId);
+    public abstract ResponseEntity<Void> deleteDevices(
+            DeviceTokenDeleteRequest request,
+            Long memberId
+    );
 
 }
