@@ -78,6 +78,9 @@ public class MemberService {
         storageManager.completeUpload(updateProfile.profileImageKey(), member);
 
         member.updateProfile(updateProfile.nickname());
+
+        log.info("[MemberService] 프로필 업데이트 완료 - memberId: {}, hasProfileImage: {}",
+                memberId, updateProfile.profileImageKey() != null);
     }
 
     @Transactional
@@ -86,10 +89,14 @@ public class MemberService {
 
         // 기존 선호 학습 정보와 동일한 경우 업데이트하지 않음
         if (memberPreference.isEqualsPreference(updatePreference.categoryTopicId(), updatePreference.difficulty())) {
+            log.debug("[MemberService] 선호도 변경 없음 - memberId: {}", memberId);
             return;
         }
 
         memberManager.updatePreference(memberPreference, updatePreference);
+
+        log.info("[MemberService] 학습 선호도 업데이트 완료 - memberId: {}, categoryTopicId: {}, difficulty: {}",
+                memberId, updatePreference.categoryTopicId(), updatePreference.difficulty());
     }
 
     /**
@@ -100,6 +107,8 @@ public class MemberService {
     **/
     public void syncDeviceTokens(Long memberId, String deviceToken) {
         memberDeviceManager.syncDeviceToken(memberId, deviceToken, LocalDateTime.now());
+
+        log.info("[MemberService] 디바이스 토큰 동기화 완료 - memberId: {}", memberId);
     }
 
     /**
@@ -112,6 +121,8 @@ public class MemberService {
         memberDeviceValidator.validateDeleteDeviceToken(deviceToken, memberId);
 
         memberDeviceManager.deleteDeviceToken(deviceToken, memberId);
+
+        log.info("[MemberService] 디바이스 토큰 삭제 완료 - memberId: {}", memberId);
     }
 
 }
