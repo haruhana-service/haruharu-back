@@ -1,5 +1,7 @@
 package org.kwakmunsu.haruhana.domain.scheduler;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
@@ -33,6 +35,28 @@ class DeviceTokenSchedulerIntegrationTest extends IntegrationTestSupport {
         // when
         deviceTokenScheduler.clearExpiredDeviceToken();
 
+        // then
+        assertThat(memberDeviceJpaRepository.findByMemberIdAndDeviceToken(member.getId(), "active-device-token"))
+                .isEmpty();
+    }
+
+    @Test
+    void 만료되지_않은_DeviceToken을_삭제되지_않는다() {
+        // given
+        var member = MemberFixture.createMemberWithOutId(Role.ROLE_MEMBER);
+        memberJpaRepository.save(member);
+        memberDeviceJpaRepository.save(MemberDevice.register(
+                member,
+                "active-device-token",
+                LocalDateTime.now().minusDays(10))
+        );
+
+        // when
+        deviceTokenScheduler.clearExpiredDeviceToken();
+
+        // then
+        assertThat(memberDeviceJpaRepository.findByMemberIdAndDeviceToken(member.getId(), "active-device-token"))
+                .isPresent();
     }
 
 }
