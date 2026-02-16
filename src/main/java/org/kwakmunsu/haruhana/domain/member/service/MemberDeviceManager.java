@@ -39,8 +39,13 @@ public class MemberDeviceManager {
 
     @Transactional
     public void deleteDeviceToken(String deviceToken, Long memberId) {
-        // 디바이스 토크은 Hard Delete 처리
+        // 디바이스 토큰은 Hard Delete 처리
         memberDeviceJpaRepository.deleteByMemberIdAndDeviceToken(memberId, deviceToken);
+    }
+
+    @Transactional
+    public int deleteExpiredTokensBatch(LocalDateTime cutoffDateTime, int batchSize) {
+        return memberDeviceJpaRepository.deleteExpiredTokensBatch(cutoffDateTime, batchSize);
     }
 
 }
