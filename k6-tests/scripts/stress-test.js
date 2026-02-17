@@ -102,9 +102,8 @@ export function setup() {
 
 // VU별 고유 계정으로 로그인
 function login() {
-  const vuId = __VU; // k6의 VU ID (1부터 시작)
   const user = {
-    loginId: `perf_user_${vuId}`,
+    loginId: `perf_user_${__VU}`,
     password: TEST_PASSWORD
   };
 

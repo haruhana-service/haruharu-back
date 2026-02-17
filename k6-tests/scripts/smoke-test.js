@@ -34,8 +34,8 @@ export const options = {
 const BASE_URL = __ENV.BASE_URL || 'http://localhost:8080';
 const TEST_PASSWORD = 'TestPassword1@';
 
-// VU별 토큰 캐시
-const tokenCache = {};
+// VU별 토큰 캐시 (각 VU는 독립적인 인스턴스를 가짐)
+let token = null;
 
 // 테스트 시작 전 계정 검증
 export function setup() {
@@ -60,16 +60,13 @@ export function setup() {
 
 // VU별 고유 계정으로 로그인
 function login() {
-  const vuId = __VU;
-  const cacheKey = `vu_${vuId}`;
-
-  // 캐시된 토큰이 있으면 반환
-  if (tokenCache[cacheKey]) {
-    return tokenCache[cacheKey];
+  // 캐시된 토큰이 있으면 반환 (각 VU는 자신만의 token 변수를 가짐)
+  if (token) {
+    return token;
   }
 
   const user = {
-    loginId: `perf_user_${vuId}`,
+    loginId: `perf_user_${__VU}`,
     password: TEST_PASSWORD
   };
 
@@ -86,8 +83,8 @@ function login() {
     try {
       const body = JSON.parse(res.body);
       if (body.data && body.data.accessToken) {
-        tokenCache[cacheKey] = body.data.accessToken;
-        return tokenCache[cacheKey];
+        token = body.data.accessToken;
+        return token;
       }
     } catch (e) {}
   }
