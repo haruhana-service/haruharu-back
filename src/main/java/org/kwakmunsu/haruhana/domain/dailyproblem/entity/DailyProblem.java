@@ -3,8 +3,10 @@ package org.kwakmunsu.haruhana.domain.dailyproblem.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -13,6 +15,11 @@ import org.kwakmunsu.haruhana.domain.member.entity.Member;
 import org.kwakmunsu.haruhana.domain.problem.entity.Problem;
 import org.kwakmunsu.haruhana.global.entity.BaseEntity;
 
+@Table(
+        indexes = {
+                @Index(name = "idx_member_date_solved", columnList = "member_id, assigned_at, is_solved")
+        }
+)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
