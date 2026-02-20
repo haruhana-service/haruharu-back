@@ -25,6 +25,7 @@ public class MemberService {
     private final MemberManager memberManager;
     private final MemberReader memberReader;
     private final MemberValidator memberValidator;
+    private final MemberRemover memberRemover;
     private final ProblemGenerator problemGenerator;
     private final StreakManager streakManager;
     private final MemberDeviceManager memberDeviceManager;
@@ -123,6 +124,12 @@ public class MemberService {
         memberDeviceManager.deleteDeviceToken(deviceToken, memberId);
 
         log.info("[MemberService] 디바이스 토큰 삭제 완료 - memberId: {}", memberId);
+    }
+
+    public void withdraw(Long memberId) {
+        memberRemover.remove(memberId);
+
+        log.info("[MemberService] 회원 탈퇴 완료 - memberId: {}", memberId);
     }
 
 }

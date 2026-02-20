@@ -67,6 +67,14 @@ public class MemberController extends MemberDocsController {
     }
 
     @Override
+    @DeleteMapping("/v1/members")
+    public ResponseEntity<Void> withdraw(@LoginMember Long memberId) {
+        memberService.withdraw(memberId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
     @PatchMapping("/v1/members/devices")
     public ResponseEntity<ApiResponse<?>> syncDevices(
             @RequestBody @Valid DeviceTokenSyncRequest request,

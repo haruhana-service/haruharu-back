@@ -121,6 +121,23 @@ public abstract class MemberDocsController {
     );
 
     @Operation(
+            summary = "회원 탈퇴 - JWT [O]",
+            description = """
+                    ### 회원을 탈퇴 처리합니다.
+                    - 회원 및 관련 데이터(스트릭, 제출, 오늘의 문제 등)를 soft delete 처리합니다.
+                    - 프로필 이미지가 있는 경우 S3에서도 삭제됩니다.
+                    - 성공 시 빈 응답을 반환합니다.
+                    """
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "204", description = "회원 탈퇴 성공")
+    @ApiExceptions(values = {
+            UNAUTHORIZED_ERROR,
+            NOT_FOUND_MEMBER,
+            DEFAULT_ERROR
+    })
+    public abstract ResponseEntity<Void> withdraw(Long memberId);
+
+    @Operation(
             summary = "디바이스 토큰 삭제 - JWT [O]",
             description = """
                     ### 디바이스 토큰을 삭제합니다.
