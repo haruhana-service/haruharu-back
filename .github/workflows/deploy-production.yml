@@ -1,8 +1,8 @@
-name: haruharu-deploy-staging
+name: haruharu-deploy-production
 on:
   push:
     branches:
-      - dev
+      - main
 
 jobs:
   deploy:
@@ -27,7 +27,7 @@ jobs:
           mkdir -p ./src/main/resources
           cd ./src/main/resources
           echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
-          echo "${{ secrets.APPLICATION_STAGING_YML }}" > ./application-staging.yml
+          echo "${{ secrets.APPLICATION_PROD_YML }}" > ./application-prod.yml
           echo "${{ secrets.APPLICATION_LOCAL_YML }}" > ./application-local.yml
           echo "${{ secrets.APPLICATION_TEST_YML }}" > ./application-test.yml
           echo "${{ secrets.APPLICATION_S3_YML }}" > ./application-s3.yml
@@ -58,58 +58,55 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/haruharu-staging:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/haruharu-prod:latest
 
       - name: monitoring 설정 파일 EC2로 복사
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.EC2_STAGING_HOST }}
+          host: ${{ secrets.EC2_PROD_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           port: 22
           source: "monitoring/"
-          target: "~/haruharu-staging/"
+          target: "~/haruharu-prod/"
           strip_components: 0
 
       - name: AWS EC2에 배포
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.EC2_STAGING_HOST }}
+          host: ${{ secrets.EC2_PROD_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           port: 22
           script: |
-            mkdir -p ~/haruharu-staging/nginx
-            cd ~/haruharu-staging
+            mkdir -p ~/haruharu-prod/nginx
+            cd ~/haruharu-prod
 
             # 환경변수 파일 생성
             cat > .env << 'EOF'
             DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
-            DB_ROOT_PASSWORD=${{ secrets.DB_ROOT_PASSWORD }}
-            DB_USER=${{ secrets.DB_USER }}
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             GRAFANA_ADMIN_USER=${{ secrets.GRAFANA_ADMIN_USER }}
             GRAFANA_ADMIN_PASSWORD=${{ secrets.GRAFANA_ADMIN_PASSWORD }}
             EOF
 
             # docker-compose 파일 생성
-            cat > docker-compose-staging.yml << 'EOF'
-            ${{ secrets.DOCKER_COMPOSE_STAGING_YML }}
+            cat > docker-compose-prod.yml << 'EOF'
+            ${{ secrets.DOCKER_COMPOSE_PROD_YML }}
             EOF
 
             # nginx 설정 파일 생성
-            cat > ./nginx/staging.conf << 'EOF'
-            ${{ secrets.NGINX_STAGING_CONF }}
+            cat > ./nginx/prod.conf << 'EOF'
+            ${{ secrets.NGINX_PROD_CONF }}
             EOF
 
             # 1. app 컨테이너만 중지 (인프라 컨테이너는 유지)
-            docker-compose -f docker-compose-staging.yml stop app || true
+            docker-compose -f docker-compose-prod.yml stop app || true
 
             # 2. 디스크 공간 확보 - 사용하지 않는 이미지 정리
             docker image prune -a -f || true
 
-            # 3. 오래된 haruharu-staging 이미지 삭제 (latest 제외)
-            docker images "${{ secrets.DOCKER_USERNAME }}/haruharu-staging" --format "{{.ID}} {{.Tag}}" | \
+            # 3. 오래된 haruharu-prod 이미지 삭제 (latest 제외)
+            docker images "${{ secrets.DOCKER_USERNAME }}/haruharu-prod" --format "{{.ID}} {{.Tag}}" | \
             grep -v "latest" | \
             awk '{print $1}' | \
             xargs -r docker rmi -f || true
@@ -122,16 +119,16 @@ jobs:
             df -h / | grep -v Filesystem
 
             # 6. 새 Docker 이미지 가져오기
-            docker pull ${{ secrets.DOCKER_USERNAME }}/haruharu-staging:latest
+            docker pull ${{ secrets.DOCKER_USERNAME }}/haruharu-prod:latest
 
-            # 7. 인프라 컨테이너 확인 및 시작 (MySQL, Nginx, Prometheus, Grafana)
-            docker-compose -f docker-compose-staging.yml up -d mysql nginx prometheus grafana
+            # 7. 인프라 컨테이너 확인 및 시작 (Nginx, Prometheus, Grafana)
+            docker-compose -f docker-compose-prod.yml up -d nginx prometheus grafana
 
             # 8. app 컨테이너만 재배포 (Zero-downtime deployment)
-            docker-compose -f docker-compose-staging.yml up -d --no-deps --force-recreate app
+            docker-compose -f docker-compose-prod.yml up -d --no-deps --force-recreate app
 
             # 9. 최종 정리
             docker image prune -f || true
 
             # 10. 배포 완료 확인
-            docker-compose -f docker-compose-staging.yml ps
+            docker-compose -f docker-compose-prod.yml ps
