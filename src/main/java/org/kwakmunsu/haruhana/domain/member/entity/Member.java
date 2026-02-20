@@ -11,6 +11,9 @@ import lombok.NoArgsConstructor;
 import org.kwakmunsu.haruhana.domain.member.enums.Role;
 import org.kwakmunsu.haruhana.global.entity.BaseEntity;
 import org.kwakmunsu.haruhana.global.security.jwt.TokenHasher;
+import org.kwakmunsu.haruhana.global.support.error.ErrorType;
+import org.kwakmunsu.haruhana.global.support.error.HaruHanaException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -70,10 +73,6 @@ public class Member extends BaseEntity {
         this.refreshToken = null;
     }
 
-    public boolean isGuest() {
-        return role == Role.ROLE_GUEST;
-    }
-
     public void updateProfileImageObjectKey(String profileImageObjectKey) {
         this.profileImageObjectKey = profileImageObjectKey;
     }
@@ -85,6 +84,12 @@ public class Member extends BaseEntity {
 
     public boolean hasMatchingNickname(String nickname) {
         return this.nickname.equals(nickname);
+    }
+
+    public void validatePassword(PasswordEncoder passwordEncoder, String targetPassword) {
+        if (!passwordEncoder.matches(targetPassword, this.password)) {
+            throw new HaruHanaException(ErrorType.INVALID_ACCOUNT);
+        }
     }
 
 }
