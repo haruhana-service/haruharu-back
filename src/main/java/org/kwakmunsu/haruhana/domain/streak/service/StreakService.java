@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.kwakmunsu.haruhana.domain.streak.entity.Streak;
 import org.kwakmunsu.haruhana.domain.streak.service.dto.response.StreakResponse;
 import org.kwakmunsu.haruhana.domain.streak.service.dto.response.WeeklySolvedStatusResponse;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -22,6 +24,7 @@ public class StreakService {
     private final StreakManager streakManager;
     private final StreakReader streakReader;
 
+    @CacheEvict(cacheNames = "streak", key = "#memberId")
     @Retryable(
             retryFor = {
                     OptimisticLockException.class,
@@ -37,7 +40,7 @@ public class StreakService {
         log.info("[StreakService] 스트릭 증가 완료 - memberId: {}", memberId);
     }
 
-    // NOTE: Caching 적용 필요성 검토
+    @Cacheable(cacheNames = "streak", key = "#memberId")
     @Transactional(readOnly = true)
     public StreakResponse getStreak(Long memberId) {
         Streak streak = streakReader.getByMemberId(memberId);

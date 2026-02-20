@@ -8,6 +8,8 @@ import org.kwakmunsu.haruhana.domain.submission.entity.Submission;
 import org.kwakmunsu.haruhana.domain.submission.event.SubmissionCompletedEvent;
 import org.kwakmunsu.haruhana.domain.submission.service.dto.response.SubmissionResponse;
 import org.kwakmunsu.haruhana.domain.submission.service.dto.response.SubmissionResult;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +36,10 @@ public class SubmissionService {
 
      * @return SubmissionResponse 제출 응답 DTO
      */
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "todayProblem",       key = "#memberId + ':' + T(java.time.LocalDate).now()"),
+            @CacheEvict(cacheNames = "dailyProblemDetail", key = "#memberId + ':' + #dailyProblemId")
+    })
     @Transactional
     public SubmissionResponse submitSolution(Long dailyProblemId, Long memberId, String userAnswer) {
         DailyProblem dailyProblem = dailyProblemReader.find(dailyProblemId, memberId);

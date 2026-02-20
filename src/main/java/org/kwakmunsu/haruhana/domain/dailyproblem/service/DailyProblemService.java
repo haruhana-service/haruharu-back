@@ -9,6 +9,7 @@ import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.DailyProb
 import org.kwakmunsu.haruhana.domain.dailyproblem.service.dto.response.TodayProblemResponse;
 import org.kwakmunsu.haruhana.domain.submission.entity.Submission;
 import org.kwakmunsu.haruhana.domain.submission.service.SubmissionReader;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +24,7 @@ public class DailyProblemService {
      * 오늘의 문제 조회
      * @param memberId 회원 ID
      */
-    @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "todayProblem", key = "#memberId + ':' + T(java.time.LocalDate).now()")
     public TodayProblemResponse getTodayProblem(Long memberId) {
         DailyProblem dailyProblem = dailyProblemReader.findDailyProblemByMember(memberId);
 
@@ -35,6 +36,7 @@ public class DailyProblemService {
      * @param dailyProblemId 오늘의 문제 ID
      * @param memberId 회원 ID
      */
+    @Cacheable(cacheNames = "dailyProblemDetail", key = "#memberId + ':' + #dailyProblemId")
     @Transactional(readOnly = true)
     public DailyProblemDetailResponse getDailyProblem(Long dailyProblemId, Long memberId) {
         DailyProblem dailyProblem = dailyProblemReader.find(dailyProblemId, memberId);
