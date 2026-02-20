@@ -27,7 +27,7 @@ public class MemberReader {
     public Member findByAccount(String loginId, String password) {
         Member member = memberJpaRepository.findByLoginIdAndStatus(loginId, EntityStatus.ACTIVE)
                 .orElseThrow(() -> new HaruHanaException(ErrorType.INVALID_ACCOUNT));
-
+        // 도메인 로직으로 옮길 예정
         if (!passwordEncoder.matches(password, member.getPassword())) {
             throw new HaruHanaException(ErrorType.INVALID_ACCOUNT);
         }

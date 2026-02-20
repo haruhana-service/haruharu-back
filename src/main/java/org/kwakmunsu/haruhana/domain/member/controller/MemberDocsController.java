@@ -10,9 +10,7 @@ import static org.kwakmunsu.haruhana.global.support.error.ErrorType.NOT_FOUND_ME
 import static org.kwakmunsu.haruhana.global.support.error.ErrorType.UNAUTHORIZED_ERROR;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.kwakmunsu.haruhana.domain.member.controller.dto.DeviceTokenDeleteRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.DeviceTokenSyncRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.MemberCreateRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.PreferenceUpdateRequest;

@@ -10,6 +10,7 @@ import org.kwakmunsu.haruhana.global.entity.EntityStatus;
 import org.kwakmunsu.haruhana.global.support.error.ErrorType;
 import org.kwakmunsu.haruhana.global.support.error.HaruHanaException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Component
@@ -17,6 +18,7 @@ public class DailyProblemReader {
 
     private final DailyProblemJpaRepository dailyProblemJpaRepository;
 
+    @Transactional(readOnly = true)
     public DailyProblem findDailyProblemByMember(Long memberId) {
         return dailyProblemJpaRepository.findByMemberIdAndAssignedAtAndStatus(
                 memberId,
@@ -30,6 +32,7 @@ public class DailyProblemReader {
                 .orElseThrow(() -> new HaruHanaException(ErrorType.NOT_FOUND_DAILY_PROBLEM));
     }
 
+    @Transactional(readOnly = true)
     public Optional<DailyProblem> findDailyProblem(LocalDate assignedAt, Long memberId) {
         if (assignedAt == null) {
             assignedAt = LocalDate.now();
