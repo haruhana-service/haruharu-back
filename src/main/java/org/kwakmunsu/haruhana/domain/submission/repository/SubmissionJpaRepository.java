@@ -14,7 +14,7 @@ public interface SubmissionJpaRepository extends JpaRepository<Submission, Long>
     Optional<Submission> findByMemberIdAndDailyProblemIdAndStatus(Long memberId, Long dailyProblemId, EntityStatus status);
 
     @Modifying
-    @Query("UPDATE Submission s SET s.status = :status, s.updatedAt = :now WHERE s.member.id = :memberId")
+    @Query("UPDATE Submission s SET s.status = :status, s.updatedAt = :now WHERE s.member.id = :memberId AND s.status = 'ACTIVE'")
     void softDeleteByMemberId(@Param("memberId") Long memberId, @Param("status") EntityStatus status, @Param("now") LocalDateTime now);
 
 }

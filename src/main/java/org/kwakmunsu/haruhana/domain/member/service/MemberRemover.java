@@ -54,7 +54,7 @@ public class MemberRemover {
 
         // 3. 관련 도메인 데이터 일괄 soft delete (디바이스 정보는 Hard Delete)
         streakJpaRepository.softDeleteByMemberId(memberId, EntityStatus.DELETED, now);
-        memberDeviceJpaRepository.deleteAllByMemberId(memberId); // Hard Delete - 탈퇴 시 디바이스 정보 완전 삭제
+        memberDeviceJpaRepository.deleteAllByMemberId(memberId);
         submissionJpaRepository.softDeleteByMemberId(memberId, EntityStatus.DELETED, now);
         dailyProblemJpaRepository.softDeleteByMemberId(memberId, EntityStatus.DELETED, now);
         memberPreferenceJpaRepository.softDeleteByMemberId(memberId, EntityStatus.DELETED, now);
@@ -67,7 +67,13 @@ public class MemberRemover {
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
-                s3ObjectKeysToDelete.forEach(storageProvider::deleteObjectAsync);
+                s3ObjectKeysToDelete.forEach(key -> {
+                    try {
+                        storageProvider.deleteObjectAsync(key);
+                    } catch (Exception e) {
+                        log.warn("[MemberRemover] S3 오브젝트 삭제 실패 - memberId: {}, key: {}", memberId, key, e);
+                    }
+                });
             }
         });
 

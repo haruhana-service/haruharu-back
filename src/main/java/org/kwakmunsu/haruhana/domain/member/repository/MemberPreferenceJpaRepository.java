@@ -20,6 +20,6 @@ public interface MemberPreferenceJpaRepository extends JpaRepository<MemberPrefe
     Optional<MemberPreference> findByMemberIdWithMember(@Param("memberId") Long memberId, @Param("status") EntityStatus status);
 
     @Modifying
-    @Query("UPDATE MemberPreference mp SET mp.status = :status, mp.updatedAt = :now WHERE mp.member.id = :memberId")
+    @Query("UPDATE MemberPreference mp SET mp.status = :status, mp.updatedAt = :now WHERE mp.member.id = :memberId AND mp.status = 'ACTIVE'")
     void softDeleteByMemberId(@Param("memberId") Long memberId, @Param("status") EntityStatus status, @Param("now") LocalDateTime now);
 }

@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 public interface NotificationJpaRepository extends JpaRepository<Notification, Long> {
 
     @Modifying
-    @Query("UPDATE Notification n SET n.status = :status, n.updatedAt = :now WHERE n.memberId = :memberId")
+    @Query("UPDATE Notification n SET n.status = :status, n.updatedAt = :now WHERE n.memberId = :memberId AND n.status = 'ACTIVE'")
     void softDeleteByMemberId(@Param("memberId") Long memberId, @Param("status") EntityStatus status, @Param("now") LocalDateTime now);
 
 }

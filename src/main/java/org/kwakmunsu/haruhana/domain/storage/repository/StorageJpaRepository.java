@@ -23,7 +23,7 @@ public interface StorageJpaRepository extends JpaRepository<Storage, Long> {
     List<String> findObjectKeysByMemberId(@Param("memberId") Long memberId, @Param("uploadStatus") UploadStatus uploadStatus);
 
     @Modifying
-    @Query("UPDATE Storage s SET s.status = :status, s.updatedAt = :now WHERE s.memberId = :memberId")
+    @Query("UPDATE Storage s SET s.status = :status, s.updatedAt = :now WHERE s.memberId = :memberId AND s.status = 'ACTIVE'")
     void softDeleteByMemberId(@Param("memberId") Long memberId, @Param("status") EntityStatus status, @Param("now") LocalDateTime now);
 
 }
