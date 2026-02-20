@@ -83,8 +83,9 @@ public class CacheConfig {
     }
 
     private long nanosUntilMidnight() {
-        LocalDateTime midnight = LocalDate.now().plusDays(1).atStartOfDay();
-        long seconds = Duration.between(LocalDateTime.now(), midnight).getSeconds();
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime midnight = now.toLocalDate().plusDays(1).atStartOfDay();
+        long seconds = Duration.between(now, midnight).getSeconds();
         return TimeUnit.SECONDS.toNanos(Math.max(1, seconds));
     }
 
