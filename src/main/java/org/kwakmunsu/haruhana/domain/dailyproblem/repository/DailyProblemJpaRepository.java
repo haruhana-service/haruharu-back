@@ -1,6 +1,7 @@
 package org.kwakmunsu.haruhana.domain.dailyproblem.repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.kwakmunsu.haruhana.domain.dailyproblem.entity.DailyProblem;
@@ -45,8 +46,8 @@ public interface DailyProblemJpaRepository extends JpaRepository<DailyProblem, L
     );
 
     @Modifying
-    @Query("UPDATE DailyProblem dp SET dp.status = :status WHERE dp.member.id = :memberId")
-    void softDeleteByMemberId(@Param("memberId") Long memberId, @Param("status") EntityStatus status);
+    @Query("UPDATE DailyProblem dp SET dp.status = :status, dp.updatedAt = :now WHERE dp.member.id = :memberId")
+    void softDeleteByMemberId(@Param("memberId") Long memberId, @Param("status") EntityStatus status, @Param("now") LocalDateTime now);
 
     @Query("""
             SELECT dp.member.id

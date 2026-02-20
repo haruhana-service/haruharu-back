@@ -1,5 +1,6 @@
 package org.kwakmunsu.haruhana.domain.streak.repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import org.kwakmunsu.haruhana.domain.streak.entity.Streak;
 import org.kwakmunsu.haruhana.global.entity.EntityStatus;
@@ -14,6 +15,6 @@ public interface StreakJpaRepository extends JpaRepository<Streak, Long> {
     boolean existsByMemberIdAndStatus(Long memberId, EntityStatus entityStatus);
 
     @Modifying
-    @Query("UPDATE Streak s SET s.status = :status WHERE s.member.id = :memberId")
-    void softDeleteByMemberId(@Param("memberId") Long memberId, @Param("status") EntityStatus status);
+    @Query("UPDATE Streak s SET s.status = :status, s.updatedAt = :now WHERE s.member.id = :memberId")
+    void softDeleteByMemberId(@Param("memberId") Long memberId, @Param("status") EntityStatus status, @Param("now") LocalDateTime now);
 }

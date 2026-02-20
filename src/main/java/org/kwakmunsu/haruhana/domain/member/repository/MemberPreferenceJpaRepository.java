@@ -1,6 +1,7 @@
 package org.kwakmunsu.haruhana.domain.member.repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.kwakmunsu.haruhana.domain.member.entity.MemberPreference;
@@ -19,6 +20,6 @@ public interface MemberPreferenceJpaRepository extends JpaRepository<MemberPrefe
     Optional<MemberPreference> findByMemberIdWithMember(@Param("memberId") Long memberId, @Param("status") EntityStatus status);
 
     @Modifying
-    @Query("UPDATE MemberPreference mp SET mp.status = :status WHERE mp.member.id = :memberId")
-    void softDeleteByMemberId(@Param("memberId") Long memberId, @Param("status") EntityStatus status);
+    @Query("UPDATE MemberPreference mp SET mp.status = :status, mp.updatedAt = :now WHERE mp.member.id = :memberId")
+    void softDeleteByMemberId(@Param("memberId") Long memberId, @Param("status") EntityStatus status, @Param("now") LocalDateTime now);
 }

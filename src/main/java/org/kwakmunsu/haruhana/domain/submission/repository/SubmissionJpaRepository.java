@@ -1,5 +1,6 @@
 package org.kwakmunsu.haruhana.domain.submission.repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import org.kwakmunsu.haruhana.domain.submission.entity.Submission;
 import org.kwakmunsu.haruhana.global.entity.EntityStatus;
@@ -13,7 +14,7 @@ public interface SubmissionJpaRepository extends JpaRepository<Submission, Long>
     Optional<Submission> findByMemberIdAndDailyProblemIdAndStatus(Long memberId, Long dailyProblemId, EntityStatus status);
 
     @Modifying
-    @Query("UPDATE Submission s SET s.status = :status WHERE s.member.id = :memberId")
-    void softDeleteByMemberId(@Param("memberId") Long memberId, @Param("status") EntityStatus status);
+    @Query("UPDATE Submission s SET s.status = :status, s.updatedAt = :now WHERE s.member.id = :memberId")
+    void softDeleteByMemberId(@Param("memberId") Long memberId, @Param("status") EntityStatus status, @Param("now") LocalDateTime now);
 
 }
