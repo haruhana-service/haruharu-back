@@ -5,7 +5,6 @@ spring:
     active: local
   config:
     import:
-      - application-ai.yml
       - application-s3.yml
   web:
     resources:
