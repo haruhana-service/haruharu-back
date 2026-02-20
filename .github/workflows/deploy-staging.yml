@@ -31,7 +31,6 @@ jobs:
           echo "${{ secrets.APPLICATION_LOCAL_YML }}" > ./application-local.yml
           echo "${{ secrets.APPLICATION_TEST_YML }}" > ./application-test.yml
           echo "${{ secrets.APPLICATION_S3_YML }}" > ./application-s3.yml
-          echo "${{ secrets.APPLICATION_AI_YML }}" > ./application-ai.yml
 
       - name: Firebase 서비스계정 키 파일 생성
         run: |
@@ -64,7 +63,7 @@ jobs:
       - name: monitoring 설정 파일 EC2로 복사
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ secrets.EC2_HOST }}
+          host: ${{ secrets.EC2_STAGING_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           port: 22
@@ -75,7 +74,7 @@ jobs:
       - name: AWS EC2에 배포
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.EC2_HOST }}
+          host: ${{ secrets.EC2_STAGING_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           port: 22
