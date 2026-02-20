@@ -22,6 +22,7 @@ public class AuthService {
         Member member = memberReader.findByAccount(loginId, password);
 
         TokenResponse tokenResponse = jwtProvider.createTokens(member.getId(), member.getRole());
+        // NOTE: 인증 서비스에서 업데이트를 하는 게 맞나? MemberManager 한테 위임하는 게 나을 것 같은데?
         member.updateRefreshToken(tokenResponse.refreshToken());
 
         log.info("[AuthService] 로그인 성공. memberId: {}", member.getId());

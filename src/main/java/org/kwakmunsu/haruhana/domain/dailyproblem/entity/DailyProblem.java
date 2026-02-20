@@ -34,7 +34,7 @@ public class DailyProblem extends BaseEntity {
     Problem problem;
 
     @Column(nullable = false)
-    LocalDate assignedAt; // 음 뺴도 될 거 같은데 일단 남겨두자
+    LocalDate assignedAt;
 
     @Column(nullable = false)
     boolean isSolved;
