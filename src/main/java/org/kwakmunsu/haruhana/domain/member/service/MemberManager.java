@@ -64,6 +64,14 @@ public class MemberManager {
                 member.getId(), updatePreference.categoryTopicId(), updatePreference.difficulty());
     }
 
+    public void updateRefreshToken(Member member, String refreshToken) {
+        member.updateRefreshToken(refreshToken);
+    }
+
+    public void clearMember(Member member) {
+        member.clearRefreshToken();
+    }
+
     private void preferenceUpdateForTomorrow(
             MemberPreference memberPreference,
             Member member,

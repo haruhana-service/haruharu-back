@@ -3,6 +3,7 @@ package org.kwakmunsu.haruhana.domain.auth.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kwakmunsu.haruhana.domain.member.entity.Member;
+import org.kwakmunsu.haruhana.domain.member.service.MemberManager;
 import org.kwakmunsu.haruhana.domain.member.service.MemberReader;
 import org.kwakmunsu.haruhana.global.security.jwt.JwtProvider;
 import org.kwakmunsu.haruhana.global.security.jwt.dto.TokenResponse;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AuthService {
 
+    private final MemberManager memberManager;
     private final MemberReader memberReader;
     private final JwtProvider jwtProvider;
 
@@ -22,8 +24,7 @@ public class AuthService {
         Member member = memberReader.findByAccount(loginId, password);
 
         TokenResponse tokenResponse = jwtProvider.createTokens(member.getId(), member.getRole());
-        // NOTE: 인증 서비스에서 업데이트를 하는 게 맞나? MemberManager 한테 위임하는 게 나을 것 같은데?
-        member.updateRefreshToken(tokenResponse.refreshToken());
+        memberManager.updateRefreshToken(member, tokenResponse.refreshToken());
 
         log.info("[AuthService] 로그인 성공. memberId: {}", member.getId());
 
@@ -35,7 +36,7 @@ public class AuthService {
         Member member = memberReader.findByRefreshToken(refreshToken);
 
         TokenResponse tokenResponse = jwtProvider.createTokens(member.getId(), member.getRole());
-        member.updateRefreshToken(tokenResponse.refreshToken());
+        memberManager.updateRefreshToken(member, tokenResponse.refreshToken());
 
         log.info("[AuthService] 토큰 재발급 성공. memberId: {}", member.getId());
 
@@ -46,7 +47,7 @@ public class AuthService {
     @Transactional
     public void logout(Long memberId) {
         Member member = memberReader.find(memberId);
-        member.clearRefreshToken();
+        memberManager.clearMember(member);
 
         log.info("[AuthService] 로그아웃 성공. memberId: {}", member.getId());
     }
