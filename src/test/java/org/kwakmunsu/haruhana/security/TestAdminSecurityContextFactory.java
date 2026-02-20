@@ -3,7 +3,6 @@ package org.kwakmunsu.haruhana.security;
 import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.kwakmunsu.haruhana.security.annotation.TestAdmin;
-import org.kwakmunsu.haruhana.security.annotation.TestGuest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
