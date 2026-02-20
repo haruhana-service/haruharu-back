@@ -30,10 +30,25 @@ class MemberServiceUnitTest extends UnitTestSupport {
     MemberManager memberManager;
 
     @Mock
+    MemberRemover memberRemover;
+
+    @Mock
     StorageProvider storageProvider;
 
     @InjectMocks
     MemberService memberService;
+
+    @Test
+    void 회원_탈퇴에_성공한다() {
+        // given
+        var member = MemberFixture.createMember(Role.ROLE_MEMBER);
+
+        // when
+        memberService.withdraw(member.getId());
+
+        // then
+        verify(memberRemover, times(1)).remove(member.getId());
+    }
 
     @Test
     void 회원_프로필을_조회한다() {

@@ -115,4 +115,15 @@ class MemberControllerTest extends ControllerTestSupport {
         verify(memberService, times(1)).updateProfile(any(), any());
     }
 
+    @TestMember
+    @Test
+    void 회원_탈퇴_Api를_요청한다() {
+        // when & then
+        assertThat(mvcTester.delete().uri("/v1/members"))
+                .apply(print())
+                .hasStatus(HttpStatus.NO_CONTENT);
+
+        verify(memberService, times(1)).withdraw(any());
+    }
+
 }

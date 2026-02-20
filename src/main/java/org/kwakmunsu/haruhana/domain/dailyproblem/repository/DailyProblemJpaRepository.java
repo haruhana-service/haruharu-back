@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.kwakmunsu.haruhana.domain.dailyproblem.entity.DailyProblem;
 import org.kwakmunsu.haruhana.global.entity.EntityStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -42,6 +43,10 @@ public interface DailyProblemJpaRepository extends JpaRepository<DailyProblem, L
             @Param("memberId") Long memberId,
             @Param("status") EntityStatus status
     );
+
+    @Modifying
+    @Query("UPDATE DailyProblem dp SET dp.status = :status WHERE dp.member.id = :memberId")
+    void softDeleteByMemberId(@Param("memberId") Long memberId, @Param("status") EntityStatus status);
 
     @Query("""
             SELECT dp.member.id

@@ -74,6 +74,26 @@ class MemberServiceIntegrationTest extends IntegrationTestSupport {
     }
 
     @Test
+    void 회원_탈퇴_시_회원_및_연관_데이터가_삭제된다() {
+        // given
+        var newProfile = MemberFixture.createNewProfile();
+        var newPreference = new NewPreference(categoryTopic.getId(), ProblemDifficulty.EASY);
+        Long memberId = memberService.createMember(newProfile, newPreference);
+
+        // when
+        memberService.withdraw(memberId);
+        entityManager.flush();
+        entityManager.clear();
+
+        // then
+        var withdrawnMember = memberJpaRepository.findById(memberId).orElseThrow();
+        assertThat(withdrawnMember.getStatus()).isEqualTo(EntityStatus.DELETED);
+
+        var withdrawnPreference = memberPreferenceJpaRepository.findByMemberIdAndStatus(memberId, EntityStatus.DELETED).orElseThrow();
+        assertThat(withdrawnPreference.getStatus()).isEqualTo(EntityStatus.DELETED);
+    }
+
+    @Test
     void 회원가입_시_회원_학습_설정과_스트릭_생성_문제_생성에_성공한다() {
         // given
         var newProfile = MemberFixture.createNewProfile();

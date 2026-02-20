@@ -17,6 +17,10 @@ public interface MemberDeviceJpaRepository extends JpaRepository<MemberDevice, L
     boolean existsByMemberIdAndDeviceToken(Long memberId, String deviceToken);
 
     @Modifying
+    @Query("DELETE FROM MemberDevice md WHERE md.member.id = :memberId")
+    void deleteAllByMemberId(@Param("memberId") Long memberId);
+
+    @Modifying
     @Query(value = """
             DELETE FROM member_device
             WHERE id IN (
