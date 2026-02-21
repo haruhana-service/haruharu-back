@@ -22,7 +22,6 @@ import org.kwakmunsu.haruhana.domain.member.repository.MemberPreferenceJpaReposi
 import org.kwakmunsu.haruhana.domain.problem.entity.Problem;
 import org.kwakmunsu.haruhana.domain.problem.enums.ProblemDifficulty;
 import org.kwakmunsu.haruhana.domain.problem.repository.ProblemJpaRepository;
-import org.kwakmunsu.haruhana.domain.problem.service.Prompt;
 import org.kwakmunsu.haruhana.infrastructure.gemini.ChatService;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
