@@ -13,6 +13,7 @@ import org.kwakmunsu.haruhana.IntegrationTestSupport;
 import org.kwakmunsu.haruhana.domain.category.CategoryFactory;
 import org.kwakmunsu.haruhana.domain.category.entity.CategoryTopic;
 import org.kwakmunsu.haruhana.domain.category.repository.CategoryTopicJpaRepository;
+import org.kwakmunsu.haruhana.domain.dailyproblem.repository.DailyProblemJpaRepository;
 import org.kwakmunsu.haruhana.domain.member.MemberFixture;
 import org.kwakmunsu.haruhana.domain.member.entity.Member;
 import org.kwakmunsu.haruhana.domain.member.entity.MemberPreference;
@@ -23,6 +24,7 @@ import org.kwakmunsu.haruhana.domain.problem.entity.Problem;
 import org.kwakmunsu.haruhana.domain.problem.enums.ProblemDifficulty;
 import org.kwakmunsu.haruhana.domain.problem.repository.ProblemJpaRepository;
 import org.kwakmunsu.haruhana.domain.problem.service.ProblemGenerator;
+import org.kwakmunsu.haruhana.domain.problem.service.Prompt;
 import org.kwakmunsu.haruhana.infrastructure.gemini.ChatService;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +35,7 @@ class ProblemSchedulerIntegrationTest extends IntegrationTestSupport {
 
     final ProblemGenerator problemGenerator;
     final ProblemJpaRepository problemJpaRepository;
+    final DailyProblemJpaRepository dailyProblemJpaRepository;
     final MemberJpaRepository memberJpaRepository;
     final MemberPreferenceJpaRepository memberPreferenceJpaRepository;
     final CategoryTopicJpaRepository categoryTopicJpaRepository;
@@ -189,6 +192,47 @@ class ProblemSchedulerIntegrationTest extends IntegrationTestSupport {
         // then
         long problemCount = problemJpaRepository.count();
         assertThat(problemCount).isZero();
+    }
+
+    @Test
+    void AI_호출_실패_시_백업_문제가_존재하면_기존_문제가_할당된다() {
+        // given - 백업용 기존 문제 사전 저장 (동일 카테고리 + 동일 난이도)
+        Problem backupProblem = problemJpaRepository.save(Problem.create(
+                "백업 문제 제목",
+                "백업 문제 설명",
+                "백업 AI 답변",
+                javaTopic,
+                ProblemDifficulty.EASY,
+                LocalDate.now(),
+                Prompt.V1_PROMPT.name()
+        ));
+
+        // AI 호출 실패 Mock
+        given(chatService.sendPrompt(any())).willThrow(new RuntimeException("AI API 오류"));
+
+        // when
+        problemGenerator.generateProblem(targetDate);
+
+        // then - 새 문제는 생성되지 않고 백업 문제만 존재
+        assertThat(problemJpaRepository.count()).isEqualTo(1);
+
+        // 백업 문제가 DailyProblem으로 할당됨
+        assertThat(dailyProblemJpaRepository.count()).isEqualTo(1);
+        assertThat(dailyProblemJpaRepository.findAll().getFirst().getProblem().getId())
+                .isEqualTo(backupProblem.getId());
+    }
+
+    @Test
+    void AI_호출_실패_시_백업_문제가_없으면_할당_없이_정상_종료된다() {
+        // given - 백업 문제 없음 (problemJpaRepository 비어있음)
+        given(chatService.sendPrompt(any())).willThrow(new RuntimeException("AI API 오류"));
+
+        // when - 예외 없이 정상 종료되어야 함
+        problemGenerator.generateProblem(targetDate);
+
+        // then - 문제도 DailyProblem도 생성되지 않음
+        assertThat(problemJpaRepository.count()).isZero();
+        assertThat(dailyProblemJpaRepository.count()).isZero();
     }
 
 }

@@ -16,6 +16,7 @@ import org.kwakmunsu.haruhana.domain.member.service.MemberReader;
 import org.kwakmunsu.haruhana.domain.problem.entity.Problem;
 import org.kwakmunsu.haruhana.domain.problem.enums.ProblemDifficulty;
 import org.kwakmunsu.haruhana.domain.problem.repository.ProblemJpaRepository;
+import org.kwakmunsu.haruhana.global.entity.EntityStatus;
 import org.kwakmunsu.haruhana.domain.problem.service.dto.ProblemGenerationGroup;
 import org.kwakmunsu.haruhana.domain.problem.service.dto.ProblemGenerationKey;
 import org.kwakmunsu.haruhana.domain.problem.service.dto.ProblemResponse;
@@ -57,10 +58,8 @@ public class ProblemGenerator {
                 Problem problem = generateAndSaveProblem(group, targetDate);
                 dailyProblemManager.assignDailyProblemToMembers(problem, group.members(), targetDate);
             } catch (Exception e) {
-                log.error("[ProblemGenerator] 문제 생성 실패 - 카테고리: {}, 난이도: {}",
-                        group.key().categoryTopicName(),
-                        group.key().difficulty(), e);
-                // TODO: 실패한 그룹은 백업 문제 생성 로직을 호출
+                log.error("[ProblemGenerator] 문제 생성 실패 - 카테고리: {}, 난이도: {}", group.key().categoryTopicName(), group.key().difficulty(), e);
+                assignBackupProblem(group, targetDate);
             }
         }
     }
@@ -98,7 +97,16 @@ public class ProblemGenerator {
             );
         } catch (Exception e) {
             log.error("[ProblemGenerator] 문제 생성 실패 - 카테고리: {}, 난이도: {}", categoryTopic.getName(), difficulty, e);
-            // TODO: 실패한 그룹은 백업 문제 생성 로직을 호출
+            problemJpaRepository.findFirstByCategoryTopicIdAndDifficultyAndStatusOrderByProblemAtDesc(
+                            categoryTopic.getId(), difficulty, EntityStatus.ACTIVE)
+                    .ifPresentOrElse(
+                            backup -> {
+                                dailyProblemManager.assignDailyProblemToMembers(backup, List.of(member), LocalDate.now());
+                                log.info("[ProblemGenerator] 백업 문제 할당 완료 - 회원: {}", member.getId());
+                            },
+                            () -> log.warn("[ProblemGenerator] 백업 문제 없음 - 카테고리: {}, 난이도: {}",
+                                    categoryTopic.getName(), difficulty)
+                    );
         }
     }
 
@@ -170,6 +178,20 @@ public class ProblemGenerator {
         String jsonResponse = chatService.sendPrompt(prompt);
 
         return objectMapper.readValue(jsonResponse, ProblemResponse.class);
+    }
+
+    private void assignBackupProblem(ProblemGenerationGroup group, LocalDate targetDate) {
+        problemJpaRepository.findFirstByCategoryTopicIdAndDifficultyAndStatusOrderByProblemAtDesc(
+                        group.key().categoryTopicId(), group.key().difficulty(), EntityStatus.ACTIVE
+                ).ifPresentOrElse(
+                        backup -> {
+                            dailyProblemManager.assignDailyProblemToMembers(backup, group.members(), targetDate);
+                            log.info("[ProblemGenerator] 백업 문제 할당 완료 - 카테고리: {}, 난이도: {}, 회원 수: {}",
+                                    group.key().categoryTopicName(), group.key().difficulty(), group.getMemberCount());
+                        },
+                        () -> log.warn("[ProblemGenerator] 백업 문제 없음, 할당 생략 - 카테고리: {}, 난이도: {}",
+                                group.key().categoryTopicName(), group.key().difficulty())
+                );
     }
 
 }
