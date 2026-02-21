@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +18,7 @@ import org.kwakmunsu.haruhana.domain.problem.repository.ProblemJpaRepository;
 import org.kwakmunsu.haruhana.domain.problem.service.dto.ProblemGenerationGroup;
 import org.kwakmunsu.haruhana.domain.problem.service.dto.ProblemGenerationKey;
 import org.kwakmunsu.haruhana.domain.problem.service.dto.ProblemResponse;
+import org.kwakmunsu.haruhana.global.entity.EntityStatus;
 import org.kwakmunsu.haruhana.infrastructure.gemini.ChatService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -46,39 +46,45 @@ public class ProblemGenerator {
             return;
         }
 
-        // 카테고리, 난이도 끼리 묶음
-        Map<ProblemGenerationKey, List<MemberPreference>> groupedPreferences = groupByTopicAndDifficulty(memberPreferences);
-
         // 카테고리, 난이도 별로 문제를 생성한다
-        List<ProblemGenerationGroup> generationGroups = createGenerationGroups(groupedPreferences);
+        List<ProblemGenerationGroup> generationGroups = buildGenerationGroups(memberPreferences);
 
         for (ProblemGenerationGroup group : generationGroups) {
             try {
                 Problem problem = generateAndSaveProblem(group, targetDate);
                 dailyProblemManager.assignDailyProblemToMembers(problem, group.members(), targetDate);
             } catch (Exception e) {
-                log.error("[ProblemGenerator] 문제 생성 실패 - 카테고리: {}, 난이도: {}",
-                        group.key().categoryTopicName(),
-                        group.key().difficulty(), e);
-                // TODO: 실패한 그룹은 백업 문제 생성 로직을 호출
+                log.error("[ProblemGenerator] 문제 생성 실패 - 카테고리: {}, 난이도: {}", group.key().categoryTopicName(), group.key().difficulty(), e);
+
+                try {
+                    assignBackupProblem(
+                            group.key().categoryTopicId(),
+                            group.key().categoryTopicName(),
+                            group.key().difficulty(),
+                            group.members(),
+                            targetDate
+                    );
+                } catch (Exception backupEx) {
+                    log.error("[ProblemGenerator] 백업 문제 할당도 실패 - 카테고리: {}, 난이도: {}", group.key().categoryTopicName(), group.key().difficulty(), backupEx);
+                }
             }
         }
     }
 
     /**
      * 회원의 첫 문제를 생성하고 할당
-     * @param member 회원가입 한 첫 회원
-     * @param categoryTopic 카테고리 주제
-     * @param difficulty 난이도
      *
-     * */
+     * @param member        회원가입 한 첫 회원
+     * @param categoryTopic 카테고리 주제
+     * @param difficulty    난이도
+     */
     @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void generateInitialProblem(Member member, CategoryTopic categoryTopic, ProblemDifficulty difficulty) {
+        LocalDate today = LocalDate.now();
         try {
             ProblemResponse problemResponse = getProblemToAi(categoryTopic.getName(), difficulty);
 
-            LocalDate today = LocalDate.now();
             Problem problem = problemJpaRepository.save(Problem.create(
                     problemResponse.title(),
                     problemResponse.description(),
@@ -98,14 +104,15 @@ public class ProblemGenerator {
             );
         } catch (Exception e) {
             log.error("[ProblemGenerator] 문제 생성 실패 - 카테고리: {}, 난이도: {}", categoryTopic.getName(), difficulty, e);
-            // TODO: 실패한 그룹은 백업 문제 생성 로직을 호출
+
+            assignBackupProblem(categoryTopic.getId(), categoryTopic.getName(), difficulty, List.of(member), today);
         }
     }
 
     /**
-     * 카테고리 주제와 난이도별로 회원 학습 정보를 그룹화
+     * 카테고리 주제와 난이도별로 그룹화하여 ProblemGenerationGroup 목록 생성
      */
-    private Map<ProblemGenerationKey, List<MemberPreference>> groupByTopicAndDifficulty(List<MemberPreference> preferences) {
+    private List<ProblemGenerationGroup> buildGenerationGroups(List<MemberPreference> preferences) {
         return preferences.stream()
                 .collect(Collectors.groupingBy(preference ->
                         ProblemGenerationKey.of(
@@ -113,28 +120,17 @@ public class ProblemGenerator {
                                 preference.getCategoryTopic().getName(),
                                 preference.getDifficulty()
                         )
-                ));
-    }
-
-    /**
-     * 그룹화된 데이터를 ProblemGenerationGroup 으로 변환
-     */
-    private List<ProblemGenerationGroup> createGenerationGroups(
-            Map<ProblemGenerationKey, List<MemberPreference>> groupedPreferences) {
-        return groupedPreferences.entrySet().stream()
-                .map(entry -> {
-                    // 첫 번째 Preference 에서 CategoryTopic 가져오기 (모두 동일함)
-                    CategoryTopic categoryTopic = entry.getValue().getFirst().getCategoryTopic();
-
-                    return ProblemGenerationGroup.builder()
-                            .key(entry.getKey())
-                            .categoryTopic(categoryTopic)
-                            .members(entry.getValue().stream()
-                                    .map(MemberPreference::getMember)
-                                    .distinct()
-                                    .toList())
-                            .build();
-                })
+                ))
+                .entrySet().stream()
+                .map(entry -> ProblemGenerationGroup.builder()
+                        .key(entry.getKey())
+                        // 첫 번째 Preference 에서 CategoryTopic 가져오기 (모두 동일함)
+                        .categoryTopic(entry.getValue().getFirst().getCategoryTopic())
+                        .members(entry.getValue().stream()
+                                .map(MemberPreference::getMember)
+                                .distinct()
+                                .toList())
+                        .build())
                 .toList();
     }
 
@@ -170,6 +166,24 @@ public class ProblemGenerator {
         String jsonResponse = chatService.sendPrompt(prompt);
 
         return objectMapper.readValue(jsonResponse, ProblemResponse.class);
+    }
+
+    private void assignBackupProblem(
+            Long categoryTopicId,
+            String categoryTopicName,
+            ProblemDifficulty difficulty,
+            List<Member> members,
+            LocalDate targetDate
+    ) {
+        problemJpaRepository.findFirstByCategoryTopicIdAndDifficultyAndStatusOrderByProblemAtDesc(categoryTopicId,
+                difficulty,
+                EntityStatus.ACTIVE
+        ).ifPresentOrElse(backup -> {
+                    dailyProblemManager.assignDailyProblemToMembers(backup, members, targetDate);
+                    log.info("[ProblemGenerator] 백업 문제 할당 완료 - 카테고리: {}, 난이도: {}, 회원 수: {}", categoryTopicName, difficulty, members.size());
+                },
+                () -> log.warn("[ProblemGenerator] 백업 문제 없음, 할당 생략 - 카테고리: {}, 난이도: {}", categoryTopicName, difficulty)
+        );
     }
 
 }
