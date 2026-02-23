@@ -126,4 +126,34 @@ class MemberControllerTest extends ControllerTestSupport {
         verify(memberService, times(1)).withdraw(any());
     }
 
+    @Test
+    void 닉네임_사용_가능_여부_Api를_요청한다() {
+        // given
+
+        // when
+        assertThat(mvcTester.get().uri("/v1/members/nickname")
+                .param("nickname", "사용가능한닉네임"))
+                .apply(print())
+                .hasStatusOk();
+
+
+        // then
+        verify(memberService, times(1)).checkNicknameAvailable("사용가능한닉네임");
+    }
+
+    @Test
+    void 로그인_사용_가능_여부_Api를_요청한다() {
+        // given
+
+        // when
+        assertThat(mvcTester.get().uri("/v1/members/loginId")
+                .param("loginId", "사용가능한LoginId"))
+                .apply(print())
+                .hasStatusOk();
+
+
+        // then
+        verify(memberService, times(1)).checkLoginIdAvailable("사용가능한LoginId");
+    }
+
 }

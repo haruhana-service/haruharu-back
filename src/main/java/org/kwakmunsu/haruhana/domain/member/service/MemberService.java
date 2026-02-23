@@ -156,4 +156,14 @@ public class MemberService {
         memberValidator.validateNicknameAvailable(nickname);
     }
 
+    /**
+     * 로그인 아이디 사용 가능 여부 검사 <br>
+     * 중복 여부를 검사합니다. <br>
+     * @param loginId 검사할 로그인 아이디
+     * @return 사용 가능하면 true, 중복이면 false
+    * */
+    public boolean checkLoginIdAvailable(String loginId) {
+        return !memberReader.existsByLoginId(loginId);
+    }
+
 }

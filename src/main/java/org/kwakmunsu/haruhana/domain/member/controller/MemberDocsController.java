@@ -20,6 +20,8 @@ import org.kwakmunsu.haruhana.domain.member.service.MemberProfileResponse;
 import org.kwakmunsu.haruhana.global.support.response.ApiResponse;
 import org.kwakmunsu.haruhana.global.swagger.ApiExceptions;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Member Docs", description = "Member 관련 API 문서")
 public abstract class MemberDocsController {
@@ -151,6 +153,20 @@ public abstract class MemberDocsController {
             DEFAULT_ERROR
     })
     public abstract ResponseEntity<Void> checkNickname(String nickname);
+
+    @Operation(
+            summary = "로그인 아이디 사용 가능 여부 확인 - JWT [X]",
+            description = """
+                    ### 로그인 아이디의 사용 가능 여부를 확인합니다.
+                    - 사용 가능한 경우 true, 중복 로그인 아이디인 경우 false
+                    - 성공 시 200 OK를 반환합니다.
+                    """
+    )
+    @ApiExceptions(values = {
+            BAD_REQUEST,
+            DEFAULT_ERROR
+    })
+    public abstract ResponseEntity<ApiResponse<Boolean>> checkLoginId(String loginId);
 
     @Operation(
             summary = "디바이스 토큰 삭제 - JWT [O]",

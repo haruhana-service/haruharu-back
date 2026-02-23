@@ -104,4 +104,12 @@ public class MemberController extends MemberDocsController {
         return ResponseEntity.ok().build();
     }
 
+    @Override
+    @GetMapping("/v1/members/loginId")
+    public ResponseEntity<ApiResponse<Boolean>> checkLoginId(@RequestParam String loginId) {
+        boolean isAvailable = memberService.checkLoginIdAvailable(loginId);
+
+        return ResponseEntity.ok(ApiResponse.success(isAvailable));
+    }
+
 }
