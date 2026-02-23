@@ -1,6 +1,7 @@
 package org.kwakmunsu.haruhana.domain.member.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.DeviceTokenSyncRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.MemberCreateRequest;
@@ -18,8 +19,10 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
+@Validated
 @RequiredArgsConstructor
 @RestController
 public class MemberController extends MemberDocsController {
@@ -98,15 +101,15 @@ public class MemberController extends MemberDocsController {
 
     @Override
     @GetMapping("/v1/members/nickname")
-    public ResponseEntity<Void> checkNickname(@RequestParam String nickname) {
-        memberService.checkNicknameAvailable(nickname);
+    public ResponseEntity<ApiResponse<Boolean>> checkNickname(@RequestParam @NotBlank String nickname) {
+        boolean isAvailable = memberService.checkNicknameAvailable(nickname);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ApiResponse.success(isAvailable));
     }
 
     @Override
-    @GetMapping("/v1/members/loginId")
-    public ResponseEntity<ApiResponse<Boolean>> checkLoginId(@RequestParam String loginId) {
+    @GetMapping("/v1/members/login-id")
+    public ResponseEntity<ApiResponse<Boolean>> checkLoginId(@RequestParam @NotBlank String loginId) {
         boolean isAvailable = memberService.checkLoginIdAvailable(loginId);
 
         return ResponseEntity.ok(ApiResponse.success(isAvailable));

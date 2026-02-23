@@ -1,5 +1,7 @@
 package org.kwakmunsu.haruhana.global.support.error;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +50,24 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(errorType.getStatus())
                 .body(ApiResponse.error(errorType, errorType.getStatus()));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiResponse<?>> handleConstraintViolationException(ConstraintViolationException e) {
+        ErrorType errorType = ErrorType.BAD_REQUEST;
+
+        Map<String, String> validationData = e.getConstraintViolations().stream()
+                .collect(Collectors.toMap(
+                        violation -> violation.getPropertyPath().toString(),
+                        ConstraintViolation::getMessage,
+                        (existing, replacement) -> existing + ", " + replacement
+                ));
+
+        log.warn("[ConstraintViolationException] @RequestParam 유효성 검사 실패. (ValidationData={})", validationData, e);
+
+        return ResponseEntity
+                .status(errorType.getStatus())
+                .body(ApiResponse.error(errorType, validationData));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

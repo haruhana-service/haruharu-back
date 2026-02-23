@@ -12,6 +12,8 @@ import static org.kwakmunsu.haruhana.global.support.error.ErrorType.UNAUTHORIZED
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.DeviceTokenSyncRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.MemberCreateRequest;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.PreferenceUpdateRequest;
@@ -40,7 +42,7 @@ public abstract class MemberDocsController {
             DUPLICATE_NICKNAME,
             DEFAULT_ERROR
     })
-    public abstract ResponseEntity<ApiResponse<Long>> create(MemberCreateRequest request);
+    public abstract ResponseEntity<ApiResponse<Long>> create(@Valid MemberCreateRequest request);
 
     @Operation(
             summary = "회원 학습 정보 수정 - JWT [O]",
@@ -58,7 +60,7 @@ public abstract class MemberDocsController {
             DEFAULT_ERROR
     })
     public abstract ResponseEntity<ApiResponse<?>> updatePreference(
-            PreferenceUpdateRequest request,
+            @Valid PreferenceUpdateRequest request,
             Long memberId
     );
 
@@ -93,7 +95,7 @@ public abstract class MemberDocsController {
             DEFAULT_ERROR
     })
     public abstract ResponseEntity<ApiResponse<?>> syncDevices(
-            DeviceTokenSyncRequest request,
+            @Valid DeviceTokenSyncRequest request,
             Long memberId
     );
 
@@ -117,7 +119,7 @@ public abstract class MemberDocsController {
             DEFAULT_ERROR
     })
     public abstract ResponseEntity<ApiResponse<?>> updateProfile(
-            ProfileUpdateRequest request,
+            @Valid ProfileUpdateRequest request,
             Long memberId
     );
 
@@ -142,17 +144,14 @@ public abstract class MemberDocsController {
             summary = "닉네임 사용 가능 여부 확인 - JWT [X]",
             description = """
                     ### 닉네임의 사용 가능 여부를 확인합니다.
-                    - 중복 닉네임인 경우 409 에러를 반환합니다.
-                    - 부적절한 단어(욕설, 성적 표현 등)가 포함된 경우 400 에러를 반환합니다.
-                    - 성공 시 200 OK를 반환합니다.
+                    - 부적절한 단어(욕설, 성적 표현 등)가 포함되거나 이미 사용 중인 닉네임인 경우 false, 사용 가능한 닉네임인 경우 true
                     """
     )
     @ApiExceptions(values = {
             DUPLICATE_NICKNAME,
-            INVALID_NICKNAME,
             DEFAULT_ERROR
     })
-    public abstract ResponseEntity<Void> checkNickname(String nickname);
+    public abstract ResponseEntity<ApiResponse<Boolean>> checkNickname(@NotBlank String nickname);
 
     @Operation(
             summary = "로그인 아이디 사용 가능 여부 확인 - JWT [X]",
@@ -166,7 +165,7 @@ public abstract class MemberDocsController {
             BAD_REQUEST,
             DEFAULT_ERROR
     })
-    public abstract ResponseEntity<ApiResponse<Boolean>> checkLoginId(String loginId);
+    public abstract ResponseEntity<ApiResponse<Boolean>> checkLoginId(@NotBlank String loginId);
 
     @Operation(
             summary = "디바이스 토큰 삭제 - JWT [O]",
