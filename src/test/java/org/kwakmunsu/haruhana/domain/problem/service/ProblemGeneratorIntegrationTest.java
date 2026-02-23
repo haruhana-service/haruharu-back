@@ -1,7 +1,7 @@
 package org.kwakmunsu.haruhana.domain.problem.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 import jakarta.persistence.EntityManager;
@@ -22,6 +22,7 @@ import org.kwakmunsu.haruhana.domain.member.repository.MemberPreferenceJpaReposi
 import org.kwakmunsu.haruhana.domain.problem.entity.Problem;
 import org.kwakmunsu.haruhana.domain.problem.enums.ProblemDifficulty;
 import org.kwakmunsu.haruhana.domain.problem.repository.ProblemJpaRepository;
+import org.kwakmunsu.haruhana.domain.problem.service.dto.ProblemResponse;
 import org.kwakmunsu.haruhana.infrastructure.gemini.ChatService;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,7 +57,7 @@ class ProblemGeneratorIntegrationTest extends IntegrationTestSupport {
                     "aiAnswer": "테스트 모범 답변입니다."
                 }
                 """;
-        given(chatService.sendPrompt(anyString())).willReturn(mockJsonResponse);
+        given(chatService.sendPrompt(any(), any())).willReturn(mockJsonResponse);
     }
 
     @Test
@@ -88,6 +89,12 @@ class ProblemGeneratorIntegrationTest extends IntegrationTestSupport {
         memberPreferenceJpaRepository.save(MemberPreference.create(member2, javaTopic, ProblemDifficulty.MEDIUM, targetDate));
 
         entityManager.flush();
+        ProblemResponse mockResponse = new ProblemResponse(
+                "Java의 equals와 hashCode의 관계",
+                "Java에서 equals()와 hashCode()를 함께 재정의해야 하는 이유는 무엇인가요?",
+                "equals()와 hashCode()는 객체의 동등성 비교에 사용되는 메서드입니다..."
+        );
+        given(chatService.sendPrompt(any(), any())).willReturn(mockResponse);
 
         // when
         problemGenerator.generateProblem(targetDate);
@@ -138,7 +145,7 @@ class ProblemGeneratorIntegrationTest extends IntegrationTestSupport {
         entityManager.flush();
 
         // setUp의 stub을 예외를 던지도록 덮어씀
-        given(chatService.sendPrompt(anyString())).willThrow(new RuntimeException("AI API 오류"));
+        given(chatService.sendPrompt(any(), any())).willThrow(new RuntimeException("AI API 오류"));
 
         // when
         problemGenerator.generateProblem(targetDate);
@@ -164,7 +171,7 @@ class ProblemGeneratorIntegrationTest extends IntegrationTestSupport {
         entityManager.flush();
 
         // setUp의 stub을 예외를 던지도록 덮어씀
-        given(chatService.sendPrompt(anyString())).willThrow(new RuntimeException("AI API 오류"));
+        given(chatService.sendPrompt(any(), any())).willThrow(new RuntimeException("AI API 오류"));
 
         // when - 예외 없이 정상 종료되어야 함
         problemGenerator.generateProblem(targetDate);
@@ -195,6 +202,19 @@ class ProblemGeneratorIntegrationTest extends IntegrationTestSupport {
         memberPreferenceJpaRepository.save(MemberPreference.create(member2, springTopic, ProblemDifficulty.EASY, targetDate));
 
         entityManager.flush();
+        ProblemResponse mockResponse = new ProblemResponse(
+                "Java의 equals와 hashCode의 관계",
+                "Java에서 equals()와 hashCode()를 함께 재정의해야 하는 이유는 무엇인가요?",
+                "equals()와 hashCode()는 객체의 동등성 비교에 사용되는 메서드입니다..."
+        );
+        ProblemResponse springResponse = new ProblemResponse(
+                "Spring DI란?",
+                "Spring에서 DI란 무엇인가요?",
+                "Spring 답변"
+        );
+        given(chatService.sendPrompt(any(), any()))
+                .willReturn(mockResponse)
+                .willReturn(springResponse);
 
         // when
         problemGenerator.generateProblem(targetDate);

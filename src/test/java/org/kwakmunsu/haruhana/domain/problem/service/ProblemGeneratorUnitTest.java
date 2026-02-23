@@ -1,13 +1,11 @@
 package org.kwakmunsu.haruhana.domain.problem.service;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -23,10 +21,10 @@ import org.kwakmunsu.haruhana.domain.problem.ProblemFixture;
 import org.kwakmunsu.haruhana.domain.problem.entity.Problem;
 import org.kwakmunsu.haruhana.domain.problem.enums.ProblemDifficulty;
 import org.kwakmunsu.haruhana.domain.problem.repository.ProblemJpaRepository;
+import org.kwakmunsu.haruhana.domain.problem.service.dto.ProblemResponse;
 import org.kwakmunsu.haruhana.infrastructure.gemini.ChatService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.springframework.test.util.ReflectionTestUtils;
 
 class ProblemGeneratorUnitTest extends UnitTestSupport {
@@ -36,9 +34,6 @@ class ProblemGeneratorUnitTest extends UnitTestSupport {
 
     @Mock
     ChatService chatService;
-
-    @Spy
-    ObjectMapper objectMapper;  // 실제 JSON 파싱이 필요하므로 Spy 사용
 
     @Mock
     ProblemJpaRepository problemJpaRepository;
@@ -60,7 +55,7 @@ class ProblemGeneratorUnitTest extends UnitTestSupport {
         problemGenerator.generateProblem(targetDate);
 
         // then
-        verify(chatService, never()).sendPrompt(anyString());
+        verify(chatService, never()).sendPrompt(any(), any());
         verify(problemJpaRepository, never()).save(any());
         verify(dailyProblemManager, never()).assignDailyProblemToMembers(any(), any(), any());
     }
@@ -87,15 +82,13 @@ class ProblemGeneratorUnitTest extends UnitTestSupport {
         given(memberReader.getMemberPreferences(targetDate))
                 .willReturn(List.of(pref1, pref2, pref3));
 
-        var jsonResponse = """
-                {
-                    "title": "Java의 equals와 hashCode의 관계",
-                    "description": "Java에서 equals()와 hashCode()를 함께 재정의해야 하는 이유는 무엇인가요?",
-                    "aiAnswer": "equals()와 hashCode()는 객체의 동등성 비교에 사용되는 메서드입니다..."
-                }
-                """;
+        ProblemResponse mockResponse = new ProblemResponse(
+                "Java의 equals와 hashCode의 관계",
+                "Java에서 equals()와 hashCode()를 함께 재정의해야 하는 이유는 무엇인가요?",
+                "equals()와 hashCode()는 객체의 동등성 비교에 사용되는 메서드입니다..."
+        );
 
-        given(chatService.sendPrompt(anyString())).willReturn(jsonResponse);
+        given(chatService.sendPrompt(any(), any())).willReturn(mockResponse);
 
         var savedProblem = ProblemFixture.createProblem(1L, javaTopic);
         given(problemJpaRepository.save(any(Problem.class))).willReturn(savedProblem);
@@ -105,7 +98,7 @@ class ProblemGeneratorUnitTest extends UnitTestSupport {
 
         // then
         // 2개의 그룹이므로 2번 문제 생성
-        verify(chatService, times(2)).sendPrompt(anyString());
+        verify(chatService, times(2)).sendPrompt(any(), any());
         verify(problemJpaRepository, times(2)).save(any(Problem.class));
         verify(dailyProblemManager, times(2)).assignDailyProblemToMembers(any(), any(), any());
     }
@@ -127,18 +120,16 @@ class ProblemGeneratorUnitTest extends UnitTestSupport {
         given(memberReader.getMemberPreferences(targetDate))
                 .willReturn(List.of(pref1, pref2));
 
-        var jsonResponse = """
-                {
-                    "title": "테스트 제목",
-                    "description": "테스트 설명",
-                    "aiAnswer": "테스트 답변"
-                }
-                """;
+        ProblemResponse mockResponse = new ProblemResponse(
+                "Java의 equals와 hashCode의 관계",
+                "Java에서 equals()와 hashCode()를 함께 재정의해야 하는 이유는 무엇인가요?",
+                "equals()와 hashCode()는 객체의 동등성 비교에 사용되는 메서드입니다..."
+        );
 
         // 첫 번째 호출은 예외, 두 번째 호출은 성공
-        given(chatService.sendPrompt(anyString()))
+        given(chatService.sendPrompt(any(), any()))
                 .willThrow(new RuntimeException("AI 서비스 오류"))
-                .willReturn(jsonResponse);
+                .willReturn(mockResponse);
 
         var savedProblem = ProblemFixture.createProblem(2L, springTopic);
         given(problemJpaRepository.save(any(Problem.class))).willReturn(savedProblem);
@@ -148,7 +139,7 @@ class ProblemGeneratorUnitTest extends UnitTestSupport {
 
         // then
         // 첫 번째는 실패했지만 두 번째는 성공
-        verify(chatService, times(2)).sendPrompt(anyString());
+        verify(chatService, times(2)).sendPrompt(any(), any());
         verify(problemJpaRepository, times(1)).save(any(Problem.class));
         verify(dailyProblemManager, times(1)).assignDailyProblemToMembers(any(), any(), any());
     }
@@ -170,15 +161,13 @@ class ProblemGeneratorUnitTest extends UnitTestSupport {
         given(memberReader.getMemberPreferences(targetDate))
                 .willReturn(List.of(pref1, pref2));
 
-        var jsonResponse = """
-                {
-                    "title": "테스트 제목",
-                    "description": "테스트 설명",
-                    "aiAnswer": "테스트 답변"
-                }
-                """;
+        ProblemResponse mockResponse = new ProblemResponse(
+                "Java의 equals와 hashCode의 관계",
+                "Java에서 equals()와 hashCode()를 함께 재정의해야 하는 이유는 무엇인가요?",
+                "equals()와 hashCode()는 객체의 동등성 비교에 사용되는 메서드입니다..."
+        );
 
-        given(chatService.sendPrompt(anyString())).willReturn(jsonResponse);
+        given(chatService.sendPrompt(any(), any())).willReturn(mockResponse);
 
         var savedProblem = ProblemFixture.createProblem(1L, javaTopic);
         given(problemJpaRepository.save(any(Problem.class))).willReturn(savedProblem);
@@ -188,7 +177,7 @@ class ProblemGeneratorUnitTest extends UnitTestSupport {
 
         // then
         // 2개의 카테고리이므로 2번 문제 생성
-        verify(chatService, times(2)).sendPrompt(anyString());
+        verify(chatService, times(2)).sendPrompt(any(), any());
         verify(problemJpaRepository, times(2)).save(any(Problem.class));
         verify(dailyProblemManager, times(2)).assignDailyProblemToMembers(any(), any(), any());
     }
