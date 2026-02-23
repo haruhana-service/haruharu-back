@@ -96,4 +96,12 @@ public class MemberController extends MemberDocsController {
         return ResponseEntity.noContent().build();
     }
 
+    @Override
+    @GetMapping("/v1/members/nickname")
+    public ResponseEntity<Void> checkNickname(@RequestParam String nickname) {
+        memberService.checkNicknameAvailable(nickname);
+
+        return ResponseEntity.ok().build();
+    }
+
 }

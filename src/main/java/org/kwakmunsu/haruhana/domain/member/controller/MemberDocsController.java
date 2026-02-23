@@ -4,6 +4,7 @@ import static org.kwakmunsu.haruhana.global.support.error.ErrorType.BAD_REQUEST;
 import static org.kwakmunsu.haruhana.global.support.error.ErrorType.DEFAULT_ERROR;
 import static org.kwakmunsu.haruhana.global.support.error.ErrorType.DUPLICATE_LOGIN_ID;
 import static org.kwakmunsu.haruhana.global.support.error.ErrorType.DUPLICATE_NICKNAME;
+import static org.kwakmunsu.haruhana.global.support.error.ErrorType.INVALID_NICKNAME;
 import static org.kwakmunsu.haruhana.global.support.error.ErrorType.NOT_FOUND_CATEGORY;
 import static org.kwakmunsu.haruhana.global.support.error.ErrorType.NOT_FOUND_FCM_TOKEN;
 import static org.kwakmunsu.haruhana.global.support.error.ErrorType.NOT_FOUND_MEMBER;
@@ -134,6 +135,22 @@ public abstract class MemberDocsController {
             DEFAULT_ERROR
     })
     public abstract ResponseEntity<Void> withdraw(Long memberId);
+
+    @Operation(
+            summary = "닉네임 사용 가능 여부 확인 - JWT [X]",
+            description = """
+                    ### 닉네임의 사용 가능 여부를 확인합니다.
+                    - 중복 닉네임인 경우 409 에러를 반환합니다.
+                    - 부적절한 단어(욕설, 성적 표현 등)가 포함된 경우 400 에러를 반환합니다.
+                    - 성공 시 200 OK를 반환합니다.
+                    """
+    )
+    @ApiExceptions(values = {
+            DUPLICATE_NICKNAME,
+            INVALID_NICKNAME,
+            DEFAULT_ERROR
+    })
+    public abstract ResponseEntity<Void> checkNickname(String nickname);
 
     @Operation(
             summary = "디바이스 토큰 삭제 - JWT [O]",
