@@ -138,7 +138,7 @@ public abstract class MemberDocsController {
             NOT_FOUND_MEMBER,
             DEFAULT_ERROR
     })
-    public abstract ResponseEntity<Void> withdraw(Long memberId);
+    public abstract ResponseEntity<ApiResponse<?>> withdraw(Long memberId);
 
     @Operation(
             summary = "닉네임 사용 가능 여부 확인 - JWT [X]",
@@ -182,7 +182,7 @@ public abstract class MemberDocsController {
             NOT_FOUND_FCM_TOKEN,
             DEFAULT_ERROR
     })
-    public abstract ResponseEntity<Void> deleteDevices(
+    public abstract ResponseEntity<ApiResponse<?>> deleteDevices(
             String deviceToken,
             Long memberId
     );

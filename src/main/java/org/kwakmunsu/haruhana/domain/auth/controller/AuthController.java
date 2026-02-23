@@ -8,6 +8,7 @@ import org.kwakmunsu.haruhana.domain.auth.service.AuthService;
 import org.kwakmunsu.haruhana.global.annotation.LoginMember;
 import org.kwakmunsu.haruhana.global.security.jwt.dto.TokenResponse;
 import org.kwakmunsu.haruhana.global.support.response.ApiResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,10 +38,11 @@ public class AuthController extends AuthDocsController {
 
     @Override
     @PostMapping("/v1/auth/logout")
-    public ResponseEntity<Void> logout(@LoginMember Long memberId) {
+    public ResponseEntity<ApiResponse<?>> logout(@LoginMember Long memberId) {
         authService.logout(memberId);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(ApiResponse.success());
     }
 
 }

@@ -62,6 +62,6 @@ public abstract class AuthDocsController {
             ErrorType.NOT_FOUND_MEMBER,
             ErrorType.DEFAULT_ERROR
     })
-    public abstract ResponseEntity<Void> logout(@LoginMember Long memberId);
+    public abstract ResponseEntity<ApiResponse<?>> logout(@LoginMember Long memberId);
 
 }
