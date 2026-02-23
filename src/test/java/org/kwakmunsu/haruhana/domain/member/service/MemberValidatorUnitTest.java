@@ -1,9 +1,12 @@
 package org.kwakmunsu.haruhana.domain.member.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.UnitTestSupport;
@@ -83,8 +86,12 @@ class MemberValidatorUnitTest extends UnitTestSupport {
         // given
         given(memberJpaRepository.existsByNicknameAndStatus(any(), any())).willReturn(false);
 
-        // when & then
-        memberValidator.validateNicknameAvailable("정상닉네임");
+        // when
+        boolean nicknameAvailable = memberValidator.isNicknameAvailable("정상닉네임");
+
+        // then
+        assertThat(nicknameAvailable).isTrue();
+        verify(nicknameFilter, times(1)).validate("정상닉네임");
     }
 
     @Test
@@ -92,10 +99,11 @@ class MemberValidatorUnitTest extends UnitTestSupport {
         // given
         given(memberJpaRepository.existsByNicknameAndStatus(any(), any())).willReturn(true);
 
-        // when & then
-        assertThatThrownBy(() -> memberValidator.validateNicknameAvailable("중복닉네임"))
-                .isInstanceOf(HaruHanaException.class)
-                .hasMessage(ErrorType.DUPLICATE_NICKNAME.getMessage());
+        // when
+        boolean nicknameAvailable = memberValidator.isNicknameAvailable("중복닉네임");
+
+        // then
+        assertThat(nicknameAvailable).isFalse();
     }
 
     @Test
@@ -103,10 +111,11 @@ class MemberValidatorUnitTest extends UnitTestSupport {
         // given
         doThrow(new HaruHanaException(ErrorType.INVALID_NICKNAME)).when(nicknameFilter).validate(any());
 
-        // when & then
-        assertThatThrownBy(() -> memberValidator.validateNicknameAvailable("욕설포함닉네임"))
-                .isInstanceOf(HaruHanaException.class)
-                .hasMessage(ErrorType.INVALID_NICKNAME.getMessage());
+        // when
+        boolean nicknameAvailable = memberValidator.isNicknameAvailable("욕설포함닉네임");
+
+        // then
+        assertThat(nicknameAvailable).isFalse();
     }
 
 }

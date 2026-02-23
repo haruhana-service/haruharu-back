@@ -23,9 +23,10 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
+import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 @ActiveProfiles("test")
-@Import(TestSecurityConfig.class)
+@Import({TestSecurityConfig.class, MethodValidationPostProcessor.class})
 @WebMvcTest(
         controllers = {
                 MemberController.class,
