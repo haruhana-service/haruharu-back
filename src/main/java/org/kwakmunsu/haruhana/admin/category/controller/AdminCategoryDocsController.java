@@ -1,10 +1,10 @@
-package org.kwakmunsu.haruhana.domain.category.controller;
+package org.kwakmunsu.haruhana.admin.category.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.kwakmunsu.haruhana.domain.category.controller.dto.request.CategoryCreateRequest;
-import org.kwakmunsu.haruhana.domain.category.controller.dto.request.CategoryGroupCreateRequest;
-import org.kwakmunsu.haruhana.domain.category.controller.dto.request.CategoryTopicCreateRequest;
+import org.kwakmunsu.haruhana.admin.category.controller.request.CategoryCreateRequest;
+import org.kwakmunsu.haruhana.admin.category.controller.request.CategoryGroupCreateRequest;
+import org.kwakmunsu.haruhana.admin.category.controller.request.CategoryTopicCreateRequest;
 import org.kwakmunsu.haruhana.global.support.error.ErrorType;
 import org.kwakmunsu.haruhana.global.support.response.ApiResponse;
 import org.kwakmunsu.haruhana.global.swagger.ApiExceptions;

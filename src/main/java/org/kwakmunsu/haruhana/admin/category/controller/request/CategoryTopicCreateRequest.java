@@ -1,4 +1,4 @@
-package org.kwakmunsu.haruhana.domain.category.controller.dto.request;
+package org.kwakmunsu.haruhana.admin.category.controller.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;

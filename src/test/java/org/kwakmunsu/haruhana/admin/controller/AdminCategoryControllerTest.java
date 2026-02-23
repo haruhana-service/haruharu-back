@@ -1,4 +1,4 @@
-package org.kwakmunsu.haruhana.domain.category.controller;
+package org.kwakmunsu.haruhana.admin.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -6,9 +6,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.ControllerTestSupport;
-import org.kwakmunsu.haruhana.domain.category.controller.dto.request.CategoryCreateRequest;
-import org.kwakmunsu.haruhana.domain.category.controller.dto.request.CategoryGroupCreateRequest;
-import org.kwakmunsu.haruhana.domain.category.controller.dto.request.CategoryTopicCreateRequest;
+import org.kwakmunsu.haruhana.admin.category.controller.request.CategoryCreateRequest;
+import org.kwakmunsu.haruhana.admin.category.controller.request.CategoryGroupCreateRequest;
+import org.kwakmunsu.haruhana.admin.category.controller.request.CategoryTopicCreateRequest;
 import org.kwakmunsu.haruhana.security.annotation.TestAdmin;
 import org.springframework.http.MediaType;
 
