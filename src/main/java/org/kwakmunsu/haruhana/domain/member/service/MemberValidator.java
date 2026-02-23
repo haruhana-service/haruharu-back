@@ -25,20 +25,34 @@ public class MemberValidator {
     }
 
     public void validateUpdateProfile(UpdateProfile updateProfile, Member member) {
-        nicknameFilter.validate(updateProfile.nickname());
         if (member.hasMatchingNickname(updateProfile.nickname())) {
             return;
         }
+
+        nicknameFilter.validate(updateProfile.nickname());
+
         if (memberJpaRepository.existsByNicknameAndStatus(updateProfile.nickname(), EntityStatus.ACTIVE)) {
             throw new HaruHanaException(ErrorType.DUPLICATE_NICKNAME);
         }
     }
 
-    public void validateNicknameAvailable(String nickname) {
+    private void validateNicknameAvailable(String nickname) {
         nicknameFilter.validate(nickname);
         if (memberJpaRepository.existsByNicknameAndStatus(nickname, EntityStatus.ACTIVE)) {
             throw new HaruHanaException(ErrorType.DUPLICATE_NICKNAME);
         }
+    }
+
+    public boolean isNicknameAvailable(String nickname) {
+        try {
+            nicknameFilter.validate(nickname);
+            if (memberJpaRepository.existsByNicknameAndStatus(nickname, EntityStatus.ACTIVE)) {
+                return false;
+            }
+        } catch (HaruHanaException e) {
+            return false;
+        }
+        return true;
     }
 
 }

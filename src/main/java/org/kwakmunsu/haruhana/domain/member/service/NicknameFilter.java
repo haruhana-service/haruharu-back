@@ -26,6 +26,7 @@ public class NicknameFilter {
             badWords = reader.lines()
                     .map(String::trim)
                     .filter(line -> !line.isEmpty() && !line.startsWith("#"))
+                    .map(line -> line.toLowerCase(Locale.ROOT))
                     .collect(Collectors.toUnmodifiableSet());
         }
     }

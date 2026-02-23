@@ -12,7 +12,6 @@ import org.kwakmunsu.haruhana.domain.member.service.dto.request.UpdateProfile;
 import org.kwakmunsu.haruhana.domain.problem.service.ProblemGenerator;
 import org.kwakmunsu.haruhana.domain.storage.service.StorageManager;
 import org.kwakmunsu.haruhana.domain.streak.service.StreakManager;
-import org.kwakmunsu.haruhana.global.support.error.HaruHanaException;
 import org.kwakmunsu.haruhana.global.support.image.StorageProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -150,10 +149,10 @@ public class MemberService {
      * 닉네임 사용 가능 여부 검사 <br>
      * 부적절한 단어 포함 여부 및 중복 여부를 함께 검사합니다. <br>
      * @param nickname 검사할 닉네임
-     * @throws HaruHanaException 부적절한 단어 포함 시 (INVALID_NICKNAME) 또는 중복 시 (DUPLICATE_NICKNAME)
+     * @return 사용 가능하면 true, 부적절한 단어 포함 또는 중복이면 false
      */
-    public void checkNicknameAvailable(String nickname) {
-        memberValidator.validateNicknameAvailable(nickname);
+    public boolean checkNicknameAvailable(String nickname) {
+       return memberValidator.isNicknameAvailable(nickname);
     }
 
     /**
