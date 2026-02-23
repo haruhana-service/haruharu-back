@@ -15,25 +15,44 @@ import org.springframework.stereotype.Component;
 public class MemberValidator {
 
     private final MemberJpaRepository memberJpaRepository;
+    private final NicknameFilter nicknameFilter;
 
     public void validateNew(NewProfile newProfile) {
         if (memberJpaRepository.existsByLoginIdAndStatus(newProfile.loginId(), EntityStatus.ACTIVE)) {
             throw new HaruHanaException(ErrorType.DUPLICATE_LOGIN_ID);
         }
-
-        if (memberJpaRepository.existsByNicknameAndStatus(newProfile.nickname(), EntityStatus.ACTIVE)) {
-            throw new HaruHanaException(ErrorType.DUPLICATE_NICKNAME);
-        }
+        validateNicknameAvailable(newProfile.nickname());
     }
 
     public void validateUpdateProfile(UpdateProfile updateProfile, Member member) {
         if (member.hasMatchingNickname(updateProfile.nickname())) {
             return;
         }
-        // 내 닉네임 아닐 경우 중복 체크
+
+        nicknameFilter.validate(updateProfile.nickname());
+
         if (memberJpaRepository.existsByNicknameAndStatus(updateProfile.nickname(), EntityStatus.ACTIVE)) {
             throw new HaruHanaException(ErrorType.DUPLICATE_NICKNAME);
         }
+    }
+
+    private void validateNicknameAvailable(String nickname) {
+        nicknameFilter.validate(nickname);
+        if (memberJpaRepository.existsByNicknameAndStatus(nickname, EntityStatus.ACTIVE)) {
+            throw new HaruHanaException(ErrorType.DUPLICATE_NICKNAME);
+        }
+    }
+
+    public boolean isNicknameAvailable(String nickname) {
+        try {
+            nicknameFilter.validate(nickname);
+            if (memberJpaRepository.existsByNicknameAndStatus(nickname, EntityStatus.ACTIVE)) {
+                return false;
+            }
+        } catch (HaruHanaException e) {
+            return false;
+        }
+        return true;
     }
 
 }

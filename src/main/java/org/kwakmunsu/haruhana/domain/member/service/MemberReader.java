@@ -69,4 +69,7 @@ public class MemberReader {
                 .orElseThrow(() -> new HaruHanaException(ErrorType.NOT_FOUND_ACTIVE_MEMBER_BY_REFRESH_TOKEN));
     }
 
+    public boolean existsByLoginId(String loginId) {
+        return memberJpaRepository.existsByLoginIdAndStatus(loginId, EntityStatus.ACTIVE);
+    }
 }

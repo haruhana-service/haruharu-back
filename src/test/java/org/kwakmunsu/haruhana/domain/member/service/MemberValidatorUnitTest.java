@@ -1,8 +1,12 @@
 package org.kwakmunsu.haruhana.domain.member.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.UnitTestSupport;
@@ -17,6 +21,9 @@ class MemberValidatorUnitTest extends UnitTestSupport {
 
     @Mock
     MemberJpaRepository memberJpaRepository;
+
+    @Mock
+    NicknameFilter nicknameFilter;
 
     @InjectMocks
     MemberValidator memberValidator;
@@ -58,6 +65,57 @@ class MemberValidatorUnitTest extends UnitTestSupport {
         assertThatThrownBy(() -> memberValidator.validateNew(newProfile))
                 .isInstanceOf(HaruHanaException.class)
                 .hasMessage(ErrorType.DUPLICATE_NICKNAME.getMessage());
+    }
+
+    @Test
+    void 부적절한_단어가_포함된_닉네임으로_생성_시_도메인_규칙_검증에_걸린다() {
+        // given
+        given(memberJpaRepository.existsByLoginIdAndStatus(any(), any())).willReturn(false);
+        doThrow(new HaruHanaException(ErrorType.INVALID_NICKNAME)).when(nicknameFilter).validate(any());
+
+        var newProfile = MemberFixture.createNewProfile();
+
+        // when & then
+        assertThatThrownBy(() -> memberValidator.validateNew(newProfile))
+                .isInstanceOf(HaruHanaException.class)
+                .hasMessage(ErrorType.INVALID_NICKNAME.getMessage());
+    }
+
+    @Test
+    void 사용_가능한_닉네임_검사_시_통과한다() {
+        // given
+        given(memberJpaRepository.existsByNicknameAndStatus(any(), any())).willReturn(false);
+
+        // when
+        boolean nicknameAvailable = memberValidator.isNicknameAvailable("정상닉네임");
+
+        // then
+        assertThat(nicknameAvailable).isTrue();
+        verify(nicknameFilter, times(1)).validate("정상닉네임");
+    }
+
+    @Test
+    void 중복된_닉네임_검사_시_예외가_발생한다() {
+        // given
+        given(memberJpaRepository.existsByNicknameAndStatus(any(), any())).willReturn(true);
+
+        // when
+        boolean nicknameAvailable = memberValidator.isNicknameAvailable("중복닉네임");
+
+        // then
+        assertThat(nicknameAvailable).isFalse();
+    }
+
+    @Test
+    void 부적절한_단어가_포함된_닉네임_검사_시_예외가_발생한다() {
+        // given
+        doThrow(new HaruHanaException(ErrorType.INVALID_NICKNAME)).when(nicknameFilter).validate(any());
+
+        // when
+        boolean nicknameAvailable = memberValidator.isNicknameAvailable("욕설포함닉네임");
+
+        // then
+        assertThat(nicknameAvailable).isFalse();
     }
 
 }

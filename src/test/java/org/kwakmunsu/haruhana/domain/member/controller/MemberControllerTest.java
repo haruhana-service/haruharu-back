@@ -126,4 +126,42 @@ class MemberControllerTest extends ControllerTestSupport {
         verify(memberService, times(1)).withdraw(any());
     }
 
+    @Test
+    void 닉네임_사용_가능_여부_Api를_요청한다() {
+        // given
+        given(memberService.checkNicknameAvailable(any())).willReturn(true);
+
+        // when
+        assertThat(mvcTester.get().uri("/v1/members/nickname")
+                .param("nickname", "사용가능한닉네임"))
+                .apply(print())
+                .hasStatusOk()
+                .bodyJson()
+                .hasPathSatisfying("$.result", v -> v.assertThat().isEqualTo("SUCCESS"))
+                .hasPathSatisfying("$.data", v -> v.assertThat().isEqualTo(true))
+                .hasPathSatisfying("$.error", v -> v.assertThat().isNull());
+
+
+        // then
+        verify(memberService, times(1)).checkNicknameAvailable("사용가능한닉네임");
+    }
+
+    @Test
+    void 로그인_사용_가능_여부_Api를_요청한다() {
+        // given
+        given(memberService.checkLoginIdAvailable(any())).willReturn(true);
+        // when
+        assertThat(mvcTester.get().uri("/v1/members/login-id")
+                .param("loginId", "사용가능한LoginId"))
+                .apply(print())
+                .hasStatusOk()
+                .bodyJson()
+                .hasPathSatisfying("$.result", v -> v.assertThat().isEqualTo("SUCCESS"))
+                .hasPathSatisfying("$.data", v -> v.assertThat().isEqualTo(true))
+                .hasPathSatisfying("$.error", v -> v.assertThat().isNull());
+
+        // then
+        verify(memberService, times(1)).checkLoginIdAvailable("사용가능한LoginId");
+    }
+
 }

@@ -3,7 +3,6 @@ package org.kwakmunsu.haruhana.domain.member;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.kwakmunsu.haruhana.domain.member.controller.dto.MemberCreateRequest;
-import org.kwakmunsu.haruhana.domain.member.controller.dto.PreferenceRegisterRequest;
 import org.kwakmunsu.haruhana.domain.member.entity.Member;
 import org.kwakmunsu.haruhana.domain.member.enums.Role;
 import org.kwakmunsu.haruhana.domain.member.service.dto.request.NewPreference;
@@ -78,10 +77,6 @@ public final class MemberFixture {
 
     public static NewPreference createNewPreference(Long categoryTopicId) {
         return new NewPreference(categoryTopicId, ProblemDifficulty.MEDIUM);
-    }
-
-    public static PreferenceRegisterRequest createPreferenceRegisterRequest(Long categoryTopicId) {
-        return new PreferenceRegisterRequest(categoryTopicId, ProblemDifficulty.MEDIUM);
     }
 
 }

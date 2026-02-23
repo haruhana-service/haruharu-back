@@ -33,6 +33,14 @@ public class MemberService {
     private final StorageManager storageManager;
     private final StorageProvider storageProvider;
 
+    /**
+     * 회원 가입 <br>
+     * 회원 가입 시, 선호 학습 정보와 Streak 함께 등록 <br>
+     * 회원 가입 시, 오늘의 문제 초기 문제 직접 생성 (Async 처리) <br>
+     * @param newProfile 회원 가입 정보
+     * @param newPreference 회원 선호 학습 정보
+     * @return 생성된 회원의 식별자
+     */
     @Transactional
     public Long createMember(NewProfile newProfile, NewPreference newPreference) {
         memberValidator.validateNew(newProfile);
@@ -84,6 +92,11 @@ public class MemberService {
                 memberId, updateProfile.profileImageKey() != null);
     }
 
+    /**
+     * 회원 선호 학습 정보 업데이트 <br>
+     * 기존 선호 학습 정보와 동일한 경우 업데이트하지 않고 로그만 남김
+     * 변경된 학습 정보는 다음날부터 적용
+    * */
     @Transactional
     public void updatePreference(UpdatePreference updatePreference, Long memberId) {
         MemberPreference memberPreference = memberReader.getMemberPreference(memberId);
@@ -130,6 +143,26 @@ public class MemberService {
         memberRemover.remove(memberId);
 
         log.info("[MemberService] 회원 탈퇴 완료 - memberId: {}", memberId);
+    }
+
+    /**
+     * 닉네임 사용 가능 여부 검사 <br>
+     * 부적절한 단어 포함 여부 및 중복 여부를 함께 검사합니다. <br>
+     * @param nickname 검사할 닉네임
+     * @return 사용 가능하면 true, 부적절한 단어 포함 또는 중복이면 false
+     */
+    public boolean checkNicknameAvailable(String nickname) {
+       return memberValidator.isNicknameAvailable(nickname);
+    }
+
+    /**
+     * 로그인 아이디 사용 가능 여부 검사 <br>
+     * 중복 여부를 검사합니다. <br>
+     * @param loginId 검사할 로그인 아이디
+     * @return 사용 가능하면 true, 중복이면 false
+    * */
+    public boolean checkLoginIdAvailable(String loginId) {
+        return !memberReader.existsByLoginId(loginId);
     }
 
 }

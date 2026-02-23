@@ -116,4 +116,28 @@ class MemberServiceUnitTest extends UnitTestSupport {
         verify(memberManager, never()).updatePreference(any(), any());
     }
 
+    @Test
+    void 사용_가능한_로그인ID_인지_확인한다() {
+        // given
+        given(memberReader.existsByLoginId(any())).willReturn(false);
+
+        // when
+        boolean idAvailable = memberService.checkLoginIdAvailable("valid-login-id");
+
+        // then
+        assertThat(idAvailable).isTrue();
+    }
+
+    @Test
+    void 이미_존재하는_로그인ID라면_사용_불가_결과를_반환한다() {
+        // given
+        given(memberReader.existsByLoginId(any())).willReturn(true);
+
+        // when
+        boolean idAvailable = memberService.checkLoginIdAvailable("duplicate-login-id");
+
+        // then
+        assertThat(idAvailable).isFalse();
+    }
+
 }
