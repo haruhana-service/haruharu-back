@@ -1,7 +1,5 @@
 package org.kwakmunsu.haruhana.domain.problem.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,7 +30,6 @@ public class ProblemGenerator {
 
     private final MemberReader memberReader;
     private final ChatService chatService;
-    private final ObjectMapper objectMapper;
     private final ProblemJpaRepository problemJpaRepository;
     private final DailyProblemManager dailyProblemManager;
 
@@ -137,7 +134,7 @@ public class ProblemGenerator {
     /**
      * 그룹별로 문제 생성 및 저장
      */
-    private Problem generateAndSaveProblem(ProblemGenerationGroup group, LocalDate problemAt) throws Exception {
+    private Problem generateAndSaveProblem(ProblemGenerationGroup group, LocalDate problemAt) {
         ProblemGenerationKey key = group.key();
 
         ProblemResponse problemResponse = getProblemToAi(key.categoryTopicName(), key.difficulty());
@@ -161,11 +158,10 @@ public class ProblemGenerator {
         return saved;
     }
 
-    private ProblemResponse getProblemToAi(String categoryTopicName, ProblemDifficulty difficulty) throws JsonProcessingException {
+    private ProblemResponse getProblemToAi(String categoryTopicName, ProblemDifficulty difficulty) {
         String prompt = Prompt.V1_PROMPT.generate(categoryTopicName, difficulty);
-        String jsonResponse = chatService.sendPrompt(prompt);
 
-        return objectMapper.readValue(jsonResponse, ProblemResponse.class);
+        return chatService.sendPrompt(prompt, ProblemResponse.class);
     }
 
     private void assignBackupProblem(

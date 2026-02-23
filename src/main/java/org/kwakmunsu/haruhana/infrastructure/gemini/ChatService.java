@@ -19,14 +19,14 @@ public class ChatService {
             maxAttempts = 2,
             backoff = @Backoff(delay = 1000)
     )
-    public String sendPrompt(String prompt) {
+    public <T> T sendPrompt(String prompt, Class<T> responseType) {
         return chatClient.prompt()
                 .user(prompt)
                 .options(ChatOptions.builder()
                         .temperature(0.5)
                         .build())
                 .call()
-                .content();
+                .entity(responseType);
     }
 
 }
