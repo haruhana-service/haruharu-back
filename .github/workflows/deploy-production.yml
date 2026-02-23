@@ -31,6 +31,8 @@ jobs:
           echo "${{ secrets.APPLICATION_LOCAL_YML }}" > ./application-local.yml
           echo "${{ secrets.APPLICATION_TEST_YML }}" > ./application-test.yml
           echo "${{ secrets.APPLICATION_S3_YML }}" > ./application-s3.yml
+          echo "${{ secrets.BAD_WORDS_TXT }}" > ./bad-words.txt
+
 
       - name: Firebase 서비스계정 키 파일 생성
         run: |

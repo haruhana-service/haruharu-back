@@ -201,6 +201,7 @@ gradle-app.setting
 *.iml
 
 firebase.json
+bad-words.txt
 
 .env
 .env.prod
