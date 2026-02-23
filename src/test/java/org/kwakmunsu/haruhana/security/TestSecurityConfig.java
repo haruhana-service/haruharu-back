@@ -21,17 +21,16 @@ public class TestSecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(
-                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/v1/auth/**",
-                                "/v1/members/sign-up",
-                                "/health",
-                                "/test/**",
-                                "/"
-                        ).permitAll()
-                        .requestMatchers(HttpMethod.POST, "/v1/members/preferences").hasAuthority(Role.ROLE_GUEST.name())
-                        .anyRequest().authenticated()
+                        .requestMatchers("/v1/categories").permitAll()
+                        .requestMatchers("/v1/auth/login", "/v1/auth/reissue").permitAll()
+                        .requestMatchers("/v1/members/sign-up", "/v1/members/nickname", "/v1/members/loginId").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/swagger/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/v1/admin/**").hasRole("ADMIN")
+                        .anyRequest().hasRole("MEMBER")
                 );
 
         return http.build();
