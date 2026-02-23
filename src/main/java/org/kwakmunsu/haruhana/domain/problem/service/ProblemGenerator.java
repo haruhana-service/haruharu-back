@@ -1,7 +1,5 @@
 package org.kwakmunsu.haruhana.domain.problem.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,6 +17,8 @@ import org.kwakmunsu.haruhana.domain.problem.service.dto.ProblemGenerationGroup;
 import org.kwakmunsu.haruhana.domain.problem.service.dto.ProblemGenerationKey;
 import org.kwakmunsu.haruhana.domain.problem.service.dto.ProblemResponse;
 import org.kwakmunsu.haruhana.global.entity.EntityStatus;
+import org.kwakmunsu.haruhana.global.support.error.ErrorType;
+import org.kwakmunsu.haruhana.global.support.error.HaruHanaException;
 import org.kwakmunsu.haruhana.infrastructure.gemini.ChatService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -32,7 +32,6 @@ public class ProblemGenerator {
 
     private final MemberReader memberReader;
     private final ChatService chatService;
-    private final ObjectMapper objectMapper;
     private final ProblemJpaRepository problemJpaRepository;
     private final DailyProblemManager dailyProblemManager;
 
@@ -84,6 +83,7 @@ public class ProblemGenerator {
         LocalDate today = LocalDate.now();
         try {
             ProblemResponse problemResponse = getProblemToAi(categoryTopic.getName(), difficulty);
+            validateProblemResponse(problemResponse);
 
             Problem problem = problemJpaRepository.save(Problem.create(
                     problemResponse.title(),
@@ -137,10 +137,11 @@ public class ProblemGenerator {
     /**
      * 그룹별로 문제 생성 및 저장
      */
-    private Problem generateAndSaveProblem(ProblemGenerationGroup group, LocalDate problemAt) throws Exception {
+    private Problem generateAndSaveProblem(ProblemGenerationGroup group, LocalDate problemAt) {
         ProblemGenerationKey key = group.key();
 
         ProblemResponse problemResponse = getProblemToAi(key.categoryTopicName(), key.difficulty());
+        validateProblemResponse(problemResponse);
 
         Problem saved = problemJpaRepository.save(Problem.create(
                 problemResponse.title(),
@@ -161,11 +162,10 @@ public class ProblemGenerator {
         return saved;
     }
 
-    private ProblemResponse getProblemToAi(String categoryTopicName, ProblemDifficulty difficulty) throws JsonProcessingException {
+    private ProblemResponse getProblemToAi(String categoryTopicName, ProblemDifficulty difficulty) {
         String prompt = Prompt.V1_PROMPT.generate(categoryTopicName, difficulty);
-        String jsonResponse = chatService.sendPrompt(prompt);
 
-        return objectMapper.readValue(jsonResponse, ProblemResponse.class);
+        return chatService.sendPrompt(prompt, ProblemResponse.class);
     }
 
     private void assignBackupProblem(
@@ -184,6 +184,12 @@ public class ProblemGenerator {
                 },
                 () -> log.warn("[ProblemGenerator] 백업 문제 없음, 할당 생략 - 카테고리: {}, 난이도: {}", categoryTopicName, difficulty)
         );
+    }
+
+    private void validateProblemResponse(ProblemResponse problemResponse) {
+        if (!problemResponse.isValid()) {
+            throw new HaruHanaException(ErrorType.FAIL_TO_GENERATE_PROBLEM);
+        }
     }
 
 }
