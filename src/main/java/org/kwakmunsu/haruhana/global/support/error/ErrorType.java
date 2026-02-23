@@ -36,6 +36,9 @@ public enum ErrorType {
     // DAILY PROBLEM
     NOT_FOUND_DAILY_PROBLEM  (HttpStatus.NOT_FOUND, "오늘의 문제를 찾을 수 없습니다.", LogLevel.INFO),
 
+    // PROBLEM
+    FAIL_TO_GENERATE_PROBLEM (HttpStatus.INTERNAL_SERVER_ERROR, "문제 생성에 실패했습니다.", LogLevel.ERROR),
+
     // CATEGORY
     NOT_FOUND_CATEGORY            (HttpStatus.NOT_FOUND, "카테고리를 찾을 수 없습니다.", LogLevel.INFO),
     NOT_FOUND_CATEGORY_GROUP      (HttpStatus.NOT_FOUND, "카테고리 그룹을 찾을 수 없습니다.", LogLevel.INFO),

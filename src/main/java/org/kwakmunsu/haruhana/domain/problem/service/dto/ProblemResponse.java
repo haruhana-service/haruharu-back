@@ -9,4 +9,10 @@ public record ProblemResponse(
         String aiAnswer
 ) {
 
+    public boolean isValid() {
+        return title != null && !title.isBlank() &&
+               description != null && !description.isBlank() &&
+               aiAnswer != null && !aiAnswer.isBlank();
+    }
+
 }

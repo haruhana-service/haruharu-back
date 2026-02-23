@@ -17,6 +17,8 @@ import org.kwakmunsu.haruhana.domain.problem.service.dto.ProblemGenerationGroup;
 import org.kwakmunsu.haruhana.domain.problem.service.dto.ProblemGenerationKey;
 import org.kwakmunsu.haruhana.domain.problem.service.dto.ProblemResponse;
 import org.kwakmunsu.haruhana.global.entity.EntityStatus;
+import org.kwakmunsu.haruhana.global.support.error.ErrorType;
+import org.kwakmunsu.haruhana.global.support.error.HaruHanaException;
 import org.kwakmunsu.haruhana.infrastructure.gemini.ChatService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -81,6 +83,7 @@ public class ProblemGenerator {
         LocalDate today = LocalDate.now();
         try {
             ProblemResponse problemResponse = getProblemToAi(categoryTopic.getName(), difficulty);
+            validateProblemResponse(problemResponse);
 
             Problem problem = problemJpaRepository.save(Problem.create(
                     problemResponse.title(),
@@ -138,6 +141,7 @@ public class ProblemGenerator {
         ProblemGenerationKey key = group.key();
 
         ProblemResponse problemResponse = getProblemToAi(key.categoryTopicName(), key.difficulty());
+        validateProblemResponse(problemResponse);
 
         Problem saved = problemJpaRepository.save(Problem.create(
                 problemResponse.title(),
@@ -180,6 +184,12 @@ public class ProblemGenerator {
                 },
                 () -> log.warn("[ProblemGenerator] 백업 문제 없음, 할당 생략 - 카테고리: {}, 난이도: {}", categoryTopicName, difficulty)
         );
+    }
+
+    private void validateProblemResponse(ProblemResponse problemResponse) {
+        if (!problemResponse.isValid()) {
+            throw new HaruHanaException(ErrorType.FAIL_TO_GENERATE_PROBLEM);
+        }
     }
 
 }
