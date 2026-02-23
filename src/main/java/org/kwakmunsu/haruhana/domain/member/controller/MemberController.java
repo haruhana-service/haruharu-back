@@ -34,8 +34,7 @@ public class MemberController extends MemberDocsController {
     public ResponseEntity<ApiResponse<Long>> create(@RequestBody @Valid MemberCreateRequest request) {
         Long memberId = memberService.createMember(request.toNewProfile(), request.toNewPreference());
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(memberId));
     }
 
@@ -66,15 +65,16 @@ public class MemberController extends MemberDocsController {
     ) {
         memberService.updateProfile(request.toUpdateProfile(), memberId);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponse.success());
     }
 
     @Override
     @DeleteMapping("/v1/members")
-    public ResponseEntity<Void> withdraw(@LoginMember Long memberId) {
+    public ResponseEntity<ApiResponse<?>> withdraw(@LoginMember Long memberId) {
         memberService.withdraw(memberId);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(ApiResponse.success());
     }
 
     @Override
@@ -90,13 +90,14 @@ public class MemberController extends MemberDocsController {
 
     @Override
     @DeleteMapping("/v1/members/devices")
-    public ResponseEntity<Void> deleteDevices(
+    public ResponseEntity<ApiResponse<?>> deleteDevices(
             @RequestParam String deviceToken,
             @LoginMember Long memberId
     ) {
         memberService.deleteDeviceTokens(deviceToken, memberId);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body(ApiResponse.success());
     }
 
     @Override
