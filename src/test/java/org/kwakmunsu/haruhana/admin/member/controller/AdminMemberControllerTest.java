@@ -5,13 +5,16 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.ControllerTestSupport;
 import org.kwakmunsu.haruhana.admin.member.enums.SortBy;
+import org.kwakmunsu.haruhana.admin.member.service.dto.AdminMemberPreferenceResponse;
 import org.kwakmunsu.haruhana.admin.member.service.dto.AdminMemberPreviewResponse;
 import org.kwakmunsu.haruhana.domain.member.enums.Role;
+import org.kwakmunsu.haruhana.domain.problem.enums.ProblemDifficulty;
 import org.kwakmunsu.haruhana.global.entity.EntityStatus;
 import org.kwakmunsu.haruhana.global.support.response.PageResponse;
 import org.kwakmunsu.haruhana.security.annotation.TestAdmin;
@@ -59,6 +62,33 @@ class AdminMemberControllerTest extends ControllerTestSupport {
                 .hasPathSatisfying("$.data.contents[0].role", v -> v.assertThat().isEqualTo("ROLE_MEMBER"))
                 .hasPathSatisfying("$.data.contents[0].lastLoginAt", v -> v.assertThat().isNotNull())
                 .hasPathSatisfying("$.data.contents[0].createdAt", v -> v.assertThat().isNotNull());
+    }
+
+    @TestAdmin
+    @Test
+    void 관리자용_회원_학습_정보_목록_Api를_요청한다() {
+        // given
+        LocalDate effectiveAt = TestDateTimeUtils.now().toLocalDate();
+
+        var response = AdminMemberPreferenceResponse.builder()
+                .id(1L)
+                .memberId(1L)
+                .categoryTopic("JAVA")
+                .difficulty(ProblemDifficulty.EASY.name())
+                .effectiveAt(effectiveAt)
+                .build();
+
+        given(adminMemberService.findMemberPreference(any())).willReturn(response);
+
+        // when & then
+        assertThat(mvcTester.get().uri("/v1/admin/members/{memberId}/preferences", 1L))
+                .apply(print())
+                .hasStatusOk()
+                .bodyJson()
+                .hasPathSatisfying("$.data.memberId", v -> v.assertThat().isEqualTo(response.memberId().intValue()))
+                .hasPathSatisfying("$.data.categoryTopic", v -> v.assertThat().isEqualTo(response.categoryTopic()))
+                .hasPathSatisfying("$.data.difficulty", v -> v.assertThat().isEqualTo(response.difficulty()))
+                .hasPathSatisfying("$.data.effectiveAt", v -> v.assertThat().isNotNull());
     }
 
 }

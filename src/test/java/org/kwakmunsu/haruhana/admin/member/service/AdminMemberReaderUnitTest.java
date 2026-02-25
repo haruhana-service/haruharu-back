@@ -4,20 +4,29 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.UnitTestSupport;
 import org.kwakmunsu.haruhana.admin.member.enums.SortBy;
+import org.kwakmunsu.haruhana.admin.member.service.dto.AdminMemberPreferenceResponse;
 import org.kwakmunsu.haruhana.admin.member.service.dto.AdminMemberPreviewResponse;
+import org.kwakmunsu.haruhana.domain.category.entity.CategoryTopic;
 import org.kwakmunsu.haruhana.domain.member.MemberFixture;
 import org.kwakmunsu.haruhana.domain.member.entity.Member;
+import org.kwakmunsu.haruhana.domain.member.entity.MemberPreference;
 import org.kwakmunsu.haruhana.domain.member.enums.Role;
+import org.kwakmunsu.haruhana.domain.member.repository.MemberPreferenceJpaRepository;
 import org.kwakmunsu.haruhana.domain.member.repository.MemberQueryDslRepository;
+import org.kwakmunsu.haruhana.domain.problem.enums.ProblemDifficulty;
 import org.kwakmunsu.haruhana.global.entity.EntityStatus;
 import org.kwakmunsu.haruhana.global.support.OffsetLimit;
 import org.kwakmunsu.haruhana.global.support.response.PageResponse;
+import org.kwakmunsu.haruhana.util.TestDateTimeUtils;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
@@ -25,6 +34,9 @@ class AdminMemberReaderUnitTest extends UnitTestSupport {
 
     @Mock
     MemberQueryDslRepository memberQueryDslRepository;
+
+    @Mock
+    MemberPreferenceJpaRepository memberPreferenceJpaRepository;
 
     @InjectMocks
     AdminMemberReader adminMemberReader;
@@ -108,4 +120,39 @@ class AdminMemberReaderUnitTest extends UnitTestSupport {
         );
     }
 
+    @Test
+    void 회원_학습_정보를_조회한다() {
+        // given
+        LocalDate effectiveAt = TestDateTimeUtils.now().toLocalDate();
+        var member = mock(Member.class);
+        given(member.getId()).willReturn(1L);
+
+        var spring = CategoryTopic.create(1L, "Spring");
+        var mockedPreference = mock(MemberPreference.class);
+
+        given(mockedPreference.getId()).willReturn(1L);
+        given(mockedPreference.getMember()).willReturn(member);
+        given(mockedPreference.getCategoryTopic()).willReturn(spring);
+        given(mockedPreference.getDifficulty()).willReturn(ProblemDifficulty.EASY);
+        given(mockedPreference.getEffectiveAt()).willReturn(effectiveAt);
+
+        given(memberPreferenceJpaRepository.findByMemberIdAndStatus(any(), any())).willReturn(Optional.of(mockedPreference));
+
+        // when
+        var adminMemberReaderMemberPreference = adminMemberReader.findMemberPreference(1L);
+
+        // then
+        assertThat(adminMemberReaderMemberPreference).isNotNull()
+                .extracting(
+                        AdminMemberPreferenceResponse::memberId,
+                        AdminMemberPreferenceResponse::categoryTopic,
+                        AdminMemberPreferenceResponse::difficulty,
+                        AdminMemberPreferenceResponse::effectiveAt
+                ).containsExactly(
+                        1L,
+                        spring.getName(),
+                        ProblemDifficulty.EASY.name(),
+                        effectiveAt
+                );
+    }
 }

@@ -21,12 +21,13 @@ public enum ErrorType {
     DEFAULT_ERROR          (HttpStatus.INTERNAL_SERVER_ERROR, "알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해주세요.", LogLevel.ERROR),
 
     // MEMBER
-    INVALID_ACCOUNT                          (HttpStatus.UNAUTHORIZED, "계정 정보가 일치하지 않습니다.", LogLevel.WARN),
+    INVALID_ACCOUNT                          (HttpStatus.UNAUTHORIZED, "계정 정보가 일치하지 않습니다.", LogLevel.INFO),
     INVALID_NICKNAME                         (HttpStatus.BAD_REQUEST, "사용할 수 없는 닉네임입니다.", LogLevel.INFO),
     NOT_FOUND_MEMBER                         (HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다.", LogLevel.INFO),
     NOT_FOUND_ACTIVE_MEMBER_BY_REFRESH_TOKEN (HttpStatus.NOT_FOUND, "요청하신 Refresh Token 으로 활성화 된 회원을 찾을 수 없습니다.", LogLevel.INFO),
     DUPLICATE_LOGIN_ID                       (HttpStatus.CONFLICT, "이미 사용 중인 로그인 아이디입니다.", LogLevel.INFO),
     DUPLICATE_NICKNAME                       (HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다.", LogLevel.INFO),
+    NOT_FOUND_MEMBER_PREFERENCE(HttpStatus.NOT_FOUND, "회원 선호 정보를 찾을 수 없습니다.", LogLevel.ERROR), // 회원 정보는 없으면 안되기에 Error
 
     // MEMBER DEVICE
     NOT_FOUND_MEMBER_DEVICE (HttpStatus.NOT_FOUND, "회원 디바이스 정보를 찾을 수 없습니다.", LogLevel.INFO),
@@ -76,8 +77,8 @@ public enum ErrorType {
     FAILED_TO_UPLOAD_FILE  (HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패하였습니다.", LogLevel.ERROR),
     FILE_SIZE_EXCEEDED     (HttpStatus.INTERNAL_SERVER_ERROR, "파일 크기가 허용된 최대 크기를 초과하였습니다.", LogLevel.ERROR),
     S3_PRESIGNED_URL_ERROR (HttpStatus.INTERNAL_SERVER_ERROR,"presigned-url 생성에 실패하였습니다." , LogLevel.ERROR),
-    ;
 
+    ;
     private final HttpStatus status;
     private final String message;
     private final LogLevel logLevel;
