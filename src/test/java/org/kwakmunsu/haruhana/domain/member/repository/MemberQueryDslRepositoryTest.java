@@ -95,6 +95,19 @@ class MemberQueryDslRepositoryTest extends IntegrationTestSupport {
     }
 
     @Test
+    void 검색어가_null이면_전체_회원을_조회한다() {
+        // given
+        memberJpaRepository.save(MemberFixture.createMember("user1", "유저1"));
+        memberJpaRepository.save(MemberFixture.createMember("user2", "유저2"));
+
+        // when
+        List<Member> result = memberQueryDslRepository.findMembers(null, null, new OffsetLimit(1, 20));
+
+        // then
+        assertThat(result).hasSize(2);
+    }
+
+    @Test
     void 검색어와_일치하는_회원이_없으면_빈_리스트를_반환한다() {
         // given
         memberJpaRepository.save(MemberFixture.createMember("user1", "유저1"));
