@@ -6,7 +6,7 @@ public record OffsetLimit(
 ) {
     public OffsetLimit {
         if (page < 1) page = 1;
-        if (size < 0) size = 0;
+        if (size < 1) size = 1;
         if (size > 30) size = 30;
     }
 
