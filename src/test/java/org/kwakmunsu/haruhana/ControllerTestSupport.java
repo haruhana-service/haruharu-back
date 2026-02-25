@@ -1,11 +1,13 @@
 package org.kwakmunsu.haruhana;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.kwakmunsu.haruhana.admin.member.controller.AdminMemberController;
+import org.kwakmunsu.haruhana.admin.member.service.AdminMemberService;
 import org.kwakmunsu.haruhana.domain.auth.controller.AuthController;
 import org.kwakmunsu.haruhana.domain.auth.service.AuthService;
-import org.kwakmunsu.haruhana.domain.category.controller.AdminCategoryController;
+import org.kwakmunsu.haruhana.admin.category.controller.AdminCategoryController;
 import org.kwakmunsu.haruhana.domain.category.controller.CategoryController;
-import org.kwakmunsu.haruhana.domain.category.service.AdminCategoryService;
+import org.kwakmunsu.haruhana.admin.category.service.AdminCategoryService;
 import org.kwakmunsu.haruhana.domain.category.service.CategoryService;
 import org.kwakmunsu.haruhana.domain.dailyproblem.controller.DailyProblemController;
 import org.kwakmunsu.haruhana.domain.dailyproblem.service.DailyProblemService;
@@ -29,6 +31,7 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 @Import({TestSecurityConfig.class, MethodValidationPostProcessor.class})
 @WebMvcTest(
         controllers = {
+                AdminMemberController.class,
                 MemberController.class,
                 AuthController.class,
                 DailyProblemController.class,
@@ -44,6 +47,9 @@ public abstract class ControllerTestSupport {
 
     @Autowired
     protected ObjectMapper objectMapper;
+
+    @MockitoBean
+    protected AdminMemberService adminMemberService;
 
     @MockitoBean
     protected MemberService memberService;

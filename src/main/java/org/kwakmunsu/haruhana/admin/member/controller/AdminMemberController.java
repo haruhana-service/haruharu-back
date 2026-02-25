@@ -1,0 +1,38 @@
+package org.kwakmunsu.haruhana.admin.member.controller;
+
+import lombok.RequiredArgsConstructor;
+import org.kwakmunsu.haruhana.admin.member.enums.SortBy;
+import org.kwakmunsu.haruhana.admin.member.service.AdminMemberService;
+import org.kwakmunsu.haruhana.admin.member.service.dto.AdminMemberPreviewResponse;
+import org.kwakmunsu.haruhana.global.support.OffsetLimit;
+import org.kwakmunsu.haruhana.global.support.response.ApiResponse;
+import org.kwakmunsu.haruhana.global.support.response.PageResponse;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RequiredArgsConstructor
+@RestController
+public class AdminMemberController extends AdminMemberDocsController {
+
+    private final AdminMemberService adminMemberService;
+
+    @Override
+    @GetMapping("/v1/admin/members")
+    public ResponseEntity<ApiResponse<PageResponse<AdminMemberPreviewResponse>>> findMembers(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) SortBy sortBy,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        PageResponse<AdminMemberPreviewResponse> response = adminMemberService.findMembers(
+                search,
+                sortBy,
+                new OffsetLimit(page, size)
+        );
+
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+}

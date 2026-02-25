@@ -1,7 +1,8 @@
-package org.kwakmunsu.haruhana.domain.category.service;
+package org.kwakmunsu.haruhana.admin.category.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.kwakmunsu.haruhana.domain.category.service.CategoryManager;
 import org.springframework.stereotype.Service;
 
 @Slf4j
