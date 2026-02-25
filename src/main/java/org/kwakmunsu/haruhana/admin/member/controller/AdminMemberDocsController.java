@@ -18,11 +18,11 @@ public abstract class AdminMemberDocsController {
             description = """
                     #### 회원 목록을 검색어와 정렬 기준에 따라 조회하는 API입니다.
                     - 관리자는 회원의 로그인 ID 또는 닉네임을 검색하여 회원 목록을 조회할 수 있습니다.
-                    - 활솽화된 회원과 비활성화된 회원 모두 조회할 수 있습니다.
+                    - 활성화된 회원과 비활성화된 회원 모두 조회할 수 있습니다.
                     
                     #### Query Parameters
                     - **search**: 회원의 로그인 ID 또는 닉네임을 검색하는 키워드입니다. (예: "john" -> "john123", "john_doe" 등)
-                    - **sortBy**: 회원 목록을 정렬하는 기준입니다. (예: "lastLoginAt" -> 최근 로그인 순, "createdAt" -> 가입일 순)
+                    - **sortBy**: 회원 목록을 정렬하는 기준입니다. (예: "JOIN_ASC" -> 가입일 오름차순, "JOIN_DESC" -> 가입일 내림차순)
                     - **page**: 조회할 페이지 번호입니다. (기본값: 1)
                     - **size**: 한 페이지에 포함될 회원 수입니다. (기본값: 20)
                     """
