@@ -1,5 +1,6 @@
 package org.kwakmunsu.haruhana.domain.category.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.kwakmunsu.haruhana.domain.category.entity.Category;
 import org.kwakmunsu.haruhana.domain.category.entity.CategoryGroup;
@@ -66,6 +67,12 @@ public class CategoryManager {
                 .orElseThrow(() -> new HaruHanaException(ErrorType.NOT_FOUND_CATEGORY));
 
         if (category.isDeleted()) return;
+
+        List<CategoryGroup> groups = categoryGroupJpaRepository.findByCategoryId(categoryId);
+        groups.forEach(group -> {
+            categoryTopicJpaRepository.findByGroupId(group.getId()).forEach(CategoryTopic::delete);
+            group.delete();
+        });
 
         category.delete();
     }
