@@ -4,7 +4,6 @@ import static org.kwakmunsu.haruhana.global.support.error.ErrorType.BAD_REQUEST;
 import static org.kwakmunsu.haruhana.global.support.error.ErrorType.DEFAULT_ERROR;
 import static org.kwakmunsu.haruhana.global.support.error.ErrorType.DUPLICATE_LOGIN_ID;
 import static org.kwakmunsu.haruhana.global.support.error.ErrorType.DUPLICATE_NICKNAME;
-import static org.kwakmunsu.haruhana.global.support.error.ErrorType.INVALID_NICKNAME;
 import static org.kwakmunsu.haruhana.global.support.error.ErrorType.NOT_FOUND_CATEGORY;
 import static org.kwakmunsu.haruhana.global.support.error.ErrorType.NOT_FOUND_FCM_TOKEN;
 import static org.kwakmunsu.haruhana.global.support.error.ErrorType.NOT_FOUND_MEMBER;
@@ -22,8 +21,6 @@ import org.kwakmunsu.haruhana.domain.member.service.MemberProfileResponse;
 import org.kwakmunsu.haruhana.global.support.response.ApiResponse;
 import org.kwakmunsu.haruhana.global.swagger.ApiExceptions;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Member Docs", description = "Member 관련 API 문서")
 public abstract class MemberDocsController {
