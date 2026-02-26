@@ -3,6 +3,7 @@ package org.kwakmunsu.haruhana.domain.member.service;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import lombok.Builder;
+import org.kwakmunsu.haruhana.domain.member.entity.Member;
 import org.kwakmunsu.haruhana.domain.member.entity.MemberPreference;
 
 @Schema(description = "Member 프로필 응답 DTO")
@@ -23,18 +24,24 @@ public record MemberProfileResponse(
         @Schema(description = "학습 문제 난이도", example = "EASY")
         String difficulty,
 
+        @Schema(description = "회원 역할", example = "ROLE_MEMBER")
+        String role,
+
         @Schema(description = "조회용 presignedUrl", example = "https://example.com/profile-image.jpg")
         String profileImageUrl
 ) {
 
     public static MemberProfileResponse from(MemberPreference memberPreference, String profileImageUrl) {
         // NOTE: fetch join 사용으로 N + 1 문제 안터져요!
+        Member member = memberPreference.getMember();
+
         return MemberProfileResponse.builder()
-                .loginId(memberPreference.getMember().getLoginId())
-                .nickname(memberPreference.getMember().getNickname())
-                .createdAt(memberPreference.getMember().getCreatedAt())
+                .loginId(member.getLoginId())
+                .nickname(member.getNickname())
+                .createdAt(member.getCreatedAt())
                 .categoryTopicName(memberPreference.getCategoryTopic().getName())
                 .difficulty(memberPreference.getDifficulty().name())
+                .role(member.getRole().name())
                 .profileImageUrl(profileImageUrl)
                 .build();
     }
