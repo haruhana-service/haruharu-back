@@ -60,4 +60,10 @@ public class AdminCategoryService {
         log.info("[AdminCategoryService] 카테고리 토픽명 수정 완료 - topicId: {}, name: {}", topicId, name);
     }
 
+    public void deleteCategoryTopic(Long topicId) {
+        categoryManager.deleteCategoryTopic(topicId);
+
+        log.info("[AdminCategoryService] 카테고리 토픽 삭제 완료 - topicId: {}", topicId);
+    }
+
 }
