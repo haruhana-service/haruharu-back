@@ -12,6 +12,7 @@ import org.kwakmunsu.haruhana.global.support.response.ApiResponse;
 import org.kwakmunsu.haruhana.global.support.response.PageResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,6 +58,16 @@ public class AdminMemberController extends AdminMemberDocsController {
             @Valid @RequestBody MemberUpdateRoleRequest request
     ) {
         adminMemberService.updateRole(memberId,request.role());
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponse.success());
+    }
+
+    @Override
+    @DeleteMapping("/v1/admin/members/{memberId}")
+    public ResponseEntity<ApiResponse<?>> deleteMember(
+            @PathVariable Long memberId
+    ) {
+        adminMemberService.deleteMember(memberId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponse.success());
     }

@@ -13,7 +13,6 @@ import org.kwakmunsu.haruhana.global.support.response.ApiResponse;
 import org.kwakmunsu.haruhana.global.support.response.PageResponse;
 import org.kwakmunsu.haruhana.global.swagger.ApiExceptions;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
 
 @Tag(name = "Admin - Member", description = "관리자용 Member 관련 API 문서")
 public abstract class AdminMemberDocsController {
@@ -102,6 +101,32 @@ public abstract class AdminMemberDocsController {
             )
             Long memberId,
             MemberUpdateRoleRequest request
+    );
+
+    @Operation(
+            summary = "회원 삭제 - 관리자",
+            description = """
+                    #### 특정 회원을 삭제하는 API입니다.
+                    - 관리자는 회원의 ID를 제공하여 해당 회원을 삭제할 수 있습니다.
+                    - 이 API는 성공적으로 회원이 삭제되면 204 No Content 상태 코드를 반환합니다.
+                    """
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "204",
+            description = "회원이 성공적으로 삭제되었습니다."
+    )
+    @ApiExceptions(values = {
+            ErrorType.DEFAULT_ERROR,
+            ErrorType.NOT_FOUND_MEMBER,
+            ErrorType.UNAUTHORIZED_ERROR
+    })
+    public abstract ResponseEntity<ApiResponse<?>> deleteMember(
+            @Parameter(
+                    example = "1",
+                    description = "회원 ID",
+                    in = ParameterIn.PATH
+            )
+            Long memberId
     );
 
 }
