@@ -32,7 +32,7 @@ class MemberReaderUnitTest extends UnitTestSupport {
     @Test
     void 유효한_계정으로_회원정보_조회에_성공한다() {
         // given
-        var createMember = MemberFixture.createMember(Role.ROLE_GUEST);
+        var createMember = MemberFixture.createMember(Role.ROLE_MEMBER);
         var loginId = createMember.getLoginId();
         var password = createMember.getPassword();
 
@@ -49,14 +49,14 @@ class MemberReaderUnitTest extends UnitTestSupport {
                 Member::getRole
         ).containsExactly(
                 loginId,
-                Role.ROLE_GUEST
+                Role.ROLE_MEMBER
         );
     }
 
     @Test
     void 존재하지않는_LoginId_일_경우_회원정보_조회에_실패한다() {
         // given
-        var createMember = MemberFixture.createMember(Role.ROLE_GUEST);
+        var createMember = MemberFixture.createMember(Role.ROLE_MEMBER);
         var loginId = createMember.getLoginId();
         var password = createMember.getPassword();
 
@@ -72,7 +72,7 @@ class MemberReaderUnitTest extends UnitTestSupport {
     @Test
     void 비밀번호가_불일치할_경우_회원정보_조회에_실패한다() {
         // given
-        var createMember = MemberFixture.createMember(Role.ROLE_GUEST);
+        var createMember = MemberFixture.createMember(Role.ROLE_MEMBER);
         var loginId = createMember.getLoginId();
         var password = createMember.getPassword();
 

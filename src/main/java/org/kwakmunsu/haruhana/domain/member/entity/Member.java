@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -61,8 +62,8 @@ public class Member extends BaseEntity {
         this.lastLoginAt = lastLoginAt;
     }
 
-    public void updateRoleToMember() {
-        this.role = Role.ROLE_MEMBER;
+    public void updateRole(Role role) {
+        this.role = Objects.requireNonNull(role);
     }
 
     public void updateRefreshToken(String refreshToken) {

@@ -109,7 +109,6 @@ class MemberJpaRepositoryTest extends IntegrationTestSupport {
     void MEMBER_권한의_회원만_조회한다() {
         // given
         var member = memberJpaRepository.save(MemberFixture.createMember("member", "멤버"));
-        var guest = memberJpaRepository.save(MemberFixture.createGuest("guest", "게스트"));
 
         // when
         List<Member> result = memberJpaRepository.findMembersWithoutTodaySubmission(
