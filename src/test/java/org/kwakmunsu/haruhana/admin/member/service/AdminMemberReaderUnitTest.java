@@ -1,6 +1,7 @@
 package org.kwakmunsu.haruhana.admin.member.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -25,6 +26,8 @@ import org.kwakmunsu.haruhana.domain.member.repository.MemberQueryDslRepository;
 import org.kwakmunsu.haruhana.domain.problem.enums.ProblemDifficulty;
 import org.kwakmunsu.haruhana.global.entity.EntityStatus;
 import org.kwakmunsu.haruhana.global.support.OffsetLimit;
+import org.kwakmunsu.haruhana.global.support.error.ErrorType;
+import org.kwakmunsu.haruhana.global.support.error.HaruHanaException;
 import org.kwakmunsu.haruhana.global.support.response.PageResponse;
 import org.kwakmunsu.haruhana.util.TestDateTimeUtils;
 import org.mockito.InjectMocks;
@@ -155,4 +158,15 @@ class AdminMemberReaderUnitTest extends UnitTestSupport {
                         effectiveAt
                 );
     }
+
+    @Test
+    void 회원_학습_정보가_없을_시_예외를_반환한다() {
+        given(memberPreferenceJpaRepository.findByMemberIdAndStatus(any(), any())).willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> adminMemberReader.findMemberPreference(1L))
+                .isInstanceOf(HaruHanaException.class)
+                .hasMessage(ErrorType.NOT_FOUND_MEMBER_PREFERENCE.getMessage());
+    }
+
 }
