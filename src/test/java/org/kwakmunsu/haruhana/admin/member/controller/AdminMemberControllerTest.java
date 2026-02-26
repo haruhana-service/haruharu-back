@@ -66,7 +66,7 @@ class AdminMemberControllerTest extends ControllerTestSupport {
 
     @TestAdmin
     @Test
-    void 관리자용_회원_학습_정보_목록_Api를_요청한다() {
+    void 관리자용_회원_학습_정보_조회_Api를_요청한다() {
         // given
         LocalDate effectiveAt = TestDateTimeUtils.now().toLocalDate();
 
