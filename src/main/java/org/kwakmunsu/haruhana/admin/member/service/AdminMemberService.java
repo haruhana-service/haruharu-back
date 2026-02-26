@@ -14,12 +14,12 @@ public class AdminMemberService {
 
     private final AdminMemberReader memberReader;
 
-    public  PageResponse<AdminMemberPreviewResponse> findMembers(String search, SortBy sortBy, OffsetLimit offsetLimit) {
-       return memberReader.findMembers(search, sortBy, offsetLimit);
+    public PageResponse<AdminMemberPreviewResponse> findMembers(String search, SortBy sortBy, OffsetLimit offsetLimit) {
+        return memberReader.findMembers(search, sortBy, offsetLimit);
     }
 
     public AdminMemberPreferenceResponse findMemberPreference(Long memberId) {
-          return memberReader.findMemberPreference(memberId);
+        return memberReader.findMemberPreference(memberId);
     }
 
 }
