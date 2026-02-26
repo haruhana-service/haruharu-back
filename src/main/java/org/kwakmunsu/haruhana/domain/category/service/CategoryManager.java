@@ -91,4 +91,15 @@ public class CategoryManager {
         group.delete();
     }
 
+    @Transactional
+    public void updateCategoryTopic(Long topicId, String name) {
+        CategoryTopic topic = categoryTopicJpaRepository.findByIdAndStatus(topicId, EntityStatus.ACTIVE)
+                .orElseThrow(() -> new HaruHanaException(ErrorType.NOT_FOUND_CATEGORY_TOPIC));
+
+        if (!topic.getName().equals(name)) {
+            categoryValidator.validateTopicName(name);
+        }
+        topic.updateName(name);
+    }
+
 }

@@ -91,4 +91,15 @@ public class AdminCategoryController extends AdminCategoryDocsController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponse.success());
     }
 
+    @Override
+    @PatchMapping("/v1/admin/categories/topics/{topicId}")
+    public ResponseEntity<ApiResponse<?>> updateCategoryTopic(
+            @PathVariable Long topicId,
+            @Valid @RequestBody CategoryNameUpdateRequest request
+    ) {
+        categoryService.updateCategoryTopic(topicId, request.name());
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponse.success());
+    }
+
 }
