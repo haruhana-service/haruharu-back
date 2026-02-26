@@ -14,6 +14,8 @@ import org.springframework.data.repository.query.Param;
 public interface MemberPreferenceJpaRepository extends JpaRepository<MemberPreference, Long> {
 
     List<MemberPreference> findAllByEffectiveAtLessThanEqualAndStatus(LocalDate effectiveAt, EntityStatus status);
+
+    @Query("SELECT mp FROM MemberPreference mp JOIN FETCH mp.categoryTopic WHERE mp.member.id = :memberId AND mp.status = :status")
     Optional<MemberPreference> findByMemberIdAndStatus(Long memberId, EntityStatus status);
 
     @Query("SELECT mp FROM MemberPreference mp JOIN FETCH mp.member m JOIN FETCH mp.categoryTopic WHERE m.id = :memberId AND mp.status = :status")
