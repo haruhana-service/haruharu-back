@@ -81,4 +81,14 @@ public class CategoryManager {
         group.updateName(name);
     }
 
+    @Transactional
+    public void deleteCategoryGroup(Long groupId) {
+        CategoryGroup group = categoryGroupJpaRepository.findById(groupId)
+                .orElseThrow(() -> new HaruHanaException(ErrorType.NOT_FOUND_CATEGORY_GROUP));
+
+        if (group.isDeleted()) return;
+
+        group.delete();
+    }
+
 }
