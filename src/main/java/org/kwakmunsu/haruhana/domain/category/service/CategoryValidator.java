@@ -24,11 +24,21 @@ public class CategoryValidator {
         }
     }
 
+    public void validateTopicName(String name) {
+        if (categoryTopicJpaRepository.existsByNameAndStatus(name, EntityStatus.ACTIVE)) {
+            throw new HaruHanaException(ErrorType.DUPLICATE_CATEGORY_TOPIC_NAME);
+        }
+    }
+
     public void validateNewGroup(Long categoryId, String name) {
         if (!categoryJpaRepository.existsByIdAndStatus(categoryId, EntityStatus.ACTIVE)) {
             throw new HaruHanaException(ErrorType.NOT_FOUND_CATEGORY);
         }
 
+        validateGroupName(name);
+    }
+
+    public void validateGroupName(String name) {
         if (categoryGroupJpaRepository.existsByNameAndStatus(name, EntityStatus.ACTIVE)) {
             throw new HaruHanaException(ErrorType.DUPLICATE_CATEGORY_GROUP_NAME);
         }

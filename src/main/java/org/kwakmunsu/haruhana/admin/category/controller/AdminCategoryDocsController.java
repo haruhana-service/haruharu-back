@@ -93,4 +93,24 @@ public abstract class AdminCategoryDocsController {
             Long categoryId
     );
 
+    @Operation(
+            summary = "카테고리 그룹(중분류) 이름 수정 - 관리자",
+            description = "카테고리 그룹(중분류)의 이름을 수정합니다."
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "204",
+            description = "카테고리 그룹 이름이 성공적으로 수정되었습니다."
+    )
+    @ApiExceptions(values = {
+            ErrorType.NOT_FOUND_CATEGORY_GROUP,
+            ErrorType.DUPLICATE_CATEGORY_GROUP_NAME,
+            ErrorType.UNAUTHORIZED_ERROR,
+            ErrorType.DEFAULT_ERROR
+    })
+    public abstract ResponseEntity<ApiResponse<?>> updateCategoryGroup(
+            @Parameter(example = "1", description = "그룹 ID", in = ParameterIn.PATH)
+            Long groupId,
+            CategoryNameUpdateRequest request
+    );
+
 }

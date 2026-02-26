@@ -72,4 +72,15 @@ public class AdminCategoryController extends AdminCategoryDocsController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponse.success());
     }
 
+    @Override
+    @PatchMapping("/v1/admin/categories/groups/{groupId}")
+    public ResponseEntity<ApiResponse<?>> updateCategoryGroup(
+            @PathVariable Long groupId,
+            @Valid @RequestBody CategoryNameUpdateRequest request
+    ) {
+        categoryService.updateCategoryGroup(groupId, request.name());
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponse.success());
+    }
+
 }
