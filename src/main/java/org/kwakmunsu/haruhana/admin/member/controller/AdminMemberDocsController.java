@@ -5,10 +5,15 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.kwakmunsu.haruhana.admin.member.enums.SortBy;
+import org.kwakmunsu.haruhana.admin.member.service.dto.AdminMemberPreferenceResponse;
 import org.kwakmunsu.haruhana.admin.member.service.dto.AdminMemberPreviewResponse;
+import org.kwakmunsu.haruhana.global.support.error.ErrorType;
 import org.kwakmunsu.haruhana.global.support.response.ApiResponse;
 import org.kwakmunsu.haruhana.global.support.response.PageResponse;
+import org.kwakmunsu.haruhana.global.swagger.ApiExceptions;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Tag(name = "Admin - Member", description = "관리자용 Member 관련 API 문서")
 public abstract class AdminMemberDocsController {
@@ -47,6 +52,28 @@ public abstract class AdminMemberDocsController {
                     in = ParameterIn.QUERY
             )
             int size
+    );
+
+    @Operation(
+            summary = "회원 선호도 조회 - 관리자",
+            description = """
+                    #### 특정 회원의 선호도를 조회하는 API입니다.
+                    - 관리자는 회원의 ID를 통해 해당 회원이 설정한 선호도를 조회할 수 있습니다.
+                    - 선호도에는 카테고리 주제, 난이도, 효과 발생 날짜 등의 정보가 포함됩니다.
+                    """
+    )
+    @ApiExceptions(values = {
+            ErrorType.DEFAULT_ERROR,
+            ErrorType.NOT_FOUND_MEMBER_PREFERENCE,
+            ErrorType.UNAUTHORIZED_ERROR
+    })
+    public abstract ResponseEntity<ApiResponse<AdminMemberPreferenceResponse>> findMemberPreference(
+            @Parameter(
+                    example = "1",
+                    description = "회원 ID",
+                    in = ParameterIn.PATH
+            )
+            Long memberId
     );
 
 }
