@@ -28,4 +28,8 @@ public class AdminMemberService {
         memberManager.updateMemberRole(memberId, role);
     }
 
+    public void deleteMember(Long memberId) {
+        memberManager.deleteMember(memberId);
+    }
+
 }

@@ -24,4 +24,14 @@ public class AdminMemberManager {
         member.updateRole(role);
     }
 
+    @Transactional
+    public void deleteMember(Long memberId) {
+        Member member = memberJpaRepository.findById(memberId)
+                .orElseThrow(() -> new HaruHanaException(ErrorType.NOT_FOUND_MEMBER));
+
+        if (member.isDeleted()) return;
+
+        member.delete();
+    }
+
 }
