@@ -3,13 +3,17 @@ package org.kwakmunsu.haruhana.admin.member.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.ControllerTestSupport;
+import org.kwakmunsu.haruhana.admin.member.controller.dto.MemberUpdateRoleRequest;
 import org.kwakmunsu.haruhana.admin.member.enums.SortBy;
 import org.kwakmunsu.haruhana.admin.member.service.dto.AdminMemberPreferenceResponse;
 import org.kwakmunsu.haruhana.admin.member.service.dto.AdminMemberPreviewResponse;
@@ -19,6 +23,8 @@ import org.kwakmunsu.haruhana.global.entity.EntityStatus;
 import org.kwakmunsu.haruhana.global.support.response.PageResponse;
 import org.kwakmunsu.haruhana.security.annotation.TestAdmin;
 import org.kwakmunsu.haruhana.util.TestDateTimeUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 class AdminMemberControllerTest extends ControllerTestSupport {
 
@@ -89,6 +95,35 @@ class AdminMemberControllerTest extends ControllerTestSupport {
                 .hasPathSatisfying("$.data.categoryTopic", v -> v.assertThat().isEqualTo(response.categoryTopic()))
                 .hasPathSatisfying("$.data.difficulty", v -> v.assertThat().isEqualTo(response.difficulty()))
                 .hasPathSatisfying("$.data.effectiveAt", v -> v.assertThat().isNotNull());
+    }
+
+    @TestAdmin
+    @Test
+    void 관리자용_회원_역할_변경_APi를_요청한다() throws JsonProcessingException {
+        // given
+        var request = new MemberUpdateRoleRequest(Role.ROLE_ADMIN);
+        String requestJson = objectMapper.writeValueAsString(request);
+
+        // when & then
+        assertThat(mvcTester.patch().uri("/v1/admin/members/{memberId}/roles", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .apply(print())
+                .hasStatus(HttpStatus.NO_CONTENT);
+
+        verify(adminMemberService, times(1)).updateRole(any(), any());
+    }
+
+    @TestAdmin
+    @Test
+    void 관리자용_회원_비활성화_APi를_요청한다() {
+
+        // when & then
+        assertThat(mvcTester.delete().uri("/v1/admin/members/{memberId}", 1L))
+                .apply(print())
+                .hasStatus(HttpStatus.NO_CONTENT);
+
+        verify(adminMemberService, times(1)).deleteMember(any());
     }
 
 }
