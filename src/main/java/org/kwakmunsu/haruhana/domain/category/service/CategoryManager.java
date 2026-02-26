@@ -102,4 +102,14 @@ public class CategoryManager {
         topic.updateName(name);
     }
 
+    @Transactional
+    public void deleteCategoryTopic(Long topicId) {
+        CategoryTopic topic = categoryTopicJpaRepository.findById(topicId)
+                .orElseThrow(() -> new HaruHanaException(ErrorType.NOT_FOUND_CATEGORY_TOPIC));
+
+        if (topic.isDeleted()) return;
+
+        topic.delete();
+    }
+
 }

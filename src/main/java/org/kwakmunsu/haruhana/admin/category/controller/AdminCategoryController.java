@@ -102,4 +102,12 @@ public class AdminCategoryController extends AdminCategoryDocsController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponse.success());
     }
 
+    @Override
+    @DeleteMapping("/v1/admin/categories/topics/{topicId}")
+    public ResponseEntity<ApiResponse<?>> deleteCategoryTopic(@PathVariable Long topicId) {
+        categoryService.deleteCategoryTopic(topicId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponse.success());
+    }
+
 }
