@@ -96,7 +96,6 @@ class MemberManagerIntegrationTest extends IntegrationTestSupport {
         // given
         var newProfile = MemberFixture.createNewProfile();
         var member = memberManager.create(newProfile);
-        member.updateRoleToMember();
 
         var newPreference = MemberFixture.createNewPreference(categoryTopic.getId());
         var memberPreference = memberManager.registerPreference(member, newPreference);
@@ -140,7 +139,7 @@ class MemberManagerIntegrationTest extends IntegrationTestSupport {
         // given
         var newProfile = MemberFixture.createNewProfile();
         var member = memberManager.create(newProfile);
-        member.updateRoleToMember();
+
         // 첫 등록
         var newPreference = MemberFixture.createNewPreference(categoryTopic.getId());
         var memberPreference = memberManager.registerPreference(member, newPreference);
