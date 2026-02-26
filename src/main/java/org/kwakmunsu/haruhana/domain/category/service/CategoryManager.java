@@ -88,6 +88,8 @@ public class CategoryManager {
 
         if (group.isDeleted()) return;
 
+        categoryTopicJpaRepository.findByGroupId(groupId).forEach(CategoryTopic::delete);
+
         group.delete();
     }
 
