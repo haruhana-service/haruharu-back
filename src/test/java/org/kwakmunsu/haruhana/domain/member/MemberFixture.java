@@ -57,15 +57,6 @@ public final class MemberFixture {
         );
     }
 
-    public static Member createGuest(String loginId, String nickname) {
-        return Member.createMember(
-                loginId,
-                PASSWORD,
-                nickname,
-                Role.ROLE_GUEST
-        );
-    }
-
     public static Member createMemberWithOutId(Role role) {
         return Member.createMember(
                 LOGIN_ID,
