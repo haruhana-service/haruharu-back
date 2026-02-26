@@ -1,6 +1,7 @@
 package org.kwakmunsu.haruhana.admin.member.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,8 @@ import org.kwakmunsu.haruhana.IntegrationTestSupport;
 import org.kwakmunsu.haruhana.domain.member.MemberFixture;
 import org.kwakmunsu.haruhana.domain.member.enums.Role;
 import org.kwakmunsu.haruhana.domain.member.repository.MemberJpaRepository;
+import org.kwakmunsu.haruhana.global.support.error.ErrorType;
+import org.kwakmunsu.haruhana.global.support.error.HaruHanaException;
 import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
@@ -49,6 +52,17 @@ class AdminMemberManagerIntegrationTest extends IntegrationTestSupport {
         var updatedMember = memberJpaRepository.findById(admin.getId()).orElseThrow();
 
         assertThat(updatedMember.getRole()).isEqualTo(Role.ROLE_MEMBER);
+    }
+
+    @Test
+    void 존재하지_않는_회원의_권한을_변경하면_예외를_반환한다() {
+        // given
+        var nonExistentMemberId = 999999L;
+
+        // when & then
+        assertThatThrownBy(() -> adminMemberManager.updateMemberRole(nonExistentMemberId, Role.ROLE_ADMIN))
+                .isInstanceOf(HaruHanaException.class)
+                .hasMessage(ErrorType.NOT_FOUND_MEMBER.getMessage());
     }
 
 }
