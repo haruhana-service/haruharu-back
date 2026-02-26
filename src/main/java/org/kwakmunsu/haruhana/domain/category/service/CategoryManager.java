@@ -58,4 +58,14 @@ public class CategoryManager {
         category.updateName(name);
     }
 
+    @Transactional
+    public void deleteCategory(Long categoryId) {
+        Category category = categoryJpaRepository.findById(categoryId)
+                .orElseThrow(() -> new HaruHanaException(ErrorType.NOT_FOUND_CATEGORY));
+
+        if (category.isDeleted()) return;
+
+        category.delete();
+    }
+
 }
