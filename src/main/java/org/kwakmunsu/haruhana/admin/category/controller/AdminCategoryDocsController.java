@@ -113,4 +113,22 @@ public abstract class AdminCategoryDocsController {
             CategoryNameUpdateRequest request
     );
 
+    @Operation(
+            summary = "카테고리 그룹(중분류) 삭제 - 관리자",
+            description = "카테고리 그룹(중분류)를 삭제합니다."
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "204",
+            description = "카테고리 그룹이 성공적으로 삭제되었습니다."
+    )
+    @ApiExceptions(values = {
+            ErrorType.NOT_FOUND_CATEGORY_GROUP,
+            ErrorType.UNAUTHORIZED_ERROR,
+            ErrorType.DEFAULT_ERROR
+    })
+    public abstract ResponseEntity<ApiResponse<?>> deleteCategoryGroup(
+            @Parameter(example = "1", description = "그룹 ID", in = ParameterIn.PATH)
+            Long groupId
+    );
+
 }
