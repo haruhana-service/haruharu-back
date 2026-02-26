@@ -54,4 +54,10 @@ public class AdminCategoryService {
         log.info("[AdminCategoryService] 카테고리 그룹 삭제 완료 - groupId: {}", groupId);
     }
 
+    public void updateCategoryTopic(Long topicId, String name) {
+        categoryManager.updateCategoryTopic(topicId, name);
+
+        log.info("[AdminCategoryService] 카테고리 토픽명 수정 완료 - topicId: {}, name: {}", topicId, name);
+    }
+
 }

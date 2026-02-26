@@ -109,4 +109,19 @@ class AdminCategoryControllerTest extends ControllerTestSupport {
                 .hasStatus(204);
     }
 
+    @TestAdmin
+    @Test
+    void 카테고리_토픽명을_수정한다() throws JsonProcessingException {
+        // given
+        var request = new CategoryNameUpdateRequest("힙");
+        String requestJson = objectMapper.writeValueAsString(request);
+
+        // when & then
+        assertThat(mvcTester.patch().uri("/v1/admin/categories/topics/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .apply(print())
+                .hasStatus(204);
+    }
+
 }
