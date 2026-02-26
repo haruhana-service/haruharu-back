@@ -50,7 +50,7 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/swagger/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/v1/admin/**").hasRole("ADMIN")
-                        .anyRequest().hasRole("MEMBER")
+                        .anyRequest().hasAnyRole("MEMBER", "ADMIN")
                 );
 
         http
