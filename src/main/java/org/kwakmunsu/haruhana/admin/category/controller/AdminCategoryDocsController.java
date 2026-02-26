@@ -131,4 +131,24 @@ public abstract class AdminCategoryDocsController {
             Long groupId
     );
 
+    @Operation(
+            summary = "카테고리 토픽(소분류) 이름 수정 - 관리자",
+            description = "카테고리 토픽(소분류)의 이름을 수정합니다."
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "204",
+            description = "카테고리 토픽 이름이 성공적으로 수정되었습니다."
+    )
+    @ApiExceptions(values = {
+            ErrorType.NOT_FOUND_CATEGORY_TOPIC,
+            ErrorType.DUPLICATE_CATEGORY_TOPIC_NAME,
+            ErrorType.UNAUTHORIZED_ERROR,
+            ErrorType.DEFAULT_ERROR
+    })
+    public abstract ResponseEntity<ApiResponse<?>> updateCategoryTopic(
+            @Parameter(example = "1", description = "토픽 ID", in = ParameterIn.PATH)
+            Long topicId,
+            CategoryNameUpdateRequest request
+    );
+
 }
