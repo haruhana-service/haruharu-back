@@ -30,4 +30,10 @@ public class AdminCategoryService {
         log.info("[AdminCategoryService] 카테고리 토픽 생성 완료 - groupId: {}, name: {}", groupId, name);
     }
 
+    public void updateCategory(Long categoryId, String name) {
+        categoryManager.updateCategory(categoryId, name);
+
+        log.info("[AdminCategoryService] 카테고리명 수정 완료 - categoryId: {}, name: {}", categoryId, name);
+    }
+
 }

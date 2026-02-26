@@ -7,7 +7,11 @@ import org.kwakmunsu.haruhana.domain.category.entity.CategoryTopic;
 import org.kwakmunsu.haruhana.domain.category.repository.CategoryGroupJpaRepository;
 import org.kwakmunsu.haruhana.domain.category.repository.CategoryJpaRepository;
 import org.kwakmunsu.haruhana.domain.category.repository.CategoryTopicJpaRepository;
+import org.kwakmunsu.haruhana.global.entity.EntityStatus;
+import org.kwakmunsu.haruhana.global.support.error.ErrorType;
+import org.kwakmunsu.haruhana.global.support.error.HaruHanaException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 카테고리 관리 서비스 (생성, 수정, 삭제)
@@ -43,6 +47,15 @@ public class CategoryManager {
                 groupId,
                 name
         ));
+    }
+
+    @Transactional
+    public void updateCategory(Long categoryId, String name) {
+        Category category = categoryJpaRepository.findByIdAndStatus(categoryId, EntityStatus.ACTIVE)
+                .orElseThrow(() -> new HaruHanaException(ErrorType.NOT_FOUND_CATEGORY));
+
+        categoryValidator.validateNewCategory(name);
+        category.updateName(name);
     }
 
 }

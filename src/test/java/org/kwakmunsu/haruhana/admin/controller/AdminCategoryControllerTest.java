@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.ControllerTestSupport;
 import org.kwakmunsu.haruhana.admin.category.controller.request.CategoryCreateRequest;
 import org.kwakmunsu.haruhana.admin.category.controller.request.CategoryGroupCreateRequest;
+import org.kwakmunsu.haruhana.admin.category.controller.request.CategoryNameUpdateRequest;
 import org.kwakmunsu.haruhana.admin.category.controller.request.CategoryTopicCreateRequest;
 import org.kwakmunsu.haruhana.security.annotation.TestAdmin;
 import org.springframework.http.MediaType;
@@ -58,6 +59,21 @@ class AdminCategoryControllerTest extends ControllerTestSupport {
                 .content(requestJson))
                 .apply(print())
                 .hasStatusOk();
+    }
+
+    @TestAdmin
+    @Test
+    void 카테고리명을_수정한다() throws JsonProcessingException {
+        // given
+        var request = new CategoryNameUpdateRequest("자료구조");
+        String requestJson = objectMapper.writeValueAsString(request);
+
+        // when & then
+        assertThat(mvcTester.patch().uri("/v1/admin/categories/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .apply(print())
+                .hasStatus(204);
     }
 
 }
