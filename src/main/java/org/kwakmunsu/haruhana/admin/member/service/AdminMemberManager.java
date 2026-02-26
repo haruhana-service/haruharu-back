@@ -1,7 +1,6 @@
 package org.kwakmunsu.haruhana.admin.member.service;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.Comment;
 import org.kwakmunsu.haruhana.domain.member.entity.Member;
 import org.kwakmunsu.haruhana.domain.member.enums.Role;
 import org.kwakmunsu.haruhana.domain.member.repository.MemberJpaRepository;
