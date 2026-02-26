@@ -63,9 +63,9 @@ class StreakManagerIntegrationTest extends IntegrationTestSupport {
     }
 
     @Test
-    void streak이_존재하지_않는_회원_즉_게스트회원_일_경우_예외를_반환한다() {
+    void streak이_존재하지_않는_회원일_경우_예외를_반환한다() {
         // given
-        var member = memberJpaRepository.save(MemberFixture.createMemberWithOutId(Role.ROLE_GUEST));
+        var member = memberJpaRepository.save(MemberFixture.createMemberWithOutId(Role.ROLE_MEMBER));
 
         // when & then
         assertThatThrownBy(() -> streakManager.initStreakForMember(member))
