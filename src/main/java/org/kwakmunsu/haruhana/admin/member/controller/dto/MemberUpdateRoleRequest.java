@@ -1,7 +1,7 @@
 package org.kwakmunsu.haruhana.admin.member.controller.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.kwakmunsu.haruhana.domain.member.enums.Role;
 
 @Schema(description = "회원 권한 업데이트 요청 DTO")
