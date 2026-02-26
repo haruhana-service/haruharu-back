@@ -7,7 +7,6 @@ import org.kwakmunsu.haruhana.admin.member.service.dto.AdminMemberPreferenceResp
 import org.kwakmunsu.haruhana.admin.member.service.dto.AdminMemberPreviewResponse;
 import org.kwakmunsu.haruhana.domain.member.entity.Member;
 import org.kwakmunsu.haruhana.domain.member.entity.MemberPreference;
-import org.kwakmunsu.haruhana.domain.member.repository.MemberJpaRepository;
 import org.kwakmunsu.haruhana.domain.member.repository.MemberPreferenceJpaRepository;
 import org.kwakmunsu.haruhana.domain.member.repository.MemberQueryDslRepository;
 import org.kwakmunsu.haruhana.global.entity.EntityStatus;

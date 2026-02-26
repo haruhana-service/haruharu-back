@@ -65,4 +65,33 @@ class AdminMemberManagerIntegrationTest extends IntegrationTestSupport {
                 .hasMessage(ErrorType.NOT_FOUND_MEMBER.getMessage());
     }
 
+    @Test
+    void 관리자가_회원을_비활성화한다() {
+        // given
+        var member = MemberFixture.createMemberWithOutId(Role.ROLE_ADMIN);
+        memberJpaRepository.save(member);
+
+        // when
+        adminMemberManager.deleteMember(member.getId());
+        entityManager.flush();
+
+        // then
+        var deletedMember = memberJpaRepository.findById(member.getId()).orElseThrow();
+
+        assertThat(deletedMember.isDeleted()).isTrue();
+    }
+
+    @Test
+    void 이미_비활성화된_회원이라면_아무_일도_일어나지_않는다() {
+        // given
+        var member = MemberFixture.createMemberWithOutId(Role.ROLE_ADMIN);
+        memberJpaRepository.save(member);
+        adminMemberManager.deleteMember(member.getId());
+        entityManager.flush();
+
+        // when -  update 쿼리가 안나간다면 아무 일도 일어나지 않음.
+        adminMemberManager.deleteMember(member.getId());
+        entityManager.flush();
+    }
+
 }
