@@ -76,4 +76,13 @@ class AdminCategoryControllerTest extends ControllerTestSupport {
                 .hasStatus(204);
     }
 
+    @TestAdmin
+    @Test
+    void 카테고리를_삭제한다() {
+        // when & then
+        assertThat(mvcTester.delete().uri("/v1/admin/categories/1"))
+                .apply(print())
+                .hasStatus(204);
+    }
+
 }

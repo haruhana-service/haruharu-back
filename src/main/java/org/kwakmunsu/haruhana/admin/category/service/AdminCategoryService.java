@@ -36,4 +36,10 @@ public class AdminCategoryService {
         log.info("[AdminCategoryService] 카테고리명 수정 완료 - categoryId: {}, name: {}", categoryId, name);
     }
 
+    public void deleteCategory(Long categoryId) {
+        categoryManager.deleteCategory(categoryId);
+
+        log.info("[AdminCategoryService] 카테고리 삭제 완료 - categoryId: {}", categoryId);
+    }
+
 }
