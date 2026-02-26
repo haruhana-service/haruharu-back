@@ -10,6 +10,7 @@ import org.kwakmunsu.haruhana.admin.category.service.AdminCategoryService;
 import org.kwakmunsu.haruhana.global.support.response.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,6 +60,14 @@ public class AdminCategoryController extends AdminCategoryDocsController {
             @Valid @RequestBody CategoryNameUpdateRequest request
     ) {
         categoryService.updateCategory(categoryId, request.name());
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponse.success());
+    }
+
+    @Override
+    @DeleteMapping("/v1/admin/categories/{categoryId}")
+    public ResponseEntity<ApiResponse<?>> deleteCategory(@PathVariable Long categoryId) {
+        categoryService.deleteCategory(categoryId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponse.success());
     }
