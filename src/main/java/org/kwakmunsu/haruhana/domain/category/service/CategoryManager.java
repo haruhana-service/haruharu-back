@@ -54,7 +54,9 @@ public class CategoryManager {
         Category category = categoryJpaRepository.findByIdAndStatus(categoryId, EntityStatus.ACTIVE)
                 .orElseThrow(() -> new HaruHanaException(ErrorType.NOT_FOUND_CATEGORY));
 
-        categoryValidator.validateNewCategory(name);
+        if (!category.getName().equals(name)) {
+            categoryValidator.validateNewCategory(name);
+        }
         category.updateName(name);
     }
 
@@ -66,6 +68,17 @@ public class CategoryManager {
         if (category.isDeleted()) return;
 
         category.delete();
+    }
+
+    @Transactional
+    public void updateCategoryGroup(Long groupId, String name) {
+        CategoryGroup group = categoryGroupJpaRepository.findByIdAndStatus(groupId, EntityStatus.ACTIVE)
+                .orElseThrow(() -> new HaruHanaException(ErrorType.NOT_FOUND_CATEGORY_GROUP));
+
+        if (!group.getName().equals(name)) {
+            categoryValidator.validateGroupName(name);
+        }
+        group.updateName(name);
     }
 
 }
