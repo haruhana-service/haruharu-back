@@ -18,6 +18,7 @@ public interface ProblemJpaRepository extends JpaRepository<Problem, Long> {
             EntityStatus status
     );
 
+    // NOTE: LIMIT :limit OFFSET :offset는 표준 JPQL 문법이 아님.  "Hibernate 6.x 환경엔 작동함으로 의도적으로 사용"
     @Query("""
             SELECT p FROM Problem p
             JOIN FETCH p.categoryTopic
