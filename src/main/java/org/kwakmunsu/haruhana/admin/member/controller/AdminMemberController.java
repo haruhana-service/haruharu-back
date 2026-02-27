@@ -2,6 +2,7 @@ package org.kwakmunsu.haruhana.admin.member.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.kwakmunsu.haruhana.admin.member.controller.dto.MemberUpdateNicknameRequest;
 import org.kwakmunsu.haruhana.admin.member.controller.dto.MemberUpdateRoleRequest;
 import org.kwakmunsu.haruhana.admin.member.enums.SortBy;
 import org.kwakmunsu.haruhana.admin.member.service.AdminMemberService;
@@ -49,6 +50,17 @@ public class AdminMemberController extends AdminMemberDocsController {
         AdminMemberPreferenceResponse response = adminMemberService.findMemberPreference(memberId);
 
         return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @Override
+    @PatchMapping("/v1/admin/members/{memberId}/nicknames")
+    public ResponseEntity<ApiResponse<?>> updateMemberNickname(
+            @PathVariable Long memberId,
+            @Valid @RequestBody MemberUpdateNicknameRequest request
+    ) {
+        adminMemberService.updateNickname(memberId, request.nickname());
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponse.success());
     }
 
     @Override

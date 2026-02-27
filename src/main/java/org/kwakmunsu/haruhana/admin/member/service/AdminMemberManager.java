@@ -25,6 +25,22 @@ public class AdminMemberManager {
     }
 
     @Transactional
+    public void updateMemberNickname(Long memberId, String nickname) {
+        Member member = memberJpaRepository.findByIdAndStatus(memberId, EntityStatus.ACTIVE)
+                .orElseThrow(() -> new HaruHanaException(ErrorType.NOT_FOUND_MEMBER));
+
+        if (member.hasMatchingNickname(nickname)) {
+            return;
+        }
+
+        if (memberJpaRepository.existsByNicknameAndStatus(nickname, EntityStatus.ACTIVE)) {
+            throw new HaruHanaException(ErrorType.DUPLICATE_NICKNAME);
+        }
+
+        member.updateProfile(nickname);
+    }
+
+    @Transactional
     public void deleteMember(Long memberId) {
         Member member = memberJpaRepository.findById(memberId)
                 .orElseThrow(() -> new HaruHanaException(ErrorType.NOT_FOUND_MEMBER));

@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.ControllerTestSupport;
+import org.kwakmunsu.haruhana.admin.member.controller.dto.MemberUpdateNicknameRequest;
 import org.kwakmunsu.haruhana.admin.member.controller.dto.MemberUpdateRoleRequest;
 import org.kwakmunsu.haruhana.admin.member.enums.SortBy;
 import org.kwakmunsu.haruhana.admin.member.service.dto.AdminMemberPreferenceResponse;
@@ -95,6 +96,38 @@ class AdminMemberControllerTest extends ControllerTestSupport {
                 .hasPathSatisfying("$.data.categoryTopic", v -> v.assertThat().isEqualTo(response.categoryTopic()))
                 .hasPathSatisfying("$.data.difficulty", v -> v.assertThat().isEqualTo(response.difficulty()))
                 .hasPathSatisfying("$.data.effectiveAt", v -> v.assertThat().isNotNull());
+    }
+
+    @TestAdmin
+    @Test
+    void 관리자용_회원_닉네임_변경_API를_요청한다() throws JsonProcessingException {
+        // given
+        var request = new MemberUpdateNicknameRequest("변경닉네임");
+        String requestJson = objectMapper.writeValueAsString(request);
+
+        // when & then
+        assertThat(mvcTester.patch().uri("/v1/admin/members/{memberId}/nicknames", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .apply(print())
+                .hasStatus(HttpStatus.NO_CONTENT);
+
+        verify(adminMemberService, times(1)).updateNickname(any(), any());
+    }
+
+    @TestAdmin
+    @Test
+    void 관리자용_회원_닉네임_변경_시_닉네임이_빈값이면_400을_반환한다() throws JsonProcessingException {
+        // given
+        var request = new MemberUpdateNicknameRequest("");
+        String requestJson = objectMapper.writeValueAsString(request);
+
+        // when & then
+        assertThat(mvcTester.patch().uri("/v1/admin/members/{memberId}/nicknames", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestJson))
+                .apply(print())
+                .hasStatus(HttpStatus.BAD_REQUEST);
     }
 
     @TestAdmin
