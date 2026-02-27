@@ -21,7 +21,7 @@ public class AdminProblemController extends AdminProblemDocsController {
 
     @Override
     @GetMapping("/v1/admin/problems")
-    public ResponseEntity<ApiResponse<PageResponse<AdminProblemPreviewResponse>>> findProblem(
+    public ResponseEntity<ApiResponse<PageResponse<AdminProblemPreviewResponse>>> findProblems(
             @RequestParam(required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             LocalDate date,

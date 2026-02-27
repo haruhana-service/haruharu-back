@@ -26,7 +26,7 @@ public abstract class AdminProblemDocsController {
                     """
     )
 
-    public abstract ResponseEntity<ApiResponse<PageResponse<AdminProblemPreviewResponse>>> findProblem(
+    public abstract ResponseEntity<ApiResponse<PageResponse<AdminProblemPreviewResponse>>> findProblems(
             @Parameter(
                     example = "2024-06-01",
                     in = ParameterIn.QUERY
