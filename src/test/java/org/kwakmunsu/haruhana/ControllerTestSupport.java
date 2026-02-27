@@ -5,6 +5,8 @@ import org.kwakmunsu.haruhana.admin.category.controller.AdminCategoryController;
 import org.kwakmunsu.haruhana.admin.category.service.AdminCategoryService;
 import org.kwakmunsu.haruhana.admin.member.controller.AdminMemberController;
 import org.kwakmunsu.haruhana.admin.member.service.AdminMemberService;
+import org.kwakmunsu.haruhana.admin.problem.controller.AdminProblemController;
+import org.kwakmunsu.haruhana.admin.problem.service.AdminProblemService;
 import org.kwakmunsu.haruhana.domain.auth.controller.AuthController;
 import org.kwakmunsu.haruhana.domain.auth.service.AuthService;
 import org.kwakmunsu.haruhana.domain.category.controller.CategoryController;
@@ -32,6 +34,7 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 @WebMvcTest(
         controllers = {
                 AdminMemberController.class,
+                AdminProblemController.class,
                 MemberController.class,
                 AuthController.class,
                 DailyProblemController.class,
@@ -50,6 +53,9 @@ public abstract class ControllerTestSupport {
 
     @MockitoBean
     protected AdminMemberService adminMemberService;
+
+    @MockitoBean
+    protected AdminProblemService adminProblemService;
 
     @MockitoBean
     protected MemberService memberService;
