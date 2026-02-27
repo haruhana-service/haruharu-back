@@ -3,11 +3,10 @@ package org.kwakmunsu.haruhana.domain.streak.service;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.kwakmunsu.haruhana.domain.dailyproblem.entity.DailyProblem;
-import org.kwakmunsu.haruhana.domain.dailyproblem.repository.DailyProblemJpaRepository;
 import org.kwakmunsu.haruhana.domain.streak.entity.Streak;
 import org.kwakmunsu.haruhana.domain.streak.repository.StreakJpaRepository;
 import org.kwakmunsu.haruhana.domain.streak.service.dto.response.WeeklySolvedStatusResponse;
+import org.kwakmunsu.haruhana.domain.submission.repository.SubmissionJpaRepository;
 import org.kwakmunsu.haruhana.global.entity.EntityStatus;
 import org.kwakmunsu.haruhana.global.support.error.ErrorType;
 import org.kwakmunsu.haruhana.global.support.error.HaruHanaException;
@@ -18,7 +17,7 @@ import org.springframework.stereotype.Component;
 public class StreakReader {
 
     private final StreakJpaRepository streakJpaRepository;
-    private final DailyProblemJpaRepository dailyProblemJpaRepository;
+    private final SubmissionJpaRepository submissionJpaRepository;
 
     public Streak getByMemberId(Long memberId) {
         return streakJpaRepository.findByMemberIdAndStatus(memberId, EntityStatus.ACTIVE)
@@ -35,14 +34,14 @@ public class StreakReader {
         LocalDate today = LocalDate.now();
         LocalDate sevenDaysAgo = today.minusDays(6);
 
-        List<DailyProblem> dailyProblems = dailyProblemJpaRepository.findSolvedByMemberIdAndDateRange(
+        List<LocalDate> onTimeDates = submissionJpaRepository.findOnTimeDatesByMemberIdAndDateRange(
                 memberId,
                 sevenDaysAgo,
                 today,
                 EntityStatus.ACTIVE
         );
 
-        return WeeklySolvedStatusResponse.from(dailyProblems, today);
+        return WeeklySolvedStatusResponse.from(onTimeDates, today);
     }
 
 }

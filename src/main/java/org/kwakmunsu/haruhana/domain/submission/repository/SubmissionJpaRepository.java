@@ -1,6 +1,8 @@
 package org.kwakmunsu.haruhana.domain.submission.repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import org.kwakmunsu.haruhana.domain.submission.entity.Submission;
 import org.kwakmunsu.haruhana.global.entity.EntityStatus;
@@ -12,6 +14,22 @@ import org.springframework.data.repository.query.Param;
 public interface SubmissionJpaRepository extends JpaRepository<Submission, Long> {
 
     Optional<Submission> findByMemberIdAndDailyProblemIdAndStatus(Long memberId, Long dailyProblemId, EntityStatus status);
+
+    @Query("""
+            SELECT s.dailyProblem.assignedAt
+            FROM Submission s
+            WHERE s.member.id = :memberId
+              AND s.dailyProblem.assignedAt BETWEEN :startDate AND :endDate
+              AND s.isOnTime = true
+              AND s.status = :status
+            """
+    )
+    List<LocalDate> findOnTimeDatesByMemberIdAndDateRange(
+            @Param("memberId") Long memberId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("status") EntityStatus status
+    );
 
     @Modifying
     @Query("UPDATE Submission s SET s.status = :status, s.updatedAt = :now WHERE s.member.id = :memberId AND s.status = 'ACTIVE'")
