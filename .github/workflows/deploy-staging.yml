@@ -80,7 +80,7 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           port: 22
           script: |
-            mkdir -p ~/haruharu-staging/nginx/static
+            mkdir -p ~/haruharu-staging/nginx
             cd ~/haruharu-staging
 
             # 환경변수 파일 생성
@@ -101,11 +101,6 @@ jobs:
             # nginx 설정 파일 생성
             cat > ./nginx/staging.conf << 'EOF'
             ${{ secrets.NGINX_STAGING_CONF }}
-            EOF
-
-            # nginx static 파일 생성
-            cat > ./nginx/static/quotes.json << 'EOF'
-            ${{ secrets.NGINX_STATIC_QUOTES_JSON }}
             EOF
 
             # 1. app 컨테이너만 중지 (인프라 컨테이너는 유지)
