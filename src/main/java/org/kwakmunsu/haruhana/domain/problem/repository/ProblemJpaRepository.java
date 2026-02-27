@@ -23,7 +23,7 @@ public interface ProblemJpaRepository extends JpaRepository<Problem, Long> {
             JOIN FETCH p.categoryTopic
             WHERE p.problemAt = :date
               AND p.status = :status
-            ORDER BY p.id
+            ORDER BY p.id DESC
             LIMIT :limit OFFSET :offset
             """)
     List<Problem> findProblemsByProblemAt(
