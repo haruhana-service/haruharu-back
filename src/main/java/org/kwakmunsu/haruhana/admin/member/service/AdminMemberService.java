@@ -28,6 +28,10 @@ public class AdminMemberService {
         memberManager.updateMemberRole(memberId, role);
     }
 
+    public void updateNickname(Long memberId, String nickname) {
+        memberManager.updateMemberNickname(memberId, nickname);
+    }
+
     public void deleteMember(Long memberId) {
         memberManager.deleteMember(memberId);
     }
