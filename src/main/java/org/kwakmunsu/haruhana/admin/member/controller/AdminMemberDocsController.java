@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.kwakmunsu.haruhana.admin.member.controller.dto.MemberUpdateNicknameRequest;
 import org.kwakmunsu.haruhana.admin.member.controller.dto.MemberUpdateRoleRequest;
 import org.kwakmunsu.haruhana.admin.member.enums.SortBy;
 import org.kwakmunsu.haruhana.admin.member.service.dto.AdminMemberPreferenceResponse;
@@ -73,6 +74,36 @@ public abstract class AdminMemberDocsController {
                     in = ParameterIn.PATH
             )
             Long memberId
+    );
+
+    @Operation(
+            summary = "회원 닉네임 변경 - 관리자",
+            description = """
+                    #### 특정 회원의 닉네임을 변경하는 API입니다.
+                    - 관리자는 회원의 ID와 새로운 닉네임을 제공하여 해당 회원의 닉네임을 변경할 수 있습니다.
+                    - 현재 닉네임과 동일한 경우 변경 없이 성공으로 처리됩니다.
+                    - 이미 사용 중인 닉네임으로는 변경할 수 없습니다.
+                    - 이 API는 성공적으로 닉네임이 변경되면 204 No Content 상태 코드를 반환합니다.
+                    """
+    )
+    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "204",
+            description = "회원 닉네임이 성공적으로 변경되었습니다."
+    )
+    @ApiExceptions(values = {
+            ErrorType.DEFAULT_ERROR,
+            ErrorType.NOT_FOUND_MEMBER,
+            ErrorType.DUPLICATE_NICKNAME,
+            ErrorType.UNAUTHORIZED_ERROR
+    })
+    public abstract ResponseEntity<ApiResponse<?>> updateMemberNickname(
+            @Parameter(
+                    example = "1",
+                    description = "회원 ID",
+                    in = ParameterIn.PATH
+            )
+            Long memberId,
+            MemberUpdateNicknameRequest request
     );
 
     @Operation(
