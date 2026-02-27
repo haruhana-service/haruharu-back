@@ -3,6 +3,7 @@ package org.kwakmunsu.haruhana.admin.problem;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 import java.util.List;
@@ -81,6 +82,8 @@ class AdminProblemControllerTest extends ControllerTestSupport {
         assertThat(mvcTester.get().uri("/v1/admin/problems"))
                 .apply(print())
                 .hasStatus(HttpStatus.FORBIDDEN);
+
+        verifyNoInteractions(adminProblemService); //  보안 필터에서 요청이 차단되는지 확인
     }
 
     @Test
@@ -89,6 +92,8 @@ class AdminProblemControllerTest extends ControllerTestSupport {
         assertThat(mvcTester.get().uri("/v1/admin/problems"))
                 .apply(print())
                 .hasStatus(HttpStatus.FORBIDDEN);
+
+        verifyNoInteractions(adminProblemService);
     }
 
 }
