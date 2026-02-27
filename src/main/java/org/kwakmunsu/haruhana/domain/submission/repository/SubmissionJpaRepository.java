@@ -16,7 +16,7 @@ public interface SubmissionJpaRepository extends JpaRepository<Submission, Long>
     Optional<Submission> findByMemberIdAndDailyProblemIdAndStatus(Long memberId, Long dailyProblemId, EntityStatus status);
 
     @Query("""
-            SELECT s.dailyProblem.assignedAt
+            SELECT DISTINCT s.dailyProblem.assignedAt
             FROM Submission s
             WHERE s.member.id = :memberId
               AND s.dailyProblem.assignedAt BETWEEN :startDate AND :endDate
