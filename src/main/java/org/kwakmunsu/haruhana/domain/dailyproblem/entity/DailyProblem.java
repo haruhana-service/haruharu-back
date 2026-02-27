@@ -17,7 +17,7 @@ import org.kwakmunsu.haruhana.global.entity.BaseEntity;
 
 @Table(
         indexes = {
-                @Index(name = "idx_member_date_solved", columnList = "member_id, assigned_at, is_solved")
+                @Index(name = "idx_member_date", columnList = "member_id, assigned_at")
         }
 )
 @Getter
