@@ -9,8 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.IntegrationTestSupport;
-import org.kwakmunsu.haruhana.admin.problem.service.dto.AdminProblemPreviewResponse;
 import org.kwakmunsu.haruhana.admin.problem.service.AdminProblemReader;
+import org.kwakmunsu.haruhana.admin.problem.service.dto.AdminProblemPreviewResponse;
 import org.kwakmunsu.haruhana.domain.category.CategoryFactory;
 import org.kwakmunsu.haruhana.domain.category.entity.CategoryTopic;
 import org.kwakmunsu.haruhana.domain.category.repository.CategoryTopicJpaRepository;
@@ -99,7 +99,9 @@ class AdminProblemReaderIntegrationTest extends IntegrationTestSupport {
 
         // then
         assertThat(response.hasNext()).isTrue();
-        assertThat(response.contents()).hasSize(2);
+        assertThat(response.contents())
+                .extracting(AdminProblemPreviewResponse::title)
+                .containsExactly("문제2", "문제1");
     }
 
     @Test
