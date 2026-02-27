@@ -24,6 +24,7 @@ public class TestSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/v1/categories").permitAll()
                         .requestMatchers("/v1/auth/login", "/v1/auth/reissue").permitAll()
+                        .requestMatchers("/v1/quotes").permitAll()
                         .requestMatchers("/v1/members/sign-up", "/v1/members/nickname", "/v1/members/login-id").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/swagger/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
