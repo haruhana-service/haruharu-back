@@ -1,4 +1,4 @@
-package org.kwakmunsu.haruhana.admin.problem;
+package org.kwakmunsu.haruhana.admin.problem.service.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;

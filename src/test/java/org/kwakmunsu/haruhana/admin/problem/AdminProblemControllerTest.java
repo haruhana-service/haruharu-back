@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.ControllerTestSupport;
+import org.kwakmunsu.haruhana.admin.problem.service.dto.AdminProblemPreviewResponse;
 import org.kwakmunsu.haruhana.domain.problem.enums.ProblemDifficulty;
 import org.kwakmunsu.haruhana.global.support.response.PageResponse;
 import org.kwakmunsu.haruhana.security.annotation.TestAdmin;

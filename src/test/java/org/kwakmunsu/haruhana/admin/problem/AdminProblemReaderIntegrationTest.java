@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.IntegrationTestSupport;
+import org.kwakmunsu.haruhana.admin.problem.service.dto.AdminProblemPreviewResponse;
+import org.kwakmunsu.haruhana.admin.problem.service.AdminProblemReader;
 import org.kwakmunsu.haruhana.domain.category.CategoryFactory;
 import org.kwakmunsu.haruhana.domain.category.entity.CategoryTopic;
 import org.kwakmunsu.haruhana.domain.category.repository.CategoryTopicJpaRepository;

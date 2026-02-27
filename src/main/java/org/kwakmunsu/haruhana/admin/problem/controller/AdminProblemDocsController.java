@@ -1,10 +1,11 @@
-package org.kwakmunsu.haruhana.admin.problem;
+package org.kwakmunsu.haruhana.admin.problem.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
+import org.kwakmunsu.haruhana.admin.problem.service.dto.AdminProblemPreviewResponse;
 import org.kwakmunsu.haruhana.global.support.response.ApiResponse;
 import org.kwakmunsu.haruhana.global.support.response.PageResponse;
 import org.springframework.http.ResponseEntity;

@@ -1,8 +1,9 @@
-package org.kwakmunsu.haruhana.admin.problem;
+package org.kwakmunsu.haruhana.admin.problem.service;
 
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.kwakmunsu.haruhana.admin.problem.service.dto.AdminProblemPreviewResponse;
 import org.kwakmunsu.haruhana.domain.problem.entity.Problem;
 import org.kwakmunsu.haruhana.domain.problem.repository.ProblemJpaRepository;
 import org.kwakmunsu.haruhana.global.entity.EntityStatus;
