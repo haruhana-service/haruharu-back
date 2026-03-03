@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
 
         switch (errorType.getLogLevel()) {
             case LogLevel.ERROR -> {
-                log.error(logMessage);
+                log.error(logMessage, e);
                 errorNotificationSender.sendErrorNotification(logMessage, e);
             }
             case LogLevel.WARN ->  log.warn(logMessage);
