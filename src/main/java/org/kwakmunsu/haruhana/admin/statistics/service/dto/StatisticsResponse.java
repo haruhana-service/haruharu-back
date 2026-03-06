@@ -11,7 +11,7 @@ public record StatisticsResponse(
         @Schema(description = "오늘 날짜(problemAt)로 배정된 문제 수", example = "5")
         long todayProblemCount,
 
-        @Schema(description = "오늘 제출된 정답 수 (제때 제출)", example = "312")
+        @Schema(description = "오늘 배정된 문제의 제시간 제출 수", example = "312")
         long todayOnTimeSubmissionCount
 
 ) {
