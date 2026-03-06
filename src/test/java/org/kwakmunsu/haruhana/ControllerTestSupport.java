@@ -7,6 +7,8 @@ import org.kwakmunsu.haruhana.admin.member.controller.AdminMemberController;
 import org.kwakmunsu.haruhana.admin.member.service.AdminMemberService;
 import org.kwakmunsu.haruhana.admin.problem.controller.AdminProblemController;
 import org.kwakmunsu.haruhana.admin.problem.service.AdminProblemService;
+import org.kwakmunsu.haruhana.admin.statistics.controller.StatisticsController;
+import org.kwakmunsu.haruhana.admin.statistics.service.StatisticsService;
 import org.kwakmunsu.haruhana.domain.auth.controller.AuthController;
 import org.kwakmunsu.haruhana.domain.auth.service.AuthService;
 import org.kwakmunsu.haruhana.domain.category.controller.CategoryController;
@@ -42,7 +44,8 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
                 StreakController.class,
                 AdminCategoryController.class,
                 CategoryController.class,
-                StorageController.class
+                StorageController.class,
+                StatisticsController.class
         })
 public abstract class ControllerTestSupport {
 
@@ -81,6 +84,9 @@ public abstract class ControllerTestSupport {
 
     @MockitoBean
     protected StorageService storageService;
+
+    @MockitoBean
+    protected StatisticsService statisticsService;
 
     @MockitoBean
     protected ErrorNotificationSender errorNotificationSender;
