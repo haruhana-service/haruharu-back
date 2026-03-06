@@ -32,7 +32,7 @@ class StatisticsServiceTest extends UnitTestSupport {
     void 통계_데이터를_정상적으로_반환한다() {
         // given
         given(memberReader.countAll()).willReturn(1024L);
-        given(problemReader.countByCreatedAtToday()).willReturn(5L);
+        given(problemReader.countByProblemAtToday()).willReturn(5L);
         given(submissionReader.countTodaySubmissions()).willReturn(312L);
 
         // when
@@ -48,7 +48,7 @@ class StatisticsServiceTest extends UnitTestSupport {
     void 모든_카운트가_0이어도_정상_반환된다() {
         // given
         given(memberReader.countAll()).willReturn(0L);
-        given(problemReader.countByCreatedAtToday()).willReturn(0L);
+        given(problemReader.countByProblemAtToday()).willReturn(0L);
         given(submissionReader.countTodaySubmissions()).willReturn(0L);
 
         // when
@@ -64,7 +64,7 @@ class StatisticsServiceTest extends UnitTestSupport {
     void 문제와_제출이_없어도_회원_수는_반환된다() {
         // given
         given(memberReader.countAll()).willReturn(500L);
-        given(problemReader.countByCreatedAtToday()).willReturn(0L);
+        given(problemReader.countByProblemAtToday()).willReturn(0L);
         given(submissionReader.countTodaySubmissions()).willReturn(0L);
 
         // when

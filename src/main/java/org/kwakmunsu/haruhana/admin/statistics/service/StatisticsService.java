@@ -22,7 +22,7 @@ public class StatisticsService {
     @Transactional(readOnly = true)
     public StatisticsResponse getStatistics() {
         long totalMemberCount = memberReader.countAll();
-        long todayProblemCount = problemReader.countByCreatedAtToday();
+        long todayProblemCount = problemReader.countByProblemAtToday();
         long todaySubmissionCount = submissionReader.countTodaySubmissions();
 
         return StatisticsResponse.of(totalMemberCount, todayProblemCount, todaySubmissionCount);

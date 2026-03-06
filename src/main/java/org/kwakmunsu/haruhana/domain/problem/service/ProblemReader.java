@@ -13,7 +13,11 @@ public class ProblemReader {
 
     private final ProblemJpaRepository problemJpaRepository;
 
-    public long countByCreatedAtToday() {
+    /**
+     * problemAt(문제 배정 날짜)이 오늘인 문제 수를 반환합니다.
+     * 스케줄러가 오늘 날짜로 생성한 문제 수와 동일합니다.
+     */
+    public long countByProblemAtToday() {
         LocalDate today = LocalDateTime.now().toLocalDate();
 
         return problemJpaRepository.countByProblemAtAndStatus(today, EntityStatus.ACTIVE);

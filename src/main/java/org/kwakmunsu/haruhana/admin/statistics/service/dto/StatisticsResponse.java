@@ -8,7 +8,7 @@ public record StatisticsResponse(
         @Schema(description = "총 활성 회원 수", example = "1024")
         long totalMemberCount,
 
-        @Schema(description = "오늘 생성된 문제 수", example = "5")
+        @Schema(description = "오늘 날짜(problemAt)로 배정된 문제 수", example = "5")
         long todayProblemCount,
 
         @Schema(description = "오늘 제출된 정답 수 (제때 제출)", example = "312")
