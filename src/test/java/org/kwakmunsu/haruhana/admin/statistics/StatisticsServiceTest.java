@@ -3,7 +3,6 @@ package org.kwakmunsu.haruhana.admin.statistics;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.kwakmunsu.haruhana.UnitTestSupport;
 import org.kwakmunsu.haruhana.admin.statistics.service.StatisticsService;
@@ -33,7 +32,7 @@ class StatisticsServiceTest extends UnitTestSupport {
         // given
         given(memberReader.countAll()).willReturn(1024L);
         given(problemReader.countByProblemAtToday()).willReturn(5L);
-        given(submissionReader.countTodaySubmissions()).willReturn(312L);
+        given(submissionReader.countTodayOnTimeSubmissions()).willReturn(312L);
 
         // when
         StatisticsResponse result = statisticsService.getStatistics();
@@ -41,7 +40,7 @@ class StatisticsServiceTest extends UnitTestSupport {
         // then
         assertThat(result.totalMemberCount()).isEqualTo(1024L);
         assertThat(result.todayProblemCount()).isEqualTo(5L);
-        assertThat(result.todaySubmissionCount()).isEqualTo(312L);
+        assertThat(result.todayOnTimeSubmissionCount()).isEqualTo(312L);
     }
 
     @Test
@@ -49,7 +48,7 @@ class StatisticsServiceTest extends UnitTestSupport {
         // given
         given(memberReader.countAll()).willReturn(0L);
         given(problemReader.countByProblemAtToday()).willReturn(0L);
-        given(submissionReader.countTodaySubmissions()).willReturn(0L);
+        given(submissionReader.countTodayOnTimeSubmissions()).willReturn(0L);
 
         // when
         StatisticsResponse result = statisticsService.getStatistics();
@@ -57,7 +56,7 @@ class StatisticsServiceTest extends UnitTestSupport {
         // then
         assertThat(result.totalMemberCount()).isZero();
         assertThat(result.todayProblemCount()).isZero();
-        assertThat(result.todaySubmissionCount()).isZero();
+        assertThat(result.todayOnTimeSubmissionCount()).isZero();
     }
 
     @Test
@@ -65,7 +64,7 @@ class StatisticsServiceTest extends UnitTestSupport {
         // given
         given(memberReader.countAll()).willReturn(500L);
         given(problemReader.countByProblemAtToday()).willReturn(0L);
-        given(submissionReader.countTodaySubmissions()).willReturn(0L);
+        given(submissionReader.countTodayOnTimeSubmissions()).willReturn(0L);
 
         // when
         StatisticsResponse result = statisticsService.getStatistics();
@@ -73,7 +72,7 @@ class StatisticsServiceTest extends UnitTestSupport {
         // then
         assertThat(result.totalMemberCount()).isEqualTo(500L);
         assertThat(result.todayProblemCount()).isZero();
-        assertThat(result.todaySubmissionCount()).isZero();
+        assertThat(result.todayOnTimeSubmissionCount()).isZero();
     }
 
 }

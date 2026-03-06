@@ -26,7 +26,7 @@ class StatisticsControllerTest extends ControllerTestSupport {
                 .bodyJson()
                 .hasPathSatisfying("$.data.totalMemberCount", v -> v.assertThat().isEqualTo(1024))
                 .hasPathSatisfying("$.data.todayProblemCount", v -> v.assertThat().isEqualTo(5))
-                .hasPathSatisfying("$.data.todaySubmissionCount", v -> v.assertThat().isEqualTo(312));
+                .hasPathSatisfying("$.data.todayOnTimeSubmissionCount", v -> v.assertThat().isEqualTo(312));
     }
 
     @TestAdmin
@@ -43,7 +43,7 @@ class StatisticsControllerTest extends ControllerTestSupport {
                 .bodyJson()
                 .hasPathSatisfying("$.data.totalMemberCount", v -> v.assertThat().isEqualTo(0))
                 .hasPathSatisfying("$.data.todayProblemCount", v -> v.assertThat().isEqualTo(0))
-                .hasPathSatisfying("$.data.todaySubmissionCount", v -> v.assertThat().isEqualTo(0));
+                .hasPathSatisfying("$.data.todayOnTimeSubmissionCount", v -> v.assertThat().isEqualTo(0));
     }
 
     @TestMember

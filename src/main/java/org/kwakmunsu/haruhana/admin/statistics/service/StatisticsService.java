@@ -23,7 +23,7 @@ public class StatisticsService {
     public StatisticsResponse getStatistics() {
         long totalMemberCount = memberReader.countAll();
         long todayProblemCount = problemReader.countByProblemAtToday();
-        long todaySubmissionCount = submissionReader.countTodaySubmissions();
+        long todaySubmissionCount = submissionReader.countTodayOnTimeSubmissions();
 
         return StatisticsResponse.of(totalMemberCount, todayProblemCount, todaySubmissionCount);
     }

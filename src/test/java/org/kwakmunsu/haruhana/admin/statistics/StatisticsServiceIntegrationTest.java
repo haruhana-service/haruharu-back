@@ -133,7 +133,7 @@ class StatisticsServiceIntegrationTest extends IntegrationTestSupport {
         StatisticsResponse result = statisticsService.getStatistics();
 
         // then: 오늘 날짜 DailyProblem에 isOnTime=true인 건만 카운트 → 2
-        assertThat(result.todaySubmissionCount()).isEqualTo(2);
+        assertThat(result.todayOnTimeSubmissionCount()).isEqualTo(2);
     }
 
     @Test
@@ -146,7 +146,7 @@ class StatisticsServiceIntegrationTest extends IntegrationTestSupport {
         // then
         assertThat(result.totalMemberCount()).isZero();
         assertThat(result.todayProblemCount()).isZero();
-        assertThat(result.todaySubmissionCount()).isZero();
+        assertThat(result.todayOnTimeSubmissionCount()).isZero();
     }
 
     @Test
@@ -170,7 +170,7 @@ class StatisticsServiceIntegrationTest extends IntegrationTestSupport {
         // then
         assertThat(result.totalMemberCount()).isEqualTo(1);
         assertThat(result.todayProblemCount()).isEqualTo(1);
-        assertThat(result.todaySubmissionCount()).isEqualTo(1);
+        assertThat(result.todayOnTimeSubmissionCount()).isEqualTo(1);
     }
 
     // ──────────────────────── 헬퍼 메서드 ────────────────────────

@@ -12,7 +12,7 @@ public record StatisticsResponse(
         long todayProblemCount,
 
         @Schema(description = "오늘 제출된 정답 수 (제때 제출)", example = "312")
-        long todaySubmissionCount
+        long todayOnTimeSubmissionCount
 
 ) {
 

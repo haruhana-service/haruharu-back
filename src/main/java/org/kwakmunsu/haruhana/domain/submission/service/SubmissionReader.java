@@ -22,7 +22,7 @@ public class SubmissionReader {
         );
     }
 
-    public long countTodaySubmissions() {
+    public long countTodayOnTimeSubmissions() {
         return submissionJpaRepository.countByDailyProblem_AssignedAtAndIsOnTimeAndStatus(
                 LocalDate.now(),
                 true,
