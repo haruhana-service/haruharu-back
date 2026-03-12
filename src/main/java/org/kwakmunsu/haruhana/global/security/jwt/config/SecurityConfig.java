@@ -7,6 +7,7 @@ import org.kwakmunsu.haruhana.global.security.jwt.JwtAccessDeniedHandler;
 import org.kwakmunsu.haruhana.global.security.jwt.JwtAuthenticationEntryPoint;
 import org.kwakmunsu.haruhana.global.security.jwt.JwtFilter;
 import org.kwakmunsu.haruhana.global.security.jwt.JwtProvider;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,13 +25,15 @@ import org.springframework.web.cors.CorsConfiguration;
 @Configuration
 public class SecurityConfig {
 
-    private static final List<String> ALLOWED_ORIGINS = List.of("http://localhost:5173", "https://haruharu.vercel.app");
     private static final List<String> ALLOWED_METHODS = List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS");
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtProvider jwtProvider;
     private final ObjectMapper objectMapper;
+
+    @Value("${cors.allowed-origins}")
+    private List<String> allowedOrigins;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -65,7 +68,7 @@ public class SecurityConfig {
                 .cors(
                         corsCustomizer -> corsCustomizer.configurationSource(request -> {
                             CorsConfiguration config = new CorsConfiguration();
-                            config.setAllowedOrigins(ALLOWED_ORIGINS);
+                            config.setAllowedOrigins(allowedOrigins);
                             config.setAllowedMethods(ALLOWED_METHODS);
                             config.setAllowedHeaders(List.of("*"));
                             config.setAllowCredentials(true);
