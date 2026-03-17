@@ -6,6 +6,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SecurityPaths {
 
+    public static final String[] ACTUATOR_PERMIT = {
+            "/actuator/health",
+            "/actuator/info",
+            "/actuator/prometheus"
+    };
+
     public static final String[] PERMIT_ALL = {
             "/v1/categories",
             "/v1/auth/login",
@@ -13,9 +19,6 @@ public final class SecurityPaths {
             "/v1/members/sign-up",
             "/v1/members/nickname",
             "/v1/members/login-id",
-            "/actuator/health",
-            "/actuator/info",
-            "/actuator/prometheus",
             "/error",
             "/swagger/**",
             "/swagger-ui/**",

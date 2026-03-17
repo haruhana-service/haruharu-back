@@ -23,9 +23,10 @@ public class TestSecurityConfig {
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(SecurityPaths.ACTUATOR_PERMIT).permitAll()
+                        .requestMatchers("/actuator/**").denyAll()
                         .requestMatchers(SecurityPaths.PERMIT_ALL).permitAll()
                         .requestMatchers(SecurityPaths.ADMIN).hasRole("ADMIN")
-                        .requestMatchers("/actuator/**").denyAll()
                         .anyRequest().hasAnyRole("MEMBER", "ADMIN")
                 );
 
