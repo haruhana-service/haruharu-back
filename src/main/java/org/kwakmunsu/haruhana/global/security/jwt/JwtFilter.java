@@ -33,8 +33,8 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        return Arrays.stream(SecurityPaths.PERMIT_ALL)
-                .anyMatch(path::startsWith);
+        return Arrays.stream(SecurityPaths.PERMIT_ALL).anyMatch(path::startsWith)
+                || Arrays.stream(SecurityPaths.ACTUATOR_PERMIT).anyMatch(path::equals);
     }
 
     @Override
