@@ -9,7 +9,6 @@ import org.kwakmunsu.haruhana.domain.dailyproblem.service.DailyProblemReader;
 import org.kwakmunsu.haruhana.domain.member.service.MemberDeviceReader;
 import org.kwakmunsu.haruhana.domain.notification.enums.NotificationMessage;
 import org.kwakmunsu.haruhana.domain.notification.enums.NotificationType;
-import org.kwakmunsu.haruhana.global.support.notification.ErrorNotificationSender;
 import org.kwakmunsu.haruhana.global.support.notification.NotificationSender;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -22,7 +21,6 @@ public class NotificationScheduler {
     private final DailyProblemReader dailyProblemReader;
     private final MemberDeviceReader memberDeviceReader;
     private final NotificationSender notificationSender;
-    private final ErrorNotificationSender errorNotificationSender;
 
     /**
      * 매일 21시, 오늘 문제를 풀지 않은 회원들에게 푸시 알림을 전송합니다.
@@ -41,7 +39,6 @@ public class NotificationScheduler {
             log.info("[NotificationScheduler] 알림 전송 완료: {}명", deviceTokens.size());
         } catch (Exception e) {
             log.error("[NotificationScheduler] 알림 전송 스케줄러 실행 중 예기치 않은 오류 발생", e);
-            errorNotificationSender.sendErrorNotification("[NotificationScheduler] 알림 전송 스케줄러 실행 중 예기치 않은 오류 발생: " + e.getMessage(), e);
         }
     }
 
